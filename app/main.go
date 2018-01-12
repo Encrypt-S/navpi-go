@@ -6,6 +6,8 @@ import (
 	"io"
 	"log"
 	"runtime"
+	"os"
+	"github.com/NAVCoin/navpi-go/app/conf"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -24,6 +26,13 @@ func main() {
 	log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
 	log.Println(fmt.Sprintf("App pid : %d.", os.Getpid()))
 
+	serverConfig, err := conf.LoadServerConfig()
+	if err != nil {
+		log.Fatal("Failed to load the server config: " + err.Error())
+	}
+
+
+
 	//serverMuxA := http.NewServeMux()
 	//serverMuxA.HandleFunc("/hello", hello)
 
@@ -31,6 +40,8 @@ func main() {
 	serverMuxB.HandleFunc("/world", world)
 
 	//server = start()
+
+
 
 
 	http.ListenAndServe("localhost:8082", serverMuxB)
