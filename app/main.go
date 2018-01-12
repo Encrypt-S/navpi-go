@@ -7,7 +7,10 @@ import (
 	"runtime"
 	"os"
 	"github.com/NAVCoin/navpi-go/app/conf"
-	"github.com/NAVCoin/navpi-go/app/daemon"
+	"github.com/gorilla/mux"
+	"github.com/gorilla/handlers"
+	"github.com/NAVCoin/navpi-go/app/daemon/daemonsvr"
+	"github.com/NAVCoin/navpi-go/app/manager/managerapi"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -31,9 +34,6 @@ func main() {
 		log.Fatal("Failed to load the server config: " + err.Error())
 	}
 
-	daemon.StartServer(serverConfig)
-
-
 
 
 	// Get the user config
@@ -48,12 +48,25 @@ func main() {
 	//serverMuxA := http.NewServeMux()
 	//serverMuxA.HandleFunc("/hello", hello)
 
-	serverMuxB := http.NewServeMux()
-	serverMuxB.HandleFunc("/world", world)
+	daemonsvr.Start(serverConfig)
 
-	//server = start()
+	router := mux.NewRouter()
+	managerapi.InitManagerhandlers(router,"api")
 
-	http.ListenAndServe("localhost:8082", serverMuxB)
+	port := fmt.Sprintf(":%d", serverConfig.ManagerAiPort)
+	srv := &http.Server{
+		Addr: port,
+		Handler: handlers.CORS()(router)}
+
+	srv.ListenAndServe()
+
+	//managerServer := http.NewServeMux()
+	//managerServer.Handlers(handlers.CORS()(router))
+	//
+	//
+	////server = start()
+	//port := fmt.Sprintf("localhost:%d", serverConfig.ManagerAiPort)
+	//http.ListenAndServe(port, managerServer)
 }
 
 

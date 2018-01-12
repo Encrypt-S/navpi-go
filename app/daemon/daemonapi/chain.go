@@ -3,12 +3,9 @@ package daemonapi
 import (
 	"net/http"
 	"github.com/gorilla/mux"
-	"github.com/NAVCoin/navpi-go/app/conf"
-	"io/ioutil"
 	"log"
 
 	"fmt"
-	"github.com/NAVCoin/navpi-go/app/daemon/deamonrpc"
 	"io"
 )
 
@@ -19,7 +16,7 @@ import (
 // Setup all the handlers for the blockchain rpc interface
 func InitChainHandlers(r *mux.Router, prefix string)  {
 
-	config = conf
+	//config = conf
 	//
 	r.HandleFunc(fmt.Sprintf("/%s/blockchain/v1/getblockcount", prefix), getBlockCount).Methods("GET")
 

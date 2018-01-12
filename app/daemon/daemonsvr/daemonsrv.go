@@ -1,12 +1,10 @@
-package daemonsrv
+package daemonsvr
 
 import (
 	"github.com/NAVCoin/navpi-go/app/conf"
-	"io"
 	"net/http"
 	"fmt"
 	"github.com/gorilla/mux"
-	"log"
 	"github.com/gorilla/handlers"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonapi"
 )
@@ -31,9 +29,7 @@ func Start (serverConfig *conf.ServerConfig) *http.Server {
 	//http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 	//	io.WriteString(w, "hello world\n")
 	//})
-
-
-	log.Fatal(http.ListenAndServe(port, handlers.CORS()(router)))
+	//log.Fatal(http.ListenAndServe(port, handlers.CORS()(router)))
 
 	go func() {
 		srv.ListenAndServe()

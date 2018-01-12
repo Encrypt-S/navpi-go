@@ -1,7 +1,6 @@
 package daemonapi
 
 import (
-	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/gorilla/mux"
 	"net/http"
 	"io/ioutil"
