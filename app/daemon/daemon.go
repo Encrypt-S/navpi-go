@@ -196,6 +196,11 @@ func CheckForDaemon (serverConfig *conf.ServerConfig, userConfig *conf.Config) (
 
 }
 
+
+func getDaemonDownloadPath(version string) {
+
+}
+
 func updateDaemon(config *conf.ServerConfig) error {
 
 	log.Println("Updating Daemon")
