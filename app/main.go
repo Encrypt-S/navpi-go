@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"io"
 	"log"
 	"runtime"
 	"os"
 	"github.com/NAVCoin/navpi-go/app/conf"
+	"github.com/NAVCoin/navpi-go/app/daemon"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -31,6 +31,18 @@ func main() {
 		log.Fatal("Failed to load the server config: " + err.Error())
 	}
 
+	daemon.StartServer(serverConfig)
+
+
+
+
+	// Get the user config
+	//-----------------------
+	//userConfig, err := conf.LoadUserConfig()
+	//if err != nil {
+	//	log.Fatal("Failed to load user config: " + err.Error())
+	//	//startSetupApiSercer(fmt.Sprintf(":%d", serverConfig.SetupApiPort))
+	//}
 
 
 	//serverMuxA := http.NewServeMux()
@@ -41,26 +53,9 @@ func main() {
 
 	//server = start()
 
-
-
-
 	http.ListenAndServe("localhost:8082", serverMuxB)
 }
 
-func start () *http.Server {
-	srv := &http.Server{Addr: ":8081"}
-
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "hello world\n")
-	})
-
-	go func() {
-		srv.ListenAndServe()
-		//http.ListenAndServe("localhost:8081", serverMuxA)
-	}()
-
-	return srv
-}
 
 
 
