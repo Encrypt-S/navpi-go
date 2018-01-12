@@ -14,6 +14,7 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"runtime"
+	"errors"
 )
 
 const (
@@ -95,7 +96,21 @@ type GitHubRelease struct {
 	Body       string `json:"body"`
 }
 
-func Start(daemonPath string, config *conf.ServerConfig) (*exec.Cmd)  {
+
+func DownloadAndStart(serverConfig, config *conf.ServerConfig, userConfig *conf.Config) (*exec.Cmd) {
+
+	path, err := CheckForDaemon(serverConfig, userConfig)
+
+	if(err != nil) {
+		//updateDaemon
+	}else {
+		return Start(path)
+	}
+
+}
+
+
+func Start(daemonPath string) (*exec.Cmd)  {
 	
 	log.Println("Booting deamon")
 	cmd := exec.Command(daemonPath)
@@ -110,10 +125,6 @@ func Stop(cmd *exec.Cmd) {
 	if err := cmd.Process.Kill(); err != nil {
 		log.Fatal("failed to kill: ", err)
 	}
-}
-
-func currentDaemonPath(config *conf.Config) {
-
 }
 
 func NewDaemonAvailable(config *conf.ServerConfig) (bool, error) {
@@ -152,17 +163,14 @@ func NewDaemonAvailable(config *conf.ServerConfig) (bool, error) {
 
 }
 
-func CheckDaemon (config *conf.ServerConfig) (string, error) {
+func CheckForDaemon (serverConfig *conf.ServerConfig, userConfig *conf.Config) (string, error) {
 
 	log.Println("Checking daemon")
 
 	// get the latest release info
-	releaseVersion, versionErr := getReleaseVersion(config)
-	if versionErr != nil {
-		return "", versionErr
-	}
+	releaseVersion := userConfig.RunningNavVersion
 
-	log.Println("Latest version: " + releaseVersion)
+	log.Println("Looking for version: " + releaseVersion)
 
 	// get the apps current path
 	path, err := getCurrentPath()
@@ -179,9 +187,7 @@ func CheckDaemon (config *conf.ServerConfig) (string, error) {
 	// check the daemon exists
 	if !exists(path) {
 		log.Println("No Daemon found for version: " + releaseVersion)
-		//updateDaemon(config)
-		//
-		//CheckDaemon(config)
+		return "", errors.New("No Daemon found for version: " + releaseVersion)
 	}else {
 		log.Println("Located Daemon for version: " + releaseVersion)
 	}
@@ -320,7 +326,7 @@ func getReleaseAssetInfo(config *conf.ServerConfig) (string, string, error) {
 
 }
 
-func gitHubReleaseInfo(serverConfig *conf.ServerConfig) (GitHubRelease, error) {
+func gitHubReleaseInfo(serverConfig *conf.ServerConfig, userConfig *conf.Config) (GitHubRelease, error) {
 
 	log.Println("Retreving NAVCoin Github release info from: " + serverConfig.ReleaseAPI)
 
@@ -345,9 +351,9 @@ func gitHubReleaseInfo(serverConfig *conf.ServerConfig) (GitHubRelease, error) {
 }
 
 
-func getReleaseVersion(config *conf.ServerConfig) (string, error) {
+func getReleaseVersion(serverConfig *conf.ServerConfig, userConfig *conf.Config) (string, error) {
 
-	releaseInfo, err := gitHubReleaseInfo(config)
+	releaseInfo, err := gitHubReleaseInfo(serverConfig, userConfig)
 	if err != nil {
 		return "", nil
 	}

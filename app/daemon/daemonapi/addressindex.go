@@ -1,7 +1,6 @@
 package daemonapi
 
 import (
-	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/gorilla/mux"
 )
 
@@ -12,7 +11,6 @@ type Resp struct  {
 	Message string
 }
 
-var config *conf.Config
 
 
 // Setup all the handlers for the blockchain rpc interface

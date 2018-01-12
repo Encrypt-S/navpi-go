@@ -25,7 +25,7 @@ func InitManagerhandlers(r *mux.Router, prefix string)  {
 func startDaemon(w http.ResponseWriter, r *http.Request) {
 	//fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
 
-	log.Println("startDaemon")
+	log.Println("resart daemon requested")
 
 
 
