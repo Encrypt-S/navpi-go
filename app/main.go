@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"io"
+	"log"
+	"runtime"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -18,13 +20,17 @@ func world(w http.ResponseWriter, r *http.Request) {
 var server *http.Server
 
 func main() {
+
+	log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
+	log.Println(fmt.Sprintf("App pid : %d.", os.Getpid()))
+
 	//serverMuxA := http.NewServeMux()
 	//serverMuxA.HandleFunc("/hello", hello)
 
 	serverMuxB := http.NewServeMux()
 	serverMuxB.HandleFunc("/world", world)
 
-	server = start()
+	//server = start()
 
 
 	http.ListenAndServe("localhost:8082", serverMuxB)
