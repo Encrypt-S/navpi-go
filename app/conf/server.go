@@ -4,10 +4,11 @@ import "github.com/spf13/viper"
 
 // Config the application's configuration
 type ServerConfig struct {
-	ManagerAiPort		int64
-	DaemonApiPort      	int64
-	SetupApiPort      	int64
-	ReleaseAPI 	string
+	ManagerAiPort    int64
+	DaemonApiPort    int64
+	SetupApiPort     int64
+	LatestReleaseAPI string
+	ReleaseAPI string
 }
 
 
@@ -40,6 +41,7 @@ func parseServerConfig(config *ServerConfig)  {
 	config.DaemonApiPort = viper.GetInt64("daemonApiPort")
 	config.SetupApiPort = viper.GetInt64("setupApiPort")
 	config.ManagerAiPort = viper.GetInt64("managerApiPort")
+	config.LatestReleaseAPI = viper.GetString("latestReleaseAPI")
 	config.ReleaseAPI = viper.GetString("releaseAPI")
 
 }

@@ -328,9 +328,9 @@ func getReleaseAssetInfo(config *conf.ServerConfig) (string, string, error) {
 
 func gitHubReleaseInfo(serverConfig *conf.ServerConfig, userConfig *conf.Config) (GitHubRelease, error) {
 
-	log.Println("Retreving NAVCoin Github release info from: " + serverConfig.ReleaseAPI)
+	log.Println("Retreving NAVCoin Github release info from: " + serverConfig.LatestReleaseAPI)
 
-	response, err := http.Get(serverConfig.ReleaseAPI)
+	response, err := http.Get(serverConfig.LatestReleaseAPI)
 
 	if err != nil {
 		log.Printf("The HTTP request failed with error %s\n", err)
