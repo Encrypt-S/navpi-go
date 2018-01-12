@@ -17,8 +17,6 @@ import (
 	"fmt"
 )
 
-var daemonServer *http.Server
-
 const (
 	WindowsDaemonName string = "navcoind.exe"
 )
