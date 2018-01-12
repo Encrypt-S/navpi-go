@@ -104,13 +104,13 @@ func DownloadAndStart(serverConfig, config *conf.ServerConfig, userConfig *conf.
 	if(err != nil) {
 		//updateDaemon
 	}else {
-		return Start(path)
+		return start(path)
 	}
 
 }
 
 
-func Start(daemonPath string) (*exec.Cmd)  {
+func start(daemonPath string) (*exec.Cmd)  {
 	
 	log.Println("Booting deamon")
 	cmd := exec.Command(daemonPath)

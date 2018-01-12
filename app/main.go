@@ -55,7 +55,7 @@ func main() {
 	//serverMuxA := http.NewServeMux()
 	//serverMuxA.HandleFunc("/hello", hello)
 
-	// Start the daemon server
+	// start the daemon server
 	daemonsvr.Start(serverConfig)
 
 	// if we have a user config then we will start the system
@@ -68,7 +68,7 @@ func main() {
 
 
 
-	// Start the manager server
+	// start the manager server
 	router := mux.NewRouter()
 	managerapi.InitManagerhandlers(router,"api")
 
