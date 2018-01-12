@@ -1,4 +1,4 @@
-package blockchainapi
+package daemonapi
 
 import (
 	"net/http"
@@ -9,15 +9,15 @@ import (
 
 	"fmt"
 	"github.com/NAVCoin/navpi-go/app/daemon/deamonrpc"
+	"io"
 )
 
 
 
-var config *conf.Config
 
 
 // Setup all the handlers for the blockchain rpc interface
-func InitHandlers(r *mux.Router, conf *conf.Config, prefix string)  {
+func InitChainHandlers(r *mux.Router, prefix string)  {
 
 	config = conf
 	//
@@ -52,19 +52,20 @@ func getBlockCount(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("getBlockCount")
 
-	n := deamonrpc.RpcRequestData{}
-	n.Method = "getblockcount"
-
-	resp, err := deamonrpc.RequestDaemon(n, config)
-
-	if err != nil { // Handle errors requesting the daemon
-		deamonrpc.RpcFailed(err, w, r)
-		return
-	}
-
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	w.WriteHeader(resp.StatusCode)
-	w.Write(bodyText)
+	//n := deamonrpc.RpcRequestData{}
+	//n.Method = "getblockcount"
+	//
+	//resp, err := deamonrpc.RequestDaemon(n, config)
+	//
+	//if err != nil { // Handle errors requesting the daemon
+	//	deamonrpc.RpcFailed(err, w, r)
+	//	return
+	//}
+	//
+	//bodyText, err := ioutil.ReadAll(resp.Body)
+	//w.WriteHeader(resp.StatusCode)
+	//w.Write(bodyText)
+	io.WriteString(w, "hello world\n")
 }
 
 

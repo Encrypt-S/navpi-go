@@ -1,4 +1,4 @@
-package addressindexapi
+package daemonapi
 
 import (
 	"github.com/NAVCoin/navpi-go/app/conf"
@@ -16,9 +16,8 @@ var config *conf.Config
 
 
 // Setup all the handlers for the blockchain rpc interface
-func InitHandlers(r *mux.Router, conf *conf.Config, prefix string )  {
+func InitAddressHandlers(r *mux.Router, prefix string )  {
 
-	config = conf
 	println(prefix)
 
 

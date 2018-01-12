@@ -1,4 +1,4 @@
-package walletapi
+package daemonapi
 
 import (
 	"github.com/NAVCoin/navpi-go/app/conf"
@@ -9,19 +9,12 @@ import (
 	"github.com/NAVCoin/navpi-go/app/daemon/deamonrpc"
 )
 
-
-var config *conf.Config
-
-
 // Setup all the handlers for the blockchain rpc interface
-func InitHandlers(r *mux.Router, conf *conf.Config, prefix string)  {
+func InitWalletHandlers(r *mux.Router, prefix string)  {
 
-	config = conf
 	r.HandleFunc(fmt.Sprintf("/%s/wallet/v1/getstakereport", prefix), geStakeReport).Methods("GET")
 
 }
-
-
 
 
 func geStakeReport(w http.ResponseWriter, r *http.Request) {
