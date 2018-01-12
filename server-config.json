@@ -1,0 +1,5 @@
+{
+  "daemonApiPort": 9000,
+  "setupApiPort": 9001,
+  "releaseAPI": "https://api.github.com/repos/NAVCoin/navcoin-core/releases/latest"
+}
