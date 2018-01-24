@@ -62,7 +62,7 @@ func main() {
 	// otherwise the UI will start it later
 	if( daemonapi.UserConfig != nil) {
 
-		daemon.DownloadAndStart( daemonapi.UserConfig)
+		daemon.DownloadAndStart(serverConfig, daemonapi.UserConfig)
 	}
 
 

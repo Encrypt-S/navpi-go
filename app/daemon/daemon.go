@@ -97,15 +97,17 @@ type GitHubRelease struct {
 }
 
 
-func DownloadAndStart(serverConfig, config *conf.ServerConfig, userConfig *conf.Config) (*exec.Cmd) {
+func DownloadAndStart(serverConfig *conf.ServerConfig, userConfig *conf.Config) (*exec.Cmd) {
 
 	path, err := CheckForDaemon(serverConfig, userConfig)
 
 	if(err != nil) {
-		//updateDaemon
+		//downloadDaemon
 	}else {
 		return start(path)
 	}
+
+	return start(path)
 
 }
 
@@ -199,9 +201,11 @@ func CheckForDaemon (serverConfig *conf.ServerConfig, userConfig *conf.Config) (
 
 func getDaemonDownloadPath(version string) {
 
+	
+
 }
 
-func updateDaemon(config *conf.ServerConfig) error {
+func downloadDaemon(config *conf.ServerConfig) error {
 
 	log.Println("Updating Daemon")
 	path, err := getCurrentPath()
@@ -331,7 +335,7 @@ func getReleaseAssetInfo(config *conf.ServerConfig) (string, string, error) {
 
 }
 
-func gitHubReleaseInfo(serverConfig *conf.ServerConfig, userConfig *conf.Config) (GitHubRelease, error) {
+func gitHubReleaseInfo(serverConfig *conf.ServerConfig) (GitHubRelease, error) {
 
 	log.Println("Retreving NAVCoin Github release info from: " + serverConfig.LatestReleaseAPI)
 
@@ -356,9 +360,9 @@ func gitHubReleaseInfo(serverConfig *conf.ServerConfig, userConfig *conf.Config)
 }
 
 
-func getReleaseVersion(serverConfig *conf.ServerConfig, userConfig *conf.Config) (string, error) {
+func getReleaseVersion(serverConfig *conf.ServerConfig) (string, error) {
 
-	releaseInfo, err := gitHubReleaseInfo(serverConfig, userConfig)
+	releaseInfo, err := gitHubReleaseInfo(serverConfig)
 	if err != nil {
 		return "", nil
 	}
