@@ -102,7 +102,7 @@ func DownloadAndStart(serverConfig *conf.ServerConfig, userConfig *conf.Config) 
 	path, err := CheckForDaemon(serverConfig, userConfig)
 
 	if(err != nil) {
-		//downloadDaemon
+		downloadDaemon(serverConfig, userConfig.RunningNavVersion) //TODO: here
 	}else {
 		return start(path)
 	}
@@ -205,7 +205,7 @@ func getDaemonDownloadPath(version string) {
 
 }
 
-func downloadDaemon(config *conf.ServerConfig) error {
+func downloadDaemon(config *conf.ServerConfig, version string) error {
 
 	log.Println("Updating Daemon")
 	path, err := getCurrentPath()
