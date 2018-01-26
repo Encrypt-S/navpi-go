@@ -259,7 +259,7 @@ func gitHubReleaseInfo(releaseAPI string) (GitHubReleases, error) {
 
 func getDwLdInfoFromReleaseInfo(gitHubReleaseData GitHubReleaseData) (string, string, error) {
 
-	log.Println("Getting dowload path for OS from release assest data")
+	log.Println("Getting download path for OS from release assest data")
 
 	releaseInfo := gitHubReleaseData
 
