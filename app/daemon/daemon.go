@@ -140,11 +140,9 @@ func CheckForDaemon (serverConfig *conf.ServerConfig, userConfig *conf.Config) (
 		return "", err
 	}
 
-	// append the deamon name
-
+	// build the path
 	path += "/lib/navcoin-" + releaseVersion + "/bin/"+ getOSInfo().DaemonName
 	log.Println("Looking for Navcoin Daemon at " + path )
-
 
 	// check the daemon exists
 	if !exists(path) {
@@ -206,6 +204,7 @@ func getCurrentPath() (string, error)  {
 	return exPath, nil
 }
 
+
 // Exists reports whether the named file or directory exists.
 func exists(name string) bool {
 	if _, err := os.Stat(name); err != nil {
@@ -215,6 +214,7 @@ func exists(name string) bool {
 	}
 	return true
 }
+
 
 func downloadDaemon(serverConf *conf.ServerConfig, verson string) {
 
@@ -229,12 +229,10 @@ func downloadDaemon(serverConf *conf.ServerConfig, verson string) {
 func getReleaseDataForVersion(releaseAPI string, version string) (GitHubReleaseData, error)  {
 
 	log.Println("Atempting to get release data")
-
 	releases, err := gitHubReleaseInfo(releaseAPI)
 
 	var e GitHubReleaseData = GitHubReleaseData{}
 	for _, elem := range releases {
-
 		if elem.TagName == version {
 			log.Println("Release data found for version: " + version)
 			e = elem.GitHubReleaseData
@@ -285,21 +283,16 @@ func getDwLdInfoFromReleaseInfo(gitHubReleaseData GitHubReleaseData) (string, st
 		asset := releaseInfo.Assets[e]
 
 		if strings.Contains(asset.Name, getOSInfo().OS) {
-
 			// extra windows os check as we only want the zip
 			if strings.Contains(asset.Name, "win") {
 				//println(filepath.Ext(asset.Name))
-
 				if filepath.Ext(asset.Name) == ".zip" {
 					downloadPath = releaseInfo.Assets[e].BrowserDownloadURL
 					downloadName = releaseInfo.Assets[e].Name
 				}
-
 			} else {
-
 				downloadPath = releaseInfo.Assets[e].BrowserDownloadURL
 				downloadName = releaseInfo.Assets[e].Name
-
 			}
 		}
 	}
@@ -312,7 +305,6 @@ func getDwLdInfoFromReleaseInfo(gitHubReleaseData GitHubReleaseData) (string, st
 
 
 func downloadUnzip(assetPath string, assetName string) error {
-
 
 	path, err := getCurrentPath()
 
@@ -401,6 +393,7 @@ func unzip(src, dest string) error {
 			}
 		}
 	}
+
 	return nil
 }
 
