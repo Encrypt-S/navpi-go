@@ -14,6 +14,7 @@ import (
 	"encoding/json"
 	"strings"
 	"io"
+	"archive/zip"
 )
 
 const (
@@ -116,16 +117,6 @@ func DownloadAndStart(serverConfig *conf.ServerConfig, userConfig *conf.Config) 
 }
 
 
-func start(daemonPath string) (*exec.Cmd)  {
-	
-	log.Println("Booting deamon")
-	cmd := exec.Command(daemonPath)
-	cmd.Start()
-
-	return cmd
-
-}
-
 func Stop(cmd *exec.Cmd) {
 
 	if err := cmd.Process.Kill(); err != nil {
@@ -166,6 +157,18 @@ func CheckForDaemon (serverConfig *conf.ServerConfig, userConfig *conf.Config) (
 	return path, nil
 
 }
+
+
+func start(daemonPath string) (*exec.Cmd)  {
+	
+	log.Println("Booting deamon")
+	cmd := exec.Command(daemonPath)
+	cmd.Start()
+
+	return cmd
+
+}
+
 
 
 // Get the current os info and the daemon name for that os
@@ -219,8 +222,7 @@ func downloadDaemon(serverConf *conf.ServerConfig, verson string) {
 
 	dlPath, dlName, _ := getDwLdInfoFromReleaseInfo(releaseInfo)
 
-	download(dlPath, dlName)
-
+	downloadUnzip(dlPath, dlName)
 
 }
 
@@ -268,6 +270,7 @@ func gitHubReleaseInfo(releaseAPI string) (GitHubReleases, error) {
 	return c, nil
 }
 
+
 func getDwLdInfoFromReleaseInfo(gitHubReleaseData GitHubReleaseData) (string, string, error) {
 
 	log.Println("Getting dowload path for OS from release assest data")
@@ -308,9 +311,33 @@ func getDwLdInfoFromReleaseInfo(gitHubReleaseData GitHubReleaseData) (string, st
 }
 
 
-func download(url string, fileName string)  {
+func downloadUnzip(assetPath string, assetName string) error {
 
-	log.Println("Donloading daemon - this could take a few mins :)")
+
+	path, err := getCurrentPath()
+
+	downloadLocation := path+ "/" + assetName
+
+	log.Println("Downloading", assetPath, "to", downloadLocation)
+
+	download(assetPath, downloadLocation)
+
+	if filepath.Ext(assetName) == ".zip" {
+		unzip(downloadLocation, path + "/lib")
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+
+func download(url string, fileName string) {
+
+	log.Println("Downloading daemon - this could take a few mins :)")
 
 	output, err := os.Create(fileName)
 
@@ -331,32 +358,53 @@ func download(url string, fileName string)  {
 
 }
 
-/*
-func downloadDaemon(assetPath string, assetName string) error {
 
-	log.Println("Updating Daemon")
-	path, err := getCurrentPath()
+func unzip(src, dest string) error {
 
-	assetPath, assetName, err := getReleaseAssetInfo(config)
-
-	downloadLocation := path+ "/" + assetName
-
-	log.Println("Downloading", assetPath, "to", downloadLocation)
-
-	download(assetPath, downloadLocation)
-
-	if filepath.Ext(assetName) == ".zip" {
-		unzip(downloadLocation, path + "/lib")
-	}
-
+	r, err := zip.OpenReader(src)
 	if err != nil {
 		return err
 	}
+	defer r.Close()
 
+	for _, f := range r.File {
+		rc, err := f.Open()
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		fpath := filepath.Join(dest, f.Name)
+		if f.FileInfo().IsDir() {
+			os.MkdirAll(fpath, f.Mode())
+		} else {
+			var fdir string
+			if lastIndex := strings.LastIndex(fpath,string(os.PathSeparator)); lastIndex > -1 {
+				fdir = fpath[:lastIndex]
+			}
+
+			err = os.MkdirAll(fdir, f.Mode())
+			if err != nil {
+				log.Fatal(err)
+				return err
+			}
+			f, err := os.OpenFile(
+				fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+
+			_, err = io.Copy(f, rc)
+			if err != nil {
+				return err
+			}
+		}
+	}
 	return nil
-
 }
-*/
+
+
 
 
 
@@ -409,55 +457,6 @@ func getDaemonDownloadPath(version string) {
 	
 
 }
-
-
-
-func unzip(src, dest string) error {
-
-	r, err := zip.OpenReader(src)
-	if err != nil {
-		return err
-	}
-	defer r.Close()
-
-	for _, f := range r.File {
-		rc, err := f.Open()
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		fpath := filepath.Join(dest, f.Name)
-		if f.FileInfo().IsDir() {
-			os.MkdirAll(fpath, f.Mode())
-		} else {
-			var fdir string
-			if lastIndex := strings.LastIndex(fpath,string(os.PathSeparator)); lastIndex > -1 {
-				fdir = fpath[:lastIndex]
-			}
-
-			err = os.MkdirAll(fdir, f.Mode())
-			if err != nil {
-				log.Fatal(err)
-				return err
-			}
-			f, err := os.OpenFile(
-				fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-			if err != nil {
-				return err
-			}
-			defer f.Close()
-
-			_, err = io.Copy(f, rc)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
-
-
 
 
 
