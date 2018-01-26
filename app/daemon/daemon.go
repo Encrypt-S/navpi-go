@@ -146,7 +146,7 @@ func CheckForDaemon (serverConfig *conf.ServerConfig, userConfig *conf.Config) (
 	if !fs.Exists(path) {
 		log.Println("No Daemon found for version: " + releaseVersion)
 		return "", errors.New("No Daemon found for version: " + releaseVersion)
-	}else {
+	} else {
 		log.Println("Located Daemon for version: " + releaseVersion)
 	}
 
@@ -290,6 +290,7 @@ func getDwLdInfoFromReleaseInfo(gitHubReleaseData GitHubReleaseData) (string, st
 	return downloadPath, downloadName, nil
 
 }
+
 
 
 
