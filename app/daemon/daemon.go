@@ -234,7 +234,7 @@ func getReleaseDataForVersion(releaseAPI string, version string) (GitHubReleaseD
 
 func gitHubReleaseInfo(releaseAPI string) (GitHubReleases, error) {
 
-	log.Println("Retreving NAVCoin Github releases info from: " + releaseAPI)
+	log.Println("Retrieving NAVCoin Github releases' info from: " + releaseAPI)
 
 	response, err := http.Get(releaseAPI)
 
