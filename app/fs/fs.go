@@ -86,7 +86,7 @@ func DownloadUnzip(url string, assetName string) error {
 
 	log.Println("Downloading", url, "to", downloadLocation)
 
-	DownloadFile(downloadLocation, url)
+	Download(url, downloadLocation)
 
 	if filepath.Ext(assetName) == ".zip" {
 		Unzip(downloadLocation, path + "/lib")
@@ -124,12 +124,13 @@ func Exists(name string) bool {
 
 
 
-
-func Download(url string, fileName string) {
+// Download will perform a file download of the given url
+// this download method provides no feedback to the system
+func Download(url string, downloadTofileName string) {
 
 	log.Println("Downloading daemon - this could take a few mins :)")
 
-	output, err := os.Create(fileName)
+	output, err := os.Create(downloadTofileName)
 
 	response, err := http.Get(url)
 	if err != nil {
