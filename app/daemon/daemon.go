@@ -6,15 +6,13 @@ import (
 	"log"
 	"os/exec"
 	"path/filepath"
-	"os"
 	"runtime"
 	"errors"
 	"net/http"
 	"io/ioutil"
 	"encoding/json"
 	"strings"
-	"io"
-	"archive/zip"
+	"github.com/NAVCoin/navpi-go/app/fs"
 )
 
 const (
@@ -135,7 +133,7 @@ func CheckForDaemon (serverConfig *conf.ServerConfig, userConfig *conf.Config) (
 	log.Println("Looking for version: " + releaseVersion)
 
 	// get the apps current path
-	path, err := getCurrentPath()
+	path, err := fs.GetCurrentPath()
 	if err != nil {
 		return "", err
 	}
@@ -145,7 +143,7 @@ func CheckForDaemon (serverConfig *conf.ServerConfig, userConfig *conf.Config) (
 	log.Println("Looking for Navcoin Daemon at " + path )
 
 	// check the daemon exists
-	if !exists(path) {
+	if !fs.Exists(path) {
 		log.Println("No Daemon found for version: " + releaseVersion)
 		return "", errors.New("No Daemon found for version: " + releaseVersion)
 	}else {
@@ -194,26 +192,16 @@ func getOSInfo () OSInfo {
 }
 
 // gets the current path of the go application
-func getCurrentPath() (string, error)  {
+//func getCurrentPath() (string, error)  {
+//
+//	ex, err := os.Executable()
+//	if err != nil {
+//		return "", err
+//	}
+//	exPath := filepath.Dir(ex)
+//	return exPath, nil
+//}
 
-	ex, err := os.Executable()
-	if err != nil {
-		return "", err
-	}
-	exPath := filepath.Dir(ex)
-	return exPath, nil
-}
-
-
-// Exists reports whether the named file or directory exists.
-func exists(name string) bool {
-	if _, err := os.Stat(name); err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-	}
-	return true
-}
 
 
 func downloadDaemon(serverConf *conf.ServerConfig, verson string) {
@@ -306,16 +294,16 @@ func getDwLdInfoFromReleaseInfo(gitHubReleaseData GitHubReleaseData) (string, st
 
 func downloadUnzip(assetPath string, assetName string) error {
 
-	path, err := getCurrentPath()
+	path, err := fs.GetCurrentPath()
 
 	downloadLocation := path+ "/" + assetName
 
 	log.Println("Downloading", assetPath, "to", downloadLocation)
 
-	download(assetPath, downloadLocation)
+	fs.Download(assetPath, downloadLocation)
 
 	if filepath.Ext(assetName) == ".zip" {
-		unzip(downloadLocation, path + "/lib")
+		fs.Unzip(downloadLocation, path + "/lib")
 	}
 
 	if err != nil {
@@ -327,75 +315,75 @@ func downloadUnzip(assetPath string, assetName string) error {
 }
 
 
-func download(url string, fileName string) {
+//func download(url string, fileName string) {
+//
+//	log.Println("Downloading daemon - this could take a few mins :)")
+//
+//	output, err := os.Create(fileName)
+//
+//	response, err := http.Get(url)
+//	if err != nil {
+//		log.Println("Error while downloading", url, "-", err)
+//		return
+//	}
+//	defer response.Body.Close()
+//
+//	n, err := io.Copy(output, response.Body)
+//	if err != nil {
+//		log.Println("Error while downloading", url, "-", err)
+//		return
+//	}
+//
+//	log.Println(n, "bytes downloaded")
+//
+//}
 
-	log.Println("Downloading daemon - this could take a few mins :)")
 
-	output, err := os.Create(fileName)
-
-	response, err := http.Get(url)
-	if err != nil {
-		log.Println("Error while downloading", url, "-", err)
-		return
-	}
-	defer response.Body.Close()
-
-	n, err := io.Copy(output, response.Body)
-	if err != nil {
-		log.Println("Error while downloading", url, "-", err)
-		return
-	}
-
-	log.Println(n, "bytes downloaded")
-
-}
-
-
-func unzip(src, dest string) error {
-
-	r, err := zip.OpenReader(src)
-	if err != nil {
-		return err
-	}
-	defer r.Close()
-
-	for _, f := range r.File {
-		rc, err := f.Open()
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		fpath := filepath.Join(dest, f.Name)
-		if f.FileInfo().IsDir() {
-			os.MkdirAll(fpath, f.Mode())
-		} else {
-			var fdir string
-			if lastIndex := strings.LastIndex(fpath,string(os.PathSeparator)); lastIndex > -1 {
-				fdir = fpath[:lastIndex]
-			}
-
-			err = os.MkdirAll(fdir, f.Mode())
-			if err != nil {
-				log.Fatal(err)
-				return err
-			}
-			f, err := os.OpenFile(
-				fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-			if err != nil {
-				return err
-			}
-			defer f.Close()
-
-			_, err = io.Copy(f, rc)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
+//func unzip(src, dest string) error {
+//
+//	r, err := zip.OpenReader(src)
+//	if err != nil {
+//		return err
+//	}
+//	defer r.Close()
+//
+//	for _, f := range r.File {
+//		rc, err := f.Open()
+//		if err != nil {
+//			return err
+//		}
+//		defer rc.Close()
+//
+//		fpath := filepath.Join(dest, f.Name)
+//		if f.FileInfo().IsDir() {
+//			os.MkdirAll(fpath, f.Mode())
+//		} else {
+//			var fdir string
+//			if lastIndex := strings.LastIndex(fpath,string(os.PathSeparator)); lastIndex > -1 {
+//				fdir = fpath[:lastIndex]
+//			}
+//
+//			err = os.MkdirAll(fdir, f.Mode())
+//			if err != nil {
+//				log.Fatal(err)
+//				return err
+//			}
+//			f, err := os.OpenFile(
+//				fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+//			if err != nil {
+//				return err
+//			}
+//			defer f.Close()
+//
+//			_, err = io.Copy(f, rc)
+//			if err != nil {
+//				return err
+//			}
+//		}
+//	}
+//
+//	return nil
+//}
 
 
 
