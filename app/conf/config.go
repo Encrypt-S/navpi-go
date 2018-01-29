@@ -8,16 +8,16 @@ import (
 	"errors"
 )
 
-// Config the application's configuration
-type Config struct {
-	NavConfPath       	string
-	RunningNavVersion 	string
-	RpcUser 				string
-	RpcPassword 			string
+// UserConfig the application's configuration
+type UserConfig struct {
+	NavConfPath       	string `json:"navConfPath"`
+	RunningNavVersion 	string `json:"runningNavVersion"`
+	RpcUser 				string `json:"rpcUser"`
+	RpcPassword 			string `json:"rpcPassword"`
 }
 
 // LoadUserConfig loads the config from a file
-func LoadUserConfig() (*Config, error)  {
+func LoadUserConfig() (*UserConfig, error)  {
 
 
 	viper.SetConfigName("config")
@@ -32,7 +32,7 @@ func LoadUserConfig() (*Config, error)  {
 	}
 
 	// load the go server config
-	config := new(Config)
+	config := new(UserConfig)
 	parseConfig(config)
 
 
@@ -48,7 +48,7 @@ func LoadUserConfig() (*Config, error)  {
 
 // loadNavConfig tries to read the config file for the RPC server
 // and extract the RPC user and password from it.
-func LoadRPCDetails (config *Config) (string, string, error) {
+func LoadRPCDetails (config *UserConfig) (string, string, error) {
 
 	var configfile = config.NavConfPath
 
@@ -98,7 +98,7 @@ func LoadRPCDetails (config *Config) (string, string, error) {
 
 // parseConfig reads our the config settings for the
 // navcoin go server and puts them into the config struct
-func parseConfig(config *Config)  {
+func parseConfig(config *UserConfig)  {
 
 	config.NavConfPath = viper.GetString("navconf")
 	config.RunningNavVersion = viper.GetString("runningNavVersion")

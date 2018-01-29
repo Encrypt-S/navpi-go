@@ -100,7 +100,7 @@ type GitHubReleaseData struct {
 }
 
 
-func DownloadAndStart(serverConfig *conf.ServerConfig, userConfig *conf.Config) (*exec.Cmd) {
+func DownloadAndStart(serverConfig *conf.ServerConfig, userConfig *conf.UserConfig) (*exec.Cmd) {
 
 	path, err := CheckForDaemon(serverConfig, userConfig)
 
@@ -123,7 +123,7 @@ func Stop(cmd *exec.Cmd) {
 }
 
 
-func CheckForDaemon (serverConfig *conf.ServerConfig, userConfig *conf.Config) (string, error) {
+func CheckForDaemon (serverConfig *conf.ServerConfig, userConfig *conf.UserConfig) (string, error) {
 
 	log.Println("Checking daemon")
 

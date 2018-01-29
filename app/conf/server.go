@@ -2,7 +2,7 @@ package conf
 
 import "github.com/spf13/viper"
 
-// Config the application's configuration
+// UserConfig the application's configuration
 type ServerConfig struct {
 	ManagerAiPort    int64
 	DaemonApiPort    int64

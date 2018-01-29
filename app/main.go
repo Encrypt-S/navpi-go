@@ -162,7 +162,7 @@ func main() {
 //
 //
 //// loads the RPC details from the path given in the config
-//func populateRPCDetails(userConfig *conf.Config)  {
+//func populateRPCDetails(userConfig *conf.UserConfig)  {
 //	// we have the user config soe
 //	rpcUser, rpcPassword, err := conf.LoadRPCDetails(userConfig)
 //	if err != nil {
@@ -177,7 +177,7 @@ func main() {
 ////	startHttpServer(port)
 ////}
 //
-//func startAPIServer (port string, config *conf.Config) {
+//func startAPIServer (port string, config *conf.UserConfig) {
 //
 //	router := mux.NewRouter()
 //

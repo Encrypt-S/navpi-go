@@ -10,7 +10,7 @@ import (
 )
 
 var daemonServer *http.Server
-var config *conf.Config
+var config *conf.UserConfig
 
 
 func Start (serverConfig *conf.ServerConfig) *http.Server {
