@@ -9,10 +9,9 @@ import (
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
-	"github.com/NAVCoin/navpi-go/app/daemon/daemonsvr"
 	"github.com/NAVCoin/navpi-go/app/manager/managerapi"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonapi"
-	"github.com/NAVCoin/navpi-go/app/daemon"
+	"github.com/NAVCoin/navpi-go/app/boxsetup/setupsrv"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -40,15 +39,12 @@ func main() {
 
 	// Get the user config
 	// -----------------------
-	userConfig, err := conf.LoadUserConfig()
+	//userConfig, err := conf.LoadUserConfig()
 	if err != nil {
 		log.Fatal("Failed to load user config: " + err.Error())
 		//startSetupApiSercer(fmt.Sprintf(":%d", serverConfig.SetupApiPort))
 	} else {
-
 		// if there is no error the populate the user config
-		daemonapi.UserConfig = userConfig
-
 	}
 
 
@@ -56,14 +52,18 @@ func main() {
 	//serverMuxA.HandleFunc("/hello", hello)
 
 	// start the daemon server
-	daemonsvr.Start(serverConfig)
+	//daemonsvr.Start(serverConfig)
+	//setupsrv.Start(serverConfig)
+
 
 	// if we have a user config then we will start the system
 	// otherwise the UI will start it later
 	if( daemonapi.UserConfig != nil) {
 
-		daemon.DownloadAndStart(serverConfig, daemonapi.UserConfig)
+		//daemon.DownloadAndStart(serverConfig, daemonapi.UserConfig)
 	}
+
+	setupsrv.Start(serverConfig)
 
 
 
