@@ -6,6 +6,7 @@ import (
 	"os"
 	"regexp"
 	"errors"
+	"time"
 )
 
 // UserConfig the application's configuration
@@ -16,6 +17,15 @@ type UserConfig struct {
 	RpcPassword 			string `json:"rpcPassword"`
 }
 
+func StartConfigManager()  {
+
+	ticker := time.NewTicker(time.Millisecond * 500)
+	go func() {
+		for range ticker.C {
+			LoadUserConfig()
+		}
+	}()
+}
 
 
 // LoadUserConfig loads the config from a file
