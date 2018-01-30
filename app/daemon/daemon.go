@@ -102,12 +102,22 @@ type GitHubReleaseData struct {
 
 
 var runningDaemon *exec.Cmd
+var minHeartbeat int64 = 500 // the lowest value the hb checker can be set to
 
 
 // StartManager is a simple system that checks if
 // the daemon is alive. If not it tries to start it
 func StartManager()  {
-	ticker := time.NewTicker(time.Millisecond * 500)
+
+	// set the heartbeat interval but make sure it is not
+	// less than the min heartbeat setting
+	hbInterval := minHeartbeat
+	if  conf.ServerConf.DaemonHeartbeat > hbInterval {
+		hbInterval = conf.ServerConf.DaemonHeartbeat
+	}
+
+
+	ticker := time.NewTicker(time.Duration(hbInterval) * time.Millisecond)
 	go func() {
 		for t := range ticker.C {
 

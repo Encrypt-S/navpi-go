@@ -9,7 +9,7 @@ type ServerConfig struct {
 	SetupApiPort     int64
 	LatestReleaseAPI string
 	ReleaseAPI string
-
+	DaemonHeartbeat int64
 }
 
 
@@ -46,6 +46,7 @@ func parseServerConfig(config ServerConfig) ServerConfig  {
 	config.ManagerAiPort = viper.GetInt64("managerApiPort")
 	config.LatestReleaseAPI = viper.GetString("latestReleaseAPI")
 	config.ReleaseAPI = viper.GetString("releaseAPI")
+	config.DaemonHeartbeat = viper.GetInt64("daemonHeartbeat")
 
 	return config
 
