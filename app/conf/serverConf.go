@@ -41,8 +41,6 @@ func LoadServerConfig() (ServerConfig, error)  {
 
 func parseServerConfig(config ServerConfig) ServerConfig  {
 
-	config.DaemonApiPort = viper.GetInt64("daemonApiPort")
-	config.SetupApiPort = viper.GetInt64("setupApiPort")
 	config.ManagerAiPort = viper.GetInt64("managerApiPort")
 	config.LatestReleaseAPI = viper.GetString("latestReleaseAPI")
 	config.ReleaseAPI = viper.GetString("releaseAPI")
