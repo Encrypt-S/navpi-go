@@ -4,5 +4,6 @@
   "setupApiPort": 9001,
   "managerApiPort": 9002,
   "releaseAPI": "https://api.github.com/repos/NAVCoin/navcoin-core/releases",
-  "latestReleaseAPI": "https://api.github.com/repos/NAVCoin/navcoin-core/releases/latest"
+  "latestReleaseAPI": "https://api.github.com/repos/NAVCoin/navcoin-core/releases/latest",
+  "daemonHeartbeat": 1000
 }
