@@ -34,6 +34,7 @@ func main() {
 	}
 
 	conf.LoadUserConfig()
+	conf.StartConfigManager()
 
 	//
 	//
