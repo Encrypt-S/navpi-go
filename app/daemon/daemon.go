@@ -115,10 +115,15 @@ func StartManager()  {
 
 			// check to see if the daemon is alive
 			if isAlive() {
-				log.Println("daemon is alive....")
+				//log.Println("daemon is alive....")
 			} else {
 
-				log.Println("daemon is dead....")
+				log.Println("Deamon is unresponsive")
+
+				if runningDaemon != nil {
+					Stop(runningDaemon)
+				}
+
 
 				//Start the daemon and download it if necessary
 				cmd, err := DownloadAndStart(conf.ServerConf, conf.UserConf)
