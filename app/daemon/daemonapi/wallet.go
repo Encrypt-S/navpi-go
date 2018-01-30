@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"fmt"
 	"github.com/NAVCoin/navpi-go/app/daemon/deamonrpc"
+	"github.com/NAVCoin/navpi-go/app/conf"
 )
 
 // Setup all the handlers for the blockchain rpc interface
@@ -22,7 +23,7 @@ func geStakeReport(w http.ResponseWriter, r *http.Request) {
 	n := deamonrpc.RpcRequestData{}
 	n.Method = "getstakereport"
 
-	resp, err := deamonrpc.RequestDaemon(n, UserConfig)
+	resp, err := deamonrpc.RequestDaemon(n, conf.UserConf)
 
 	if err != nil { // Handle errors requesting the daemon
 		deamonrpc.RpcFailed(err, w, r)

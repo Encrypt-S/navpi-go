@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"log"
-	"runtime"
-	"os"
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
 	"github.com/NAVCoin/navpi-go/app/manager/managerapi"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonapi"
-	"github.com/NAVCoin/navpi-go/app/boxsetup/setupsrv"
+	"github.com/NAVCoin/navpi-go/app/daemon"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -27,26 +25,29 @@ var server *http.Server
 
 func main() {
 
-	log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
-	log.Println(fmt.Sprintf("App pid : %d.", os.Getpid()))
-
+	//log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
+	//log.Println(fmt.Sprintf("App pid : %d.", os.Getpid()))
+	//
 	serverConfig, err := conf.LoadServerConfig()
 	if err != nil {
 		log.Fatal("Failed to load the server config: " + err.Error())
 	}
 
+	conf.LoadUserConfig()
 
-
-	// Get the user config
-	// -----------------------
-	//userConfig, err := conf.LoadUserConfig()
-	if err != nil {
-		log.Fatal("Failed to load user config: " + err.Error())
-		//startSetupApiSercer(fmt.Sprintf(":%d", serverConfig.SetupApiPort))
-	} else {
-		// if there is no error the populate the user config
-	}
-
+	//
+	//
+	//
+	//// Get the user config
+	//// -----------------------
+	////userConfig, err := conf.LoadUserConfig()
+	//if err != nil {
+	//	log.Fatal("Failed to load user config: " + err.Error())
+	//	//startSetupApiSercer(fmt.Sprintf(":%d", serverConfig.SetupApiPort))
+	//} else {
+	//	// if there is no error the populate the user config
+	//}
+	//
 
 	//serverMuxA := http.NewServeMux()
 	//serverMuxA.HandleFunc("/hello", hello)
@@ -58,19 +59,20 @@ func main() {
 
 	// if we have a user config then we will start the system
 	// otherwise the UI will start it later
-	if( daemonapi.UserConfig != nil) {
+	//if( daemonapi.UserConfig != nil) {
 
 		//daemon.DownloadAndStart(serverConfig, daemonapi.UserConfig)
-	}
+	//}
 
-	setupsrv.Start(serverConfig)
+	//setupsrv.Start(serverConfig)
 
 
-
+	daemon.StartManager()
 
 	// start the manager server
 	router := mux.NewRouter()
 	managerapi.InitManagerhandlers(router,"api")
+	daemonapi.InitChainHandlers(router, "api")
 
 	port := fmt.Sprintf(":%d", serverConfig.ManagerAiPort)
 	srv := &http.Server{

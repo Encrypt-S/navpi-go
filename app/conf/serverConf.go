@@ -9,13 +9,14 @@ type ServerConfig struct {
 	SetupApiPort     int64
 	LatestReleaseAPI string
 	ReleaseAPI string
+
 }
 
 
 
 
 // LoadUserConfig loads the config from a file
-func LoadServerConfig() (*ServerConfig, error)  {
+func LoadServerConfig() (ServerConfig, error)  {
 
 	viper.SetConfigName("server-config")
 	viper.AddConfigPath("./")
@@ -25,24 +26,28 @@ func LoadServerConfig() (*ServerConfig, error)  {
 	err := viper.ReadInConfig() // Find and read the config file
 
 	if err != nil { // Handle errors reading the config file
-		return nil,err
+		return ServerConfig{},err
 	}
 
 	// load the go server config
-	serverConfig := new(ServerConfig)
-	parseServerConfig(serverConfig)
+	serverConfig := parseServerConfig(ServerConfig{})
+
+
+	ServerConf = serverConfig
 
 	return serverConfig, nil
 }
 
 
-func parseServerConfig(config *ServerConfig)  {
+func parseServerConfig(config ServerConfig) ServerConfig  {
 
 	config.DaemonApiPort = viper.GetInt64("daemonApiPort")
 	config.SetupApiPort = viper.GetInt64("setupApiPort")
 	config.ManagerAiPort = viper.GetInt64("managerApiPort")
 	config.LatestReleaseAPI = viper.GetString("latestReleaseAPI")
 	config.ReleaseAPI = viper.GetString("releaseAPI")
+
+	return config
 
 }
 

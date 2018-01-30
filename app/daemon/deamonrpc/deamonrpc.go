@@ -20,7 +20,7 @@ type RpcResp struct  {
 
 // RequestDaemon request the data via the daemon's rpc api
 // it also allows auto switches between the testnet and live depending on the config
-func RequestDaemon(rpcReqData RpcRequestData, config *conf.UserConfig) (*http.Response, error) {
+func RequestDaemon(rpcReqData RpcRequestData, config conf.UserConfig) (*http.Response, error) {
 
 
 	var username string = config.RpcUser
