@@ -179,7 +179,7 @@ func DownloadAndStart(serverConfig conf.ServerConfig, userConfig conf.UserConfig
 
 	path, err := CheckForDaemon(serverConfig, userConfig)
 
-	if(err != nil) {
+	if (err != nil) {
 		downloadDaemon(serverConfig, userConfig.RunningNavVersion)
 	}else {
 		return start(path), nil
