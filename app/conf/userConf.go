@@ -6,18 +6,30 @@ import (
 	"os"
 	"regexp"
 	"errors"
+	"time"
 )
 
-// Config the application's configuration
-type Config struct {
-	NavConfPath       	string
-	RunningNavVersion 	string
-	RpcUser 				string
-	RpcPassword 			string
+// UserConfig the application's configuration
+type UserConfig struct {
+	NavConfPath       	string `json:"navConfPath"`
+	RunningNavVersion 	string `json:"runningNavVersion"`
+	RpcUser 				string `json:"rpcUser"`
+	RpcPassword 			string `json:"rpcPassword"`
 }
 
+func StartConfigManager()  {
+
+	ticker := time.NewTicker(time.Millisecond * 500)
+	go func() {
+		for range ticker.C {
+			LoadUserConfig()
+		}
+	}()
+}
+
+
 // LoadUserConfig loads the config from a file
-func LoadUserConfig() (*Config, error)  {
+func LoadUserConfig() (error)  {
 
 
 	viper.SetConfigName("config")
@@ -28,27 +40,30 @@ func LoadUserConfig() (*Config, error)  {
 	err := viper.ReadInConfig() // Find and read the config file
 
 	if err != nil { // Handle errors reading the config file
-		return nil,err
+		return err
 	}
 
 	// load the go server config
-	config := new(Config)
-	parseConfig(config)
+	config := parseConfig(UserConfig{})
 
 
 	//load the navcoin daemon config
 	//err = loadNavConfig(config)
 
 	if err != nil {
-		return nil,err
+		return err
 	}
 
-	return config, nil
+
+	// store the user config
+	UserConf = config
+
+	return nil
 }
 
 // loadNavConfig tries to read the config file for the RPC server
 // and extract the RPC user and password from it.
-func LoadRPCDetails (config *Config) (string, string, error) {
+func LoadRPCDetails (config *UserConfig) (string, string, error) {
 
 	var configfile = config.NavConfPath
 
@@ -98,9 +113,11 @@ func LoadRPCDetails (config *Config) (string, string, error) {
 
 // parseConfig reads our the config settings for the
 // navcoin go server and puts them into the config struct
-func parseConfig(config *Config)  {
+func parseConfig(config UserConfig) UserConfig {
 
 	config.NavConfPath = viper.GetString("navconf")
 	config.RunningNavVersion = viper.GetString("runningNavVersion")
+
+	return config
 
 }

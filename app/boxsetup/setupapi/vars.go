@@ -1,4 +1,4 @@
-package daemonapi
+package setupapi
 
 import "github.com/NAVCoin/navpi-go/app/conf"
 

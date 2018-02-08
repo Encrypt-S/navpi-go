@@ -4,12 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"log"
-	"runtime"
-	"os"
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
-	"github.com/NAVCoin/navpi-go/app/daemon/daemonsvr"
 	"github.com/NAVCoin/navpi-go/app/manager/managerapi"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonapi"
 	"github.com/NAVCoin/navpi-go/app/daemon"
@@ -28,49 +25,55 @@ var server *http.Server
 
 func main() {
 
-	log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
-	log.Println(fmt.Sprintf("App pid : %d.", os.Getpid()))
-
+	//log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
+	//log.Println(fmt.Sprintf("App pid : %d.", os.Getpid()))
+	//
 	serverConfig, err := conf.LoadServerConfig()
 	if err != nil {
 		log.Fatal("Failed to load the server config: " + err.Error())
 	}
 
+	conf.LoadUserConfig()
+	//conf.StartConfigManager()
 
-
-	// Get the user config
-	// -----------------------
-	userConfig, err := conf.LoadUserConfig()
-	if err != nil {
-		log.Fatal("Failed to load user config: " + err.Error())
-		//startSetupApiSercer(fmt.Sprintf(":%d", serverConfig.SetupApiPort))
-	} else {
-
-		// if there is no error the populate the user config
-		daemonapi.UserConfig = userConfig
-
-	}
-
+	//
+	//
+	//
+	//// Get the user config
+	//// -----------------------
+	////userConfig, err := conf.LoadUserConfig()
+	//if err != nil {
+	//	log.Fatal("Failed to load user config: " + err.Error())
+	//	//startSetupApiSercer(fmt.Sprintf(":%d", serverConfig.SetupApiPort))
+	//} else {
+	//	// if there is no error the populate the user config
+	//}
+	//
 
 	//serverMuxA := http.NewServeMux()
 	//serverMuxA.HandleFunc("/hello", hello)
 
 	// start the daemon server
-	daemonsvr.Start(serverConfig)
+	//daemonsvr.Start(serverConfig)
+	//setupsrv.Start(serverConfig)
+
 
 	// if we have a user config then we will start the system
 	// otherwise the UI will start it later
-	if( daemonapi.UserConfig != nil) {
+	//if( daemonapi.UserConfig != nil) {
 
-		daemon.DownloadAndStart(serverConfig, daemonapi.UserConfig)
-	}
+		//daemon.DownloadAndStart(serverConfig, daemonapi.UserConfig)
+	//}
+
+	//setupsrv.Start(serverConfig)
 
 
-
+	daemon.StartManager()
 
 	// start the manager server
 	router := mux.NewRouter()
 	managerapi.InitManagerhandlers(router,"api")
+	daemonapi.InitChainHandlers(router, "api")
 
 	port := fmt.Sprintf(":%d", serverConfig.ManagerAiPort)
 	srv := &http.Server{
@@ -162,7 +165,7 @@ func main() {
 //
 //
 //// loads the RPC details from the path given in the config
-//func populateRPCDetails(userConfig *conf.Config)  {
+//func populateRPCDetails(userConfig *conf.UserConfig)  {
 //	// we have the user config soe
 //	rpcUser, rpcPassword, err := conf.LoadRPCDetails(userConfig)
 //	if err != nil {
@@ -177,7 +180,7 @@ func main() {
 ////	startHttpServer(port)
 ////}
 //
-//func startAPIServer (port string, config *conf.Config) {
+//func startAPIServer (port string, config *conf.UserConfig) {
 //
 //	router := mux.NewRouter()
 //

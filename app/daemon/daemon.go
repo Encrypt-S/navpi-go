@@ -13,6 +13,7 @@ import (
 	"encoding/json"
 	"strings"
 	"github.com/NAVCoin/navpi-go/app/fs"
+	"github.com/NAVCoin/navpi-go/app/daemon/deamonrpc"
 )
 
 const (
@@ -100,17 +101,91 @@ type GitHubReleaseData struct {
 }
 
 
-func DownloadAndStart(serverConfig *conf.ServerConfig, userConfig *conf.Config) (*exec.Cmd) {
+var runningDaemon *exec.Cmd
+var minHeartbeat int64 = 500 // the lowest value the hb checker can be set to
+
+
+// StartManager is a simple system that checks if
+// the daemon is alive. If not it tries to start it
+func StartManager()  {
+
+	// set the heartbeat interval but make sure it is not
+	// less than the min heartbeat setting
+	hbInterval := minHeartbeat
+	if  conf.ServerConf.DaemonHeartbeat > hbInterval {
+		hbInterval = conf.ServerConf.DaemonHeartbeat
+	}
+
+
+	ticker := time.NewTicker(time.Duration(hbInterval) * time.Millisecond)
+	go func() {
+		for t := range ticker.C {
+
+			log.Println(t)
+
+			// check to see if the daemon is alive
+			if isAlive() {
+				//log.Println("daemon is alive....")
+			} else {
+
+				log.Println("Deamon is unresponsive")
+
+				if runningDaemon != nil {
+					Stop(runningDaemon)
+				}
+
+
+				//Start the daemon and download it if necessary
+				cmd, err := DownloadAndStart(conf.ServerConf, conf.UserConf)
+
+				if err != nil {
+					log.Println(err)
+				} else {
+					runningDaemon = cmd
+				}
+
+			}
+
+		}
+	}()
+}
+
+
+// isAlive performs a simple rpc command to the daemon
+// returns false on error
+func isAlive () bool {
+
+	isLiving := true
+
+	n := deamonrpc.RpcRequestData{}
+	n.Method = "getblockcount"
+
+	_, err := deamonrpc.RequestDaemon(n, conf.UserConf)
+
+	if err != nil {
+		isLiving = false
+	}
+
+	return isLiving
+
+}
+
+
+func DownloadAndStart(serverConfig conf.ServerConfig, userConfig conf.UserConfig) (*exec.Cmd, error) {
+
+	if userConfig.RunningNavVersion == ""  {
+		return nil, errors.New("no nav version set in the user config")
+	}
 
 	path, err := CheckForDaemon(serverConfig, userConfig)
 
-	if(err != nil) {
+	if (err != nil) {
 		downloadDaemon(serverConfig, userConfig.RunningNavVersion)
 	}else {
-		return start(path)
+		return start(path), nil
 	}
 
-	return start(path)
+	return start(path), nil
 
 }
 
@@ -123,7 +198,7 @@ func Stop(cmd *exec.Cmd) {
 }
 
 
-func CheckForDaemon (serverConfig *conf.ServerConfig, userConfig *conf.Config) (string, error) {
+func CheckForDaemon (serverConfig conf.ServerConfig, userConfig conf.UserConfig) (string, error) {
 
 	log.Println("Checking daemon")
 
@@ -204,7 +279,7 @@ func getOSInfo () OSInfo {
 
 
 
-func downloadDaemon(serverConf *conf.ServerConfig, verson string) {
+func downloadDaemon(serverConf conf.ServerConfig, verson string) {
 
 	releaseInfo, _ := getReleaseDataForVersion(serverConf.ReleaseAPI, verson)
 
