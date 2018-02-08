@@ -19,9 +19,10 @@ type ServerConfig struct {
 func LoadServerConfig() (ServerConfig, error)  {
 
 	viper.SetConfigName("server-config")
+	viper.AddConfigPath(".")
 	viper.AddConfigPath("./")
 	viper.AddConfigPath("./app")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath("../")
 
 	err := viper.ReadInConfig() // Find and read the config file
 
