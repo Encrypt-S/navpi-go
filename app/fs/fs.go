@@ -2,16 +2,16 @@ package fs
 
 import (
 	"archive/zip"
-	"path/filepath"
-	"github.com/dustin/go-humanize"
-	"os"
-	"strings"
-	"log"
-	"io"
-	"net/http"
+	"compress/gzip"
 	"fmt"
+	"github.com/dustin/go-humanize"
+	"io"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 )
-
 
 // WriteCounter counts the number of bytes written to it. It implements to the io.Writer
 // interface and we can pass this into io.TeeReader() which will report progress on each
@@ -37,11 +37,9 @@ func (wc WriteCounter) PrintProgress() {
 	fmt.Printf("\rDownloading... %s complete", humanize.Bytes(wc.Total))
 }
 
-
-
-// DownloadFile will download a url to a local file. It's efficient because it will
-// write as it downloads and not load the whole file into memory. We pass an io.TeeReader
-// into Copy() to report progress on the download.
+// DownloadFile will download a url to a local file.
+// efficiently writes as it downloads instead of loading file in memory
+// io.TeeReader is passed into Copy() to report progress on the download
 func DownloadFile(filepath string, url string) error {
 
 	// Create the file, but give it a tmp file extension, this means we won't overwrite a
@@ -77,20 +75,19 @@ func DownloadFile(filepath string, url string) error {
 	return nil
 }
 
-
-func DownloadUnzip(url string, assetName string) error {
+// DownloadExtract sets up and runs the functions
+// needed for downloading and extracting of assets
+func DownloadExtract(url string, assetName string) error {
 
 	path, err := GetCurrentPath()
 
-	downloadLocation := path+ "/" + assetName
+	downloadLocation := path + "/" + assetName
 
-	log.Println("Downloading", url, "to", downloadLocation)
+	extractPath := path + "/lib"
 
 	Download(url, downloadLocation)
 
-	if filepath.Ext(assetName) == ".zip" {
-		Unzip(downloadLocation, path + "/lib")
-	}
+	Extract(assetName, downloadLocation, extractPath)
 
 	if err != nil {
 		return err
@@ -100,35 +97,13 @@ func DownloadUnzip(url string, assetName string) error {
 
 }
 
-
-// gets the current path of the go application
-func GetCurrentPath() (string, error)  {
-
-	ex, err := os.Executable()
-	if err != nil {
-		return "", err
-	}
-	exPath := filepath.Dir(ex)
-	return exPath, nil
-}
-
-// Exists reports whether the named file or directory exists.
-func Exists(name string) bool {
-	if _, err := os.Stat(name); err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-	}
-	return true
-}
-
-
-
-// Download will perform a file download of the given url
-// this download method provides no feedback to the system
+// Download performs file download of the given url
+// this method provides no feedback to the system
 func Download(url string, downloadTofileName string) {
 
-	log.Println("Downloading daemon - this could take a few mins :)")
+	log.Println("Downloading", url)
+	log.Println("Destination", downloadTofileName)
+	log.Println("This could take a few mins :)")
 
 	output, err := os.Create(downloadTofileName)
 
@@ -149,9 +124,24 @@ func Download(url string, downloadTofileName string) {
 
 }
 
+// Extract determines uncompress method
+func Extract(assetName string, downloadLocation string, extractPath string) {
 
+	switch filepath.Ext(assetName) {
+	case ".zip":
+		Unzip(downloadLocation, extractPath)
+	case ".gz":
+		Ungzip(downloadLocation, extractPath)
+	}
 
+	log.Println("File extracted to " + extractPath)
+
+}
+
+// Unzip uncompresses the given zip file
 func Unzip(src, dest string) error {
+
+	log.Println("Unzip the zip file from " + dest)
 
 	r, err := zip.OpenReader(src)
 	if err != nil {
@@ -171,7 +161,7 @@ func Unzip(src, dest string) error {
 			os.MkdirAll(fpath, f.Mode())
 		} else {
 			var fdir string
-			if lastIndex := strings.LastIndex(fpath,string(os.PathSeparator)); lastIndex > -1 {
+			if lastIndex := strings.LastIndex(fpath, string(os.PathSeparator)); lastIndex > -1 {
 				fdir = fpath[:lastIndex]
 			}
 
@@ -197,3 +187,52 @@ func Unzip(src, dest string) error {
 	return nil
 }
 
+// Ungzip uncompresses the given tar.gz file
+func Ungzip(gzStream, dest string) error {
+
+	log.Println("Ungzip the tar.gz from " + dest)
+
+	gzReader, err := os.Open(gzStream)
+	if err != nil {
+		return err
+	}
+	defer gzReader.Close()
+
+	gzArchive, err := gzip.NewReader(gzReader)
+	if err != nil {
+		return err
+	}
+	defer gzArchive.Close()
+
+	dest = filepath.Join(dest, gzArchive.Name)
+
+	writer, err := os.Create(dest)
+	if err != nil {
+		return err
+	}
+	defer writer.Close()
+
+	_, err = io.Copy(writer, gzArchive)
+
+	return err
+}
+
+// GetCurrentPath gets the path of the go app
+func GetCurrentPath() (string, error) {
+	ex, err := os.Executable()
+	if err != nil {
+		return "", err
+	}
+	exPath := filepath.Dir(ex)
+	return exPath, nil
+}
+
+// Exists reports if the named file or directory exists
+func Exists(name string) bool {
+	if _, err := os.Stat(name); err != nil {
+		if os.IsNotExist(err) {
+			return false
+		}
+	}
+	return true
+}
