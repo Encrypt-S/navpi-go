@@ -28,13 +28,15 @@ func main() {
 
 	//log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
 	//log.Println(fmt.Sprintf("App pid : %d.", os.Getpid()))
-	//
+
+	// Load the server config - this is required otherwise we die right here
 	serverConfig, err := conf.LoadServerConfig()
 	if err != nil {
 		log.Fatal("Failed to load the server config: " + err.Error())
 	}
 
 	conf.LoadUserConfig()
+	conf.StartConfigManager()
 
 	router := mux.NewRouter()
 
