@@ -238,16 +238,24 @@ func getOSInfo() OSInfo {
 
 	switch runtime.GOARCH {
 
-	case "amd64":
+		case "amd64":
 
-		switch runtime.GOOS {
-		case "windows":
-			osInfo.DaemonName = WindowsDaemonName
-			osInfo.OS = "win64"
-		case "darwin":
-			osInfo.DaemonName = DarwinDaemonName
-			osInfo.OS = "osx64"
-		}
+			switch runtime.GOOS {
+
+				case "windows":
+
+					osInfo.DaemonName = WindowsDaemonName
+					osInfo.OS = "win64"
+					break
+
+				case "darwin":
+
+					osInfo.DaemonName = DarwinDaemonName
+					osInfo.OS = "osx64"
+					break
+			}
+
+		break
 	}
 
 	return osInfo
