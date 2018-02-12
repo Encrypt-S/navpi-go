@@ -10,6 +10,7 @@ import (
 	"github.com/NAVCoin/navpi-go/app/manager/managerapi"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonapi"
 	"github.com/NAVCoin/navpi-go/app/daemon"
+	"github.com/NAVCoin/navpi-go/app/boxsetup/setupapi"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -34,6 +35,13 @@ func main() {
 	}
 
 	conf.LoadUserConfig()
+
+
+
+
+
+
+
 	//conf.StartConfigManager()
 
 	//
@@ -68,12 +76,27 @@ func main() {
 	//setupsrv.Start(serverConfig)
 
 
-	daemon.StartManager()
-
 	// start the manager server
 	router := mux.NewRouter()
-	managerapi.InitManagerhandlers(router,"api")
-	daemonapi.InitChainHandlers(router, "api")
+
+	// check to see if we have a defined running config
+	// If not we are only going to boot the setup apis, otherwise we will start the app
+	if conf.UserConf.RunningNavVersion == "" {
+
+		log.Println("No user config - adding setup api")
+		setupapi.InitSetupHandlers(router, "api")
+
+	} else {
+
+		log.Println("User config found - booting all apis")
+
+		// we have a user config so start the app in running mode
+		daemon.StartManager()
+
+		managerapi.InitManagerhandlers(router,"api")
+		daemonapi.InitChainHandlers(router, "api")
+
+	}
 
 	port := fmt.Sprintf(":%d", serverConfig.ManagerAiPort)
 	srv := &http.Server{
