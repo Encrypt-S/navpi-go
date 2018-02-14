@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-
 // WizardConfigStruct contains the app's user configuration
 type WizardConfigStruct struct {
 	NavConfPath       string `json:"navConfPath"`
@@ -30,18 +29,6 @@ func SetupViper() {
 	viper.AddConfigPath("./")
 	viper.AddConfigPath("./app")
 	viper.AddConfigPath(".")
-	// sviper.WatchConfig()
-
-	//viper.OnConfigChange(func(e fsnotify.Event) {
-	//ØOs
-	//	fmt.Println("Config file changed:", e.Name)
-	//
-	//	//LoggingConfig()
-	//	//WizardConf.NavCon
-	//	//userconfig := parseUserConfig(WizardConfigStruct{})
-	//
-	//})
-
 }
 
 func LoadWizardConfig() error {

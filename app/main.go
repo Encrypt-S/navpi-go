@@ -40,7 +40,6 @@ func main() {
 	 conf.WizardConf = wizardConfMock
 
 	// TODO: conf.SaveUserConf()
-
 	// then just save user conf to json file on computer (public function in userConf)
 
 	// Load the server config - this is required otherwise we die right here
