@@ -3,9 +3,6 @@ package daemon
 import (
 	"encoding/json"
 	"errors"
-	"github.com/NAVCoin/navpi-go/app/conf"
-	"github.com/NAVCoin/navpi-go/app/daemon/deamonrpc"
-	"github.com/NAVCoin/navpi-go/app/fs"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,6 +11,10 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/NAVCoin/navpi-go/app/conf"
+	"github.com/NAVCoin/navpi-go/app/daemon/deamonrpc"
+	"github.com/NAVCoin/navpi-go/app/fs"
 )
 
 const (
@@ -131,7 +132,7 @@ func StartManager() {
 				}
 
 				// start the daemon and download it if necessary
-				cmd, err := DownloadAndStart(conf.ServerConf, conf.UserConf)
+				cmd, err := DownloadAndStart(conf.ServerConf, conf.WizardConf)
 
 				if err != nil {
 					log.Println(err)
@@ -154,7 +155,7 @@ func isAlive() bool {
 	n := deamonrpc.RpcRequestData{}
 	n.Method = "getblockcount"
 
-	_, err := deamonrpc.RequestDaemon(n, conf.UserConf)
+	_, err := deamonrpc.RequestDaemon(n, conf.NavConf)
 
 	if err != nil {
 		isLiving = false
@@ -164,7 +165,7 @@ func isAlive() bool {
 
 }
 
-func DownloadAndStart(serverConfig conf.ServerConfig, userConfig conf.UserConfig) (*exec.Cmd, error) {
+func DownloadAndStart(serverConfig conf.ServerConfig, userConfig conf.WizardConfigStruct) (*exec.Cmd, error) {
 
 	if userConfig.RunningNavVersion == "" {
 		return nil, errors.New("no nav version set in the user config")
@@ -189,7 +190,7 @@ func Stop(cmd *exec.Cmd) {
 	}
 }
 
-func CheckForDaemon(serverConfig conf.ServerConfig, userConfig conf.UserConfig) (string, error) {
+func CheckForDaemon(serverConfig conf.ServerConfig, userConfig conf.WizardConfigStruct) (string, error) {
 
 	// get the latest release info
 	releaseVersion := userConfig.RunningNavVersion
@@ -238,22 +239,22 @@ func getOSInfo() OSInfo {
 
 	switch runtime.GOARCH {
 
-		case "amd64":
+	case "amd64":
 
-			switch runtime.GOOS {
+		switch runtime.GOOS {
 
-				case "windows":
+		case "windows":
 
-					osInfo.DaemonName = WindowsDaemonName
-					osInfo.OS = "win64"
-					break
+			osInfo.DaemonName = WindowsDaemonName
+			osInfo.OS = "win64"
+			break
 
-				case "darwin":
+		case "darwin":
 
-					osInfo.DaemonName = DarwinDaemonName
-					osInfo.OS = "osx64"
-					break
-			}
+			osInfo.DaemonName = DarwinDaemonName
+			osInfo.OS = "osx64"
+			break
+		}
 
 		break
 	}

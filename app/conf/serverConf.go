@@ -2,21 +2,20 @@ package conf
 
 import "github.com/spf13/viper"
 
-// UserConfig the application's configuration
+// WizardConfigStruct the application's configuration
 type ServerConfig struct {
 	ManagerAiPort    int64
 	DaemonApiPort    int64
 	SetupApiPort     int64
 	LatestReleaseAPI string
-	ReleaseAPI string
-	DaemonHeartbeat int64
+	ReleaseAPI       string
+	DaemonHeartbeat  int64
 }
 
-
-
+var ServerConf ServerConfig
 
 // LoadUserConfig loads the config from a file
-func LoadServerConfig() (ServerConfig, error)  {
+func LoadServerConfig() (ServerConfig, error) {
 
 	viper.SetConfigName("server-config")
 	viper.AddConfigPath(".")
@@ -27,20 +26,18 @@ func LoadServerConfig() (ServerConfig, error)  {
 	err := viper.ReadInConfig() // Find and read the config file
 
 	if err != nil { // Handle errors reading the config file
-		return ServerConfig{},err
+		return ServerConfig{}, err
 	}
 
 	// load the go server config
 	serverConfig := parseServerConfig(ServerConfig{})
-
 
 	ServerConf = serverConfig
 
 	return serverConfig, nil
 }
 
-
-func parseServerConfig(config ServerConfig) ServerConfig  {
+func parseServerConfig(config ServerConfig) ServerConfig {
 
 	config.ManagerAiPort = viper.GetInt64("managerApiPort")
 	config.LatestReleaseAPI = viper.GetString("latestReleaseAPI")
@@ -50,5 +47,3 @@ func parseServerConfig(config ServerConfig) ServerConfig  {
 	return config
 
 }
-
-
