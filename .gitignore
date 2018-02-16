@@ -1,6 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
-config.json
+# config
+/app/config-app.json
 
 # compiled output
 /dist
@@ -19,6 +20,7 @@ config.json
 .settings/
 *.sublime-workspace
 *.iml
+.vscode
 
 # IDE - VSCode
 .vscode/*
@@ -28,17 +30,12 @@ config.json
 !.vscode/extensions.json
 
 # misc
-/.sass-cache
 /connect.lock
 /coverage
 /libpeerconnection.log
 npm-debug.log
 testem.log
 /typings
-
-# e2e
-/e2e/*.js
-/e2e/*.map
 
 # System Files
 .DS_Store
