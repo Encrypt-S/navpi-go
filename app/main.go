@@ -11,36 +11,32 @@ import (
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonapi"
 	"github.com/NAVCoin/navpi-go/app/manager/managerapi"
 
-	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
+	"os"
+	"runtime"
 )
-
-func hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "hello")
-}
-
-func world(w http.ResponseWriter, r *http.Request) {
-	server.Shutdown(nil)
-	fmt.Fprintf(w, "world")
-}
 
 var server *http.Server
 
 func main() {
 
-	//log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
-	//log.Println(fmt.Sprintf("App pid : %d.", os.Getpid()))
+	log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
+	log.Println(fmt.Sprintf("App pid : %d.", os.Getpid()))
 
 	// TODO: create new user conf...
-	 userConfMock := conf.UserConfig{}
+	appConfMock := conf.AppConfig{}
 
-	 userConfMock.NavConfPath = "im/the/path"
-	 userConfMock.RunningNavVersion ="45678ikjn"
+	// win version
 
-	 conf.UserConf = userConfMock
+	// osx version
+	appConfMock.NavConfPath = "$HOME/Library/Application\\ Support/NavCoin4/navcoin.conf"
+	appConfMock.RunningNavVersion = "4.1.1"
 
-	// TODO: conf.SaveUserConf()
+	conf.AppConf = appConfMock
+
 	// then just save user conf to json file on computer (public function in userConf)
+	// TODO: conf.SaveUserConf()
 
 	// Load the server config - this is required otherwise we die right here
 	serverConfig, err := conf.LoadServerConfig()
@@ -49,14 +45,14 @@ func main() {
 	}
 
 	conf.SetupViper()
-	conf.LoadUserConfig()
+	conf.LoadAppConfig()
 	conf.StartConfigManager()
 
 	router := mux.NewRouter()
 
 	// check to see if we have a defined running config
 	// If not we are only going to boot the setup apis, otherwise we will start the app
-	if conf.UserConf.RunningNavVersion == "" {
+	if conf.AppConf.RunningNavVersion == "" {
 
 		log.Println("No user config - adding setup api")
 		setupapi.InitSetupHandlers(router, "api")
@@ -65,13 +61,12 @@ func main() {
 
 		log.Println("User config found - booting all apis")
 
-		err := conf.LoadRPCDetails(conf.UserConf)
+		err := conf.LoadRPCDetails(conf.AppConf)
+
 		if err != nil {
-
-			log.Println("THERE ARE NO RPC DETAILS - FIX ME!")
-
 			//TODO: Fix this
-			//log.Fatal("RPC Details Not found!")
+			log.Println("RPC Details Not found!")
+			log.Println("err", err)
 		}
 
 		// we have a user config so start the app in running mode

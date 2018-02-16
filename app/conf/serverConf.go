@@ -12,10 +12,12 @@ type ServerConfig struct {
 	DaemonHeartbeat  int64
 }
 
+var ServerConf ServerConfig
+
 // LoadServerConfig loads the config from a file
 func LoadServerConfig() (ServerConfig, error) {
 
-	viper.SetConfigName("server")
+	viper.SetConfigName("config-server")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("./")
 	viper.AddConfigPath("./app")
