@@ -32,12 +32,12 @@ func main() {
 	//log.Println(fmt.Sprintf("App pid : %d.", os.Getpid()))
 
 	// TODO: create new user conf...
-	 wizardConfMock := conf.WizardConfigStruct{}
+	 userConfMock := conf.UserConfig{}
 
-	 wizardConfMock.NavConfPath = "im/the/path"
-	 wizardConfMock.RunningNavVersion ="45678ikjn"
+	 userConfMock.NavConfPath = "im/the/path"
+	 userConfMock.RunningNavVersion ="45678ikjn"
 
-	 conf.WizardConf = wizardConfMock
+	 conf.UserConf = userConfMock
 
 	// TODO: conf.SaveUserConf()
 	// then just save user conf to json file on computer (public function in userConf)
@@ -49,14 +49,14 @@ func main() {
 	}
 
 	conf.SetupViper()
-	conf.LoadWizardConfig()
+	conf.LoadUserConfig()
 	conf.StartConfigManager()
 
 	router := mux.NewRouter()
 
 	// check to see if we have a defined running config
 	// If not we are only going to boot the setup apis, otherwise we will start the app
-	if conf.WizardConf.RunningNavVersion == "" {
+	if conf.UserConf.RunningNavVersion == "" {
 
 		log.Println("No user config - adding setup api")
 		setupapi.InitSetupHandlers(router, "api")
@@ -65,7 +65,7 @@ func main() {
 
 		log.Println("User config found - booting all apis")
 
-		err := conf.LoadRPCDetails()
+		err := conf.LoadRPCDetails(conf.UserConf)
 		if err != nil {
 
 			log.Println("THERE ARE NO RPC DETAILS - FIX ME!")

@@ -2,7 +2,7 @@ package conf
 
 import "github.com/spf13/viper"
 
-// WizardConfigStruct the application's configuration
+// ServerConfig the application's configuration
 type ServerConfig struct {
 	ManagerAiPort    int64
 	DaemonApiPort    int64
@@ -12,24 +12,21 @@ type ServerConfig struct {
 	DaemonHeartbeat  int64
 }
 
-var ServerConf ServerConfig
-
-// LoadUserConfig loads the config from a file
+// LoadServerConfig loads the config from a file
 func LoadServerConfig() (ServerConfig, error) {
 
-	viper.SetConfigName("server-config")
+	viper.SetConfigName("server")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("./")
 	viper.AddConfigPath("./app")
 	viper.AddConfigPath("../")
 
-	err := viper.ReadInConfig() // Find and read the config file
+	err := viper.ReadInConfig()
 
-	if err != nil { // Handle errors reading the config file
+	if err != nil {
 		return ServerConfig{}, err
 	}
 
-	// load the go server config
 	serverConfig := parseServerConfig(ServerConfig{})
 
 	ServerConf = serverConfig

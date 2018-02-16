@@ -132,7 +132,7 @@ func StartManager() {
 				}
 
 				// start the daemon and download it if necessary
-				cmd, err := DownloadAndStart(conf.ServerConf, conf.WizardConf)
+				cmd, err := DownloadAndStart(conf.ServerConf, conf.UserConf)
 
 				if err != nil {
 					log.Println(err)
@@ -155,7 +155,7 @@ func isAlive() bool {
 	n := deamonrpc.RpcRequestData{}
 	n.Method = "getblockcount"
 
-	_, err := deamonrpc.RequestDaemon(n, conf.NavConf)
+	_, err := deamonrpc.RequestDaemon(n, conf.UserConf)
 
 	if err != nil {
 		isLiving = false
@@ -165,7 +165,7 @@ func isAlive() bool {
 
 }
 
-func DownloadAndStart(serverConfig conf.ServerConfig, userConfig conf.WizardConfigStruct) (*exec.Cmd, error) {
+func DownloadAndStart(serverConfig conf.ServerConfig, userConfig conf.UserConfig) (*exec.Cmd, error) {
 
 	if userConfig.RunningNavVersion == "" {
 		return nil, errors.New("no nav version set in the user config")
@@ -190,7 +190,7 @@ func Stop(cmd *exec.Cmd) {
 	}
 }
 
-func CheckForDaemon(serverConfig conf.ServerConfig, userConfig conf.WizardConfigStruct) (string, error) {
+func CheckForDaemon(serverConfig conf.ServerConfig, userConfig conf.UserConfig) (string, error) {
 
 	// get the latest release info
 	releaseVersion := userConfig.RunningNavVersion
