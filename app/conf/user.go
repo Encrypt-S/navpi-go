@@ -49,7 +49,7 @@ func LoadUserConfig() (error)  {
 
 // loadNavConfig tries to read the config file for the RPC server
 // and extract the RPC user and password from it.
-func LoadRPCDetails (config *UserConfig) (error) {
+func LoadRPCDetails (config UserConfig) (error) {
 
 	var configfile = config.NavConfPath
 
@@ -92,7 +92,7 @@ func LoadRPCDetails (config *UserConfig) (error) {
 	config.RpcUser = string(userSubmatches[1])
 	config.RpcPassword= string(passSubmatches[1])
 
-	return config.RpcUser, config.RpcPassword, nil
+	return nil
 
 }
 
