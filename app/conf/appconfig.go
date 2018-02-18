@@ -160,7 +160,10 @@ func saveAppConfig(confPath string, runningVersion string) error {
 
 	// write jsonData to file path with WriteFile
 	// set perm: fileMode to os0644 for overwrite
-	_ = ioutil.WriteFile(path, jsonData, 0644)
+	err = ioutil.WriteFile(path, jsonData, 0644)
+	if err != nil {
+		return err
+	}
 
 	return nil
 
