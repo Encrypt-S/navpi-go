@@ -21,10 +21,10 @@ type RpcResp struct {
 
 // RequestDaemon request the data via the daemon's rpc api
 // it also allows auto switches between the testnet and live depending on the config
-func RequestDaemon(rpcReqData RpcRequestData, navConf conf.UserConfig) (*http.Response, error) {
+func RequestDaemon(rpcReqData RpcRequestData, navConf conf.NavConfig) (*http.Response, error) {
 
 	username := navConf.RpcUser
-	passwd := navConf.RpcPassword
+	password := navConf.RpcPassword
 
 	client := &http.Client{}
 
@@ -37,7 +37,7 @@ func RequestDaemon(rpcReqData RpcRequestData, navConf conf.UserConfig) (*http.Re
 	//}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonValue))
-	req.SetBasicAuth(username, passwd)
+	req.SetBasicAuth(username, password)
 	req.Header.Add("Content-Type", "application/json")
 
 	resp, err := client.Do(req)

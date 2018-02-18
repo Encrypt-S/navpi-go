@@ -21,30 +21,17 @@ var server *http.Server
 
 func main() {
 
+	// log out server runtime OS and Architecture
 	log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
 	log.Println(fmt.Sprintf("App pid : %d.", os.Getpid()))
 
-	// TODO: create new user conf...
-	appConfMock := conf.AppConfig{}
-
-	// win version
-
-	// osx version
-	appConfMock.NavConfPath = "$HOME/Library/Application\\ Support/NavCoin4/navcoin.conf"
-	appConfMock.RunningNavVersion = "4.1.1"
-
-	conf.AppConf = appConfMock
-
-	// then just save user conf to json file on computer (public function in userConf)
-	// TODO: conf.SaveUserConf()
-
-	// Load the server config - this is required otherwise we die right here
+	// load the server config - this is required otherwise we die right here
 	serverConfig, err := conf.LoadServerConfig()
 	if err != nil {
 		log.Fatal("Failed to load the server config: " + err.Error())
 	}
 
-	conf.SetupViper()
+	conf.InitAppConfig()
 	conf.LoadAppConfig()
 	conf.StartConfigManager()
 

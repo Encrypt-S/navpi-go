@@ -155,7 +155,7 @@ func isAlive() bool {
 	n := deamonrpc.RpcRequestData{}
 	n.Method = "getblockcount"
 
-	_, err := deamonrpc.RequestDaemon(n, conf.UserConf)
+	_, err := deamonrpc.RequestDaemon(n, conf.NavConf)
 
 	if err != nil {
 		isLiving = false

@@ -23,8 +23,7 @@ func geStakeReport(w http.ResponseWriter, r *http.Request) {
 	n := deamonrpc.RpcRequestData{}
 	n.Method = "getstakereport"
 
-
-	resp, err := deamonrpc.RequestDaemon(n, conf.UserConf)
+	resp, err := deamonrpc.RequestDaemon(n, conf.NavConf)
 
 	if err != nil { // Handle errors requesting the daemon
 		deamonrpc.RpcFailed(err, w, r)
