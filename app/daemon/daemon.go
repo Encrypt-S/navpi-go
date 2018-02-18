@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/NAVCoin/navpi-go/app/conf"
-	"github.com/NAVCoin/navpi-go/app/daemon/deamonrpc"
+	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
 	"github.com/NAVCoin/navpi-go/app/fs"
 )
 
@@ -152,10 +152,10 @@ func isAlive() bool {
 
 	isLiving := true
 
-	n := deamonrpc.RpcRequestData{}
+	n := daemonrpc.RpcRequestData{}
 	n.Method = "getblockcount"
 
-	_, err := deamonrpc.RequestDaemon(n, conf.NavConf)
+	_, err := daemonrpc.RequestDaemon(n, conf.NavConf)
 
 	if err != nil {
 		isLiving = false

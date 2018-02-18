@@ -49,13 +49,13 @@ func getBlockCount(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("getBlockCount")
 
-	//n := deamonrpc.RpcRequestData{}
+	//n := daemonrpc.RpcRequestData{}
 	//n.Method = "getblockcount"
 	//
-	//resp, err := deamonrpc.RequestDaemon(n, config)
+	//resp, err := daemonrpc.RequestDaemon(n, config)
 	//
 	//if err != nil { // Handle errors requesting the daemon
-	//	deamonrpc.RpcFailed(err, w, r)
+	//	daemonrpc.RpcFailed(err, w, r)
 	//	return
 	//}
 	//

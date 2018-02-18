@@ -1,4 +1,4 @@
-package deamonrpc
+package daemonrpc
 
 import (
 	"bytes"

@@ -1,4 +1,4 @@
 {
-	"navconf": "path/to/navcoin.conf",
-	"runningNavVersion": "version"
+  "navconf": "path/to/navcoin.conf",
+  "runningNavVersion": "version"
 }

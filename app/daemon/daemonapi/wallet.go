@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/NAVCoin/navpi-go/app/conf"
-	"github.com/NAVCoin/navpi-go/app/daemon/deamonrpc"
+	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
 	"github.com/gorilla/mux"
 )
 
@@ -20,13 +20,13 @@ func InitWalletHandlers(r *mux.Router, prefix string) {
 func geStakeReport(w http.ResponseWriter, r *http.Request) {
 	//fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
 
-	n := deamonrpc.RpcRequestData{}
+	n := daemonrpc.RpcRequestData{}
 	n.Method = "getstakereport"
 
-	resp, err := deamonrpc.RequestDaemon(n, conf.NavConf)
+	resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
 
 	if err != nil { // Handle errors requesting the daemon
-		deamonrpc.RpcFailed(err, w, r)
+		daemonrpc.RpcFailed(err, w, r)
 		return
 	}
 
