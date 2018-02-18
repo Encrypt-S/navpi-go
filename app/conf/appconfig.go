@@ -18,6 +18,12 @@ type AppConfig struct {
 	RunningNavVersion string `json:"runningNavVersion"`
 }
 
+// AppConfigData defines json model for app-config.json
+type AppConfigData struct {
+	NavConf           string `json:"navconf"`
+	RunningNavVersion string `json:"runningNavVersion"`
+}
+
 // InitAppConfig will create mock data for now
 // to save into app-config.json for viper read
 func InitAppConfig() error {
@@ -130,12 +136,6 @@ func parseAppConfig(appconf AppConfig) AppConfig {
 
 	return appconf
 
-}
-
-// AppConfigData defines json model for app-config.json
-type AppConfigData struct {
-	NavConf           string `json:"navconf"`
-	RunningNavVersion string `json:"runningNavVersion"`
 }
 
 // saveAppConfig saves navconf path and version to app-config.json
