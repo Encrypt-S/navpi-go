@@ -10,7 +10,6 @@ import (
 	"github.com/NAVCoin/navpi-go/app/daemon"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonapi"
 	"github.com/NAVCoin/navpi-go/app/manager/managerapi"
-
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"os"
@@ -31,7 +30,7 @@ func main() {
 		log.Fatal("Failed to load the server config: " + err.Error())
 	}
 
-	conf.InitAppConfig()
+	//conf.InitAppConfig()
 	conf.LoadAppConfig()
 	conf.StartConfigManager()
 

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 )
 
 // Setup all the handlers for the blockchain rpc interface
@@ -23,11 +24,32 @@ func InitSetupHandlers(r *mux.Router, prefix string)  {
 
 
 func hello(w http.ResponseWriter, r *http.Request) {
-	//fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
+
+	host, port, err := net.SplitHostPort(r.RemoteAddr)
+
+	log.Println(host)
+	log.Println(port)
+	log.Println(err)
+
+	// ::1 = ipV6 local host
+	if err != nil || host == "" {
+		//w.WriteHeader(http.StatusInternalServerError)
+		//return
+
+		requestIP := net.ParseIP(host)
+
+		log.Println(requestIP)
+		/*
+		if !reco.containsIP(requestIP) {
+			w.WriteHeader(http.StatusForbidden)
+			io.WriteString(w, "Forbidden")
+			return
+		}
+		*/
+	}
+
 
 	log.Println("hello")
-
-
 
 	//n := daemonrpc.RpcRequestData{}
 	//n.Method = "getblockcount"
