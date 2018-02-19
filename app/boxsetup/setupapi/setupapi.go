@@ -1,14 +1,12 @@
 package setupapi
 
-
-
 import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"fmt"
 	"io"
 	"log"
-	"net"
+	"github.com/NAVCoin/navpi-go/app/boxsetup/netconfig"
 )
 
 // Setup all the handlers for the blockchain rpc interface
@@ -16,38 +14,21 @@ func InitSetupHandlers(r *mux.Router, prefix string)  {
 
 	var nameSpace string = "setup"
 
-	var path string = fmt.Sprintf("/%s/%s/v1/hello", prefix, nameSpace)
+	// hello world route
+	var path_hello string = fmt.Sprintf("/%s/%s/v1/hello", prefix, nameSpace)
 
-	r.HandleFunc(path, hello).Methods("GET")
+	// netconfig route
+	var path_netconfig string = fmt.Sprintf("/%s/%s/v1/netconfig", prefix, nameSpace)
+
+	// handle hello world
+	r.HandleFunc(path_hello, hello).Methods("GET")
+
+	// handle netconfig
+	r.HandleFunc(path_netconfig, netconfig.HttpScan).Methods("GET")
 
 }
 
-
 func hello(w http.ResponseWriter, r *http.Request) {
-
-	host, port, err := net.SplitHostPort(r.RemoteAddr)
-
-	log.Println(host)
-	log.Println(port)
-	log.Println(err)
-
-	// ::1 = ipV6 local host
-	if err != nil || host == "" {
-		//w.WriteHeader(http.StatusInternalServerError)
-		//return
-
-		requestIP := net.ParseIP(host)
-
-		log.Println(requestIP)
-		/*
-		if !reco.containsIP(requestIP) {
-			w.WriteHeader(http.StatusForbidden)
-			io.WriteString(w, "Forbidden")
-			return
-		}
-		*/
-	}
-
 
 	log.Println("hello")
 
@@ -64,6 +45,7 @@ func hello(w http.ResponseWriter, r *http.Request) {
 	//bodyText, err := ioutil.ReadAll(resp.Body)
 	//w.WriteHeader(resp.StatusCode)
 	//w.Write(bodyText)
+
 	io.WriteString(w, "Hello ")
 
 }
