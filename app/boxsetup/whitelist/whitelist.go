@@ -4,55 +4,13 @@ package whitelist
 // and determine whether a given IP is contained
 // within a defined range of IP addresses
 
-import (
-	"log"
-	"net"
-	"net/http"
-)
-
 // WhitelistHandler is a vulcand-compatible middleware for
 // restricting requests based on whether or not they originate
 // from an allowed IP range.
-type WhitelistHandler struct {
-	//allowedRanges []ipRange
-	next http.Handler
-}
-
-func (i *WhitelistHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
-	host, port, err := net.SplitHostPort(r.RemoteAddr)
-
-	log.Println("ServeHTTP!!!")
-	log.Println("host", host)
-	log.Println("port", port)
-	log.Println("err", err)
-
-	if err != nil || host == "" {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
-
-	if host == "::1" {
-		log.Println("we are on localhost!")
-		requestIP := net.ParseIP(host)
-		log.Println(requestIP)
-	}
-
-	// if we are not in localhost parse the IP
-	if host != "::1" {
-		log.Println("we are not on localhost")
-		requestIP := net.ParseIP(host)
-		log.Println(requestIP)
-
-		// whitelist range check
-		// need to make "i" equal the
-		//if !i.containsIP(requestIP) {
-		//	w.WriteHeader(http.StatusForbidden)
-		//	io.WriteString(w, "Forbidden")
-		//	return
-		//}
-	}
-
-}
+// type WhitelistHandler struct {
+// 	allowedRanges []ipRange
+// 	next          http.Handler
+// }
 
 // type ipRange struct {
 // 	start net.IP
