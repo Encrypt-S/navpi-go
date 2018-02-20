@@ -64,7 +64,7 @@ func main() {
 	}
 
 	// Start the server
-	port := fmt.Sprintf(":%d", serverConfig.ManagerAiPort)
+	port := fmt.Sprintf(":%d", serverConfig.ManagerApiPort)
 	srv := &http.Server{
 		Addr:    port,
 		Handler: handlers.CORS()(router)}
