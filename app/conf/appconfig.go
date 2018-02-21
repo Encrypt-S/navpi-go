@@ -77,7 +77,7 @@ func MockAppConfig() (AppConfig, error) {
 	AppConf = mockConfig
 
 	// save the mocked app config
-	err := saveAppConfig()
+	err := SaveAppConfig()
 	if err != nil {
 		log.Println("Unable to save mocked app config")
 		log.Println("err", err)
@@ -149,7 +149,7 @@ func LoadRPCDetails(appconfig AppConfig) error {
 // SaveAppConfig saves navconf path and version to app-config.json
 // will be called called only once after MockAppConfig
 // next time the config loop runs :: we'll have a config
-func saveAppConfig() error {
+func SaveAppConfig() error {
 
 	// merge input path and version values with AppConfigData
 	// use MarshalIndent to format json (prettyprint)
