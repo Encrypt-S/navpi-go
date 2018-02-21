@@ -1,6 +1,6 @@
 package whitelist
 
-// rangerover contains methods for parsing IP addresses
+// TODO: ranges.go contains methods for parsing IP addresses
 // and for determining whether a given IP is contained within
 // a defined range of IP addresses.
 

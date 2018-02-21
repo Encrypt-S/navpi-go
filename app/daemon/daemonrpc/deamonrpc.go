@@ -61,13 +61,11 @@ func RpcFailed(err error, w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	//Write json response back to response
 	w.Write(respJson)
 
 }
 
 // NotImplemented: this is a generic function for daeomn apis
-// that have not been implemented yet
 func NotImplemented(w http.ResponseWriter, r *http.Request) {
 	//fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
 
@@ -84,7 +82,6 @@ func NotImplemented(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	//Write json response back to response
 	w.Write(respJson)
 
 }

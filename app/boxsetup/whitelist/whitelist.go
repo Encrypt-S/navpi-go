@@ -4,9 +4,10 @@ package whitelist
 // and determine whether a given IP is contained
 // within a defined range of IP addresses
 
-// WhitelistHandler is a vulcand-compatible middleware for
+// WhitelistHandler is a middleware for
 // restricting requests based on whether or not they originate
 // from an allowed IP range.
+
 // type WhitelistHandler struct {
 // 	allowedRanges []ipRange
 // 	next          http.Handler
@@ -81,7 +82,7 @@ package whitelist
 //func (i ipRange) contains(ip net.IP) bool {
 //	return bytes.Compare(ip, i.start) >= 0 && bytes.Compare(ip, i.end) <= 0
 //}
-//
+
 //func (i *RangeHandler) containsIP(ip net.IP) bool {
 //	for _, addrs := range i.allowedRanges {
 //		if addrs.contains(ip) {
@@ -90,7 +91,7 @@ package whitelist
 //	}
 //	return false
 //}
-//
+
 //func buildRanges(stringRanges []string) []ipRange {
 //	ranges := make([]ipRange, 0)
 //	for _, ip := range stringRanges {
@@ -99,7 +100,7 @@ package whitelist
 //	}
 //	return ranges
 //}
-//
+
 //func createRangesFromString(raw string) (net.IP, net.IP) {
 //	ips := strings.Split(raw, "-")
 //	start := net.ParseIP(ips[0])

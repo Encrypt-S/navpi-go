@@ -1,16 +1,14 @@
 package setupapi
 
 import (
-	"testing"
 	"github.com/stretchr/testify/suite"
+	"testing"
 )
 
-// setup the test suite
 type SetupApiSuite struct {
 	suite.Suite
 }
 
-// InitSetupHandlers Test
 func (suite *SetupApiSuite) InitSetupHandlersSuccess() {
 
 	suite.Equal(expectedURL, result)
