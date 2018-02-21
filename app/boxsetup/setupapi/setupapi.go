@@ -14,7 +14,6 @@ func InitSetupHandlers(r *mux.Router, prefix string) {
 
 	var nameSpace string = "setup"
 
-	// test @ http://192.168.1.207:9002/api/setup/v1/detectip
 	var path_ip_detect string = fmt.Sprintf("/%s/%s/v1/detectip", prefix, nameSpace)
 
 	r.Handle(path_ip_detect, middleware.Adapt(detectIpV1Handler(), middleware.Notify()))
@@ -26,11 +25,9 @@ func detectIpV1Handler() http.Handler {
 
 		host, port, err := net.SplitHostPort(r.RemoteAddr)
 
-		// host :: 192.168.1.207
 		log.Println("host :: ", host)
 
-		// port :: 59660
-		 log.Println("port :: ", port)
+		log.Println("port :: ", port)
 
 		if err != nil || host == "" {
 			log.Println("err :: ", err)
