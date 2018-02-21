@@ -6,8 +6,8 @@ import (
 	"github.com/gorilla/mux"
 	"io"
 	"log"
-	"net/http"
 	"net"
+	"net/http"
 )
 
 // Setup all the handlers for the blockchain rpc interface
@@ -44,7 +44,7 @@ func whitelistV1Handler() http.Handler {
 
 		log.Println("host=", host)
 		log.Println("port=", port)
-		log.Println("err=",err)
+		log.Println("err=", err)
 
 		if err != nil || host == "" {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -58,9 +58,14 @@ func whitelistV1Handler() http.Handler {
 
 		// if we are not in localhost parse the IP
 		if host != "::1" {
+
 			log.Println("we are not on localhost")
+
 			requestIP := net.ParseIP(host)
+
 			log.Println(requestIP)
+
+
 
 			// whitelist range check
 			// need to make "i" equal the
@@ -82,6 +87,7 @@ func notifyV1Handler() http.Handler {
 		fmt.Fprintf(w, "Hi there, I ran the middleware, I love %s!", r.URL.Path[1:])
 	})
 }
+
 
 // hello world handler
 func hello(w http.ResponseWriter, r *http.Request) {

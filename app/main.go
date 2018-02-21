@@ -30,22 +30,37 @@ func main() {
 		log.Fatal("Failed to load the server config: " + err.Error())
 	}
 
-	//conf.InitAppConfig()
+	// load app config
 	conf.LoadAppConfig()
+
+	// start config manager loop
 	conf.StartConfigManager()
 
+	// setup router
 	router := mux.NewRouter()
 
 	// check to see if we have a defined running config
 	// If not we are only going to boot the setup apis, otherwise we will start the app
 	if conf.AppConf.RunningNavVersion == "" {
 
-		log.Println("No user config - adding setup api")
+		log.Println("No app config detected...")
+		log.Println("Creating mock config")
+		log.Println("Initializing setup handlers")
+
+		appConfig, err := conf.MockAppConfig()
+		if err != nil {
+			log.Fatal("Failed to create the mock config: " + err.Error())
+		} else {
+			log.Println("appConfig", appConfig)
+		}
+
+
+
 		setupapi.InitSetupHandlers(router, "api")
 
 	} else {
 
-		log.Println("User config found - booting all apis")
+		log.Println("App config found - booting all apis!")
 
 		err := conf.LoadRPCDetails(conf.AppConf)
 

@@ -34,12 +34,13 @@ func LoadServerConfig() (ServerConfig, error) {
 	ServerConf = serverConfig
 
 	return serverConfig, nil
+
 }
 
 // parseServerConfig reads config settings from server-config.json
 func parseServerConfig(config ServerConfig) ServerConfig {
 
-	config.ManagerApiPort = viper.GetInt64("managerApiPort")
+	config.ManagerApiPort= viper.GetInt64("managerApiPort")
 	config.LatestReleaseAPI = viper.GetString("latestReleaseAPI")
 	config.ReleaseAPI = viper.GetString("releaseAPI")
 	config.DaemonHeartbeat = viper.GetInt64("daemonHeartbeat")

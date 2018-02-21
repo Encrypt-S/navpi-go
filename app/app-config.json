@@ -1,0 +1,5 @@
+{
+	"navconf": "path/to/navcoin.conf",
+	"runningNavVersion": "version",
+	"detectedIp": "1.1.1.1.1"
+}
