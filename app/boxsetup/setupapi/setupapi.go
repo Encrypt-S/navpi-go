@@ -1,51 +1,52 @@
 package setupapi
 
-
-
 import (
-	"github.com/gorilla/mux"
-	"net/http"
 	"fmt"
-	"io"
+	"github.com/NAVCoin/navpi-go/app/conf"
+	"github.com/NAVCoin/navpi-go/app/middleware"
+	"github.com/gorilla/mux"
 	"log"
+	"net"
+	"net/http"
 )
 
-// Setup all the handlers for the blockchain rpc interface
-func InitSetupHandlers(r *mux.Router, prefix string)  {
+func InitSetupHandlers(r *mux.Router, prefix string) {
 
 	var nameSpace string = "setup"
 
-	var path string = fmt.Sprintf("/%s/%s/v1/hello", prefix, nameSpace)
+	var path_ip_detect string = fmt.Sprintf("/%s/%s/v1/detectip", prefix, nameSpace)
 
-	r.HandleFunc(path, hello).Methods("GET")
-
-}
-
-
-func hello(w http.ResponseWriter, r *http.Request) {
-	//fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
-
-	log.Println("hello")
-
-
-
-	//n := daemonrpc.RpcRequestData{}
-	//n.Method = "getblockcount"
-	//
-	//resp, err := daemonrpc.RequestDaemon(n, config)
-	//
-	//if err != nil { // Handle errors requesting the daemon
-	//	daemonrpc.RpcFailed(err, w, r)
-	//	return
-	//}
-	//
-	//bodyText, err := ioutil.ReadAll(resp.Body)
-	//w.WriteHeader(resp.StatusCode)
-	//w.Write(bodyText)
-	io.WriteString(w, "Hello ")
+	r.Handle(path_ip_detect, middleware.Adapt(detectIpV1Handler(), middleware.Notify()))
 
 }
 
+func detectIpV1Handler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
+		host, port, err := net.SplitHostPort(r.RemoteAddr)
 
+		log.Println("host :: ", host)
 
+		log.Println("port :: ", port)
+
+		if err != nil || host == "" {
+			log.Println("err :: ", err)
+		}
+
+		if host == "::1" {
+
+			log.Println("localhost")
+
+		} else {
+
+			log.Println("not localhost")
+
+		}
+
+		conf.AppConf.DetectedIp = host
+		conf.SaveAppConfig()
+
+		fmt.Fprintf(w, "Hi there, I ran the middleware, I love %s!", r.URL.Path[1:])
+
+	})
+}

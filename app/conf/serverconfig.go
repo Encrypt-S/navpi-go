@@ -4,9 +4,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-// ServerConfig the application's configuration
 type ServerConfig struct {
-	ManagerAiPort    int64
+	ManagerApiPort   int64
 	DaemonApiPort    int64
 	SetupApiPort     int64
 	LatestReleaseAPI string
@@ -14,7 +13,6 @@ type ServerConfig struct {
 	DaemonHeartbeat  int64
 }
 
-// LoadServerConfig loads the config from a file
 func LoadServerConfig() (ServerConfig, error) {
 
 	viper.SetConfigName("server-config")
@@ -34,12 +32,12 @@ func LoadServerConfig() (ServerConfig, error) {
 	ServerConf = serverConfig
 
 	return serverConfig, nil
+
 }
 
-// parseServerConfig reads config settings from server-config.json
 func parseServerConfig(config ServerConfig) ServerConfig {
 
-	config.ManagerAiPort = viper.GetInt64("managerApiPort")
+	config.ManagerApiPort = viper.GetInt64("managerApiPort")
 	config.LatestReleaseAPI = viper.GetString("latestReleaseAPI")
 	config.ReleaseAPI = viper.GetString("releaseAPI")
 	config.DaemonHeartbeat = viper.GetInt64("daemonHeartbeat")

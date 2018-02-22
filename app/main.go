@@ -10,7 +10,6 @@ import (
 	"github.com/NAVCoin/navpi-go/app/daemon"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonapi"
 	"github.com/NAVCoin/navpi-go/app/manager/managerapi"
-
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"os"
@@ -31,7 +30,6 @@ func main() {
 		log.Fatal("Failed to load the server config: " + err.Error())
 	}
 
-	conf.InitAppConfig()
 	conf.LoadAppConfig()
 	conf.StartConfigManager()
 
@@ -41,12 +39,20 @@ func main() {
 	// If not we are only going to boot the setup apis, otherwise we will start the app
 	if conf.AppConf.RunningNavVersion == "" {
 
-		log.Println("No user config - adding setup api")
+		log.Println("App config undetected :: creating mock config, initializing setup handlers")
+
+		appConfig, err := conf.MockAppConfig()
+		if err != nil {
+			log.Fatal("Failed to create the mock config: " + err.Error())
+		} else {
+			log.Println("appConfig", appConfig)
+		}
+
 		setupapi.InitSetupHandlers(router, "api")
 
 	} else {
 
-		log.Println("User config found - booting all apis")
+		log.Println("App config found :: booting all apis!")
 
 		err := conf.LoadRPCDetails(conf.AppConf)
 
@@ -65,7 +71,7 @@ func main() {
 	}
 
 	// Start the server
-	port := fmt.Sprintf(":%d", serverConfig.ManagerAiPort)
+	port := fmt.Sprintf(":%d", serverConfig.ManagerApiPort)
 	srv := &http.Server{
 		Addr:    port,
 		Handler: handlers.CORS()(router)}

@@ -124,7 +124,6 @@ func Download(url string, downloadTofileName string) {
 
 }
 
-// Extract determines uncompress method
 func Extract(assetName string, downloadLocation string, extractPath string) {
 
 	switch filepath.Ext(assetName) {
@@ -138,7 +137,6 @@ func Extract(assetName string, downloadLocation string, extractPath string) {
 
 }
 
-// Unzip uncompresses the given zip file
 func Unzip(src, dest string) error {
 
 	log.Println("Unzip the zip file from " + dest)
