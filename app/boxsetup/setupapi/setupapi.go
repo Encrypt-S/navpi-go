@@ -32,11 +32,12 @@ func rangeSetHandler() http.Handler {
 		// If there is no host found we need to
 		if err != nil || host == "" {
 			apiResp := api.APIResponse{}
-			apiResp.Error.Message = "Cannot detect the host"
+
+			apiResp.Error = api.ApiRespErrors.SetupAPIUsingLocalHost
 
 			jsonValue, _ := json.Marshal(apiResp)
 
-			w.WriteHeader(http.StatusInternalServerError)s
+			w.WriteHeader(http.StatusInternalServerError)
 			w.Write(jsonValue)
 
 			return

@@ -14,11 +14,14 @@ import (
 	"github.com/gorilla/mux"
 	"os"
 	"runtime"
+	"github.com/NAVCoin/navpi-go/app/api"
 )
 
 var server *http.Server
 
 func main() {
+
+	api.BuildAppErrors()
 
 	// log out server runtime OS and Architecture
 	log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
