@@ -41,12 +41,12 @@ func main() {
 
 		log.Println("App config undetected :: creating mock config, initializing setup handlers")
 
-		appConfig, err := conf.MockAppConfig()
-		if err != nil {
-			log.Fatal("Failed to create the mock config: " + err.Error())
-		} else {
-			log.Println("appConfig", appConfig)
-		}
+		//appConfig, err := conf.MockAppConfig()
+		//if err != nil {
+		//	log.Fatal("Failed to create the mock config: " + err.Error())
+		//} else {
+		//	log.Println("appConfig", appConfig)
+		//}
 
 		setupapi.InitSetupHandlers(router, "api")
 
