@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"github.com/NAVCoin/navpi-go/app/api"
 	"encoding/json"
+	"github.com/NAVCoin/navpi-go/app/conf"
 )
 
 
@@ -27,51 +28,44 @@ func rangeSetHandler() http.Handler {
 
 		host, _, err := net.SplitHostPort(r.RemoteAddr)
 
-		w.WriteHeader(http.StatusBadRequest)
+
+		apiResp := api.APIResponse{}
 
 		// If there is no host found we need to
 		if err != nil || host == "" {
-			apiResp := api.APIResponse{}
-
-			apiResp.Error = api.ApiRespErrors.SetupAPIUsingLocalHost
-
-			jsonValue, _ := json.Marshal(apiResp)
 
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write(jsonValue)
+			apiResp.Error = api.ApiRespErrors.SetupAPINoHost
 
+			jsonValue, _ := json.Marshal(apiResp)
+			w.Write(jsonValue)
 			return
 		}
 
 		if host != "::1" {
 
+			conf.AppConf.DetectedIp = host
+			conf.SaveAppConfig()
+
+			apiResp.Success = true
+			apiResp.Data = host
+
+			jsonValue, _ := json.Marshal(apiResp)
+			w.Write(jsonValue)
+
+			return
+
+		} else {
+
+			w.WriteHeader(http.StatusBadRequest)
+			apiResp.Error = api.ApiRespErrors.SetupAPIUsingLocalHost
+
+			jsonValue, _ := json.Marshal(apiResp)
+			w.Write(jsonValue)
+			return
 
 		}
 
-		//host, port, err := net.SplitHostPort(r.RemoteAddr)
-		//
-		//log.Println("host :: ", host)
-		//
-		//log.Println("port :: ", port)
-		//
-		//if err != nil || host == "" {
-		//	log.Println("err :: ", err)
-		//}
-		//
-		//if host == "::1" {
-		//
-		//	log.Println("localhost")
-		//
-		//} else {
-		//
-		//	log.Println("not localhost")
-		//
-		//}
-		//
-		//conf.AppConf.DetectedIp = host
-		//conf.SaveAppConfig()
-		//
-		//fmt.Fprintf(w, "Hi there, I ran the middleware, I love %s!", r.URL.Path[1:])
 
 	})
 }

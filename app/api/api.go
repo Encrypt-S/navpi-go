@@ -22,6 +22,8 @@ type ErrorCode struct {
 
 type AppErrorsStruct struct {
 	SetupAPIUsingLocalHost ErrorCode
+	SetupAPINoHost ErrorCode
+
 }
 
 
@@ -32,7 +34,8 @@ func BuildAppErrors()  {
 
 	AppErrors := AppErrorsStruct{}
 
-	AppErrors.SetupAPIUsingLocalHost = ErrorCode{"USING_LOCAL_HOST", "You are using localhost, please use 127.0.01 or your network ip address"}
+	AppErrors.SetupAPIUsingLocalHost = ErrorCode{"SETUP_HOST_NOT_FOUND", "The host was not found"}
+	AppErrors.SetupAPINoHost = ErrorCode{"USING_LOCAL_HOST", "You are using localhost, please use 127.0.01 or your network ip address"}
 
 }
 

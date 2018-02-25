@@ -42,7 +42,7 @@ func main() {
 	// If not we are only going to boot the setup apis, otherwise we will start the app
 	if conf.AppConf.RunningNavVersion == "" {
 
-		log.Println("App config undetected :: creating mock config, initializing setup handlers")
+		//log.Println("App config undetected :: creating mock config, initializing setup handlers")
 
 		//appConfig, err := conf.MockAppConfig()
 		//if err != nil {
