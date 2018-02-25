@@ -38,6 +38,9 @@ func main() {
 
 	router := mux.NewRouter()
 
+	// Init the meta api
+	api.InitMetaHandlers(router, "api")
+
 	// check to see if we have a defined running config
 	// If not we are only going to boot the setup apis, otherwise we will start the app
 	if conf.AppConf.RunningNavVersion == "" {

@@ -9,10 +9,10 @@ import (
 	"github.com/NAVCoin/navpi-go/app/api"
 	"encoding/json"
 	"github.com/NAVCoin/navpi-go/app/conf"
+	"strings"
 )
 
-
-
+// InitSetupHandlers sets the api
 func InitSetupHandlers(r *mux.Router, prefix string) {
 
 	var nameSpace string = "setup"
@@ -23,42 +23,31 @@ func InitSetupHandlers(r *mux.Router, prefix string) {
 
 }
 
+// rangeSetHandler takes the users ip address and saves it to the config as a range
 func rangeSetHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		host, _, err := net.SplitHostPort(r.RemoteAddr)
+		apiResp := api.Response{}
 
-
-		apiResp := api.APIResponse{}
-
-		// If there is no host found we need to
+		// If there is no host found we need to error out
 		if err != nil || host == "" {
 
 			w.WriteHeader(http.StatusInternalServerError)
-			apiResp.Error = api.ApiRespErrors.SetupAPINoHost
+			apiResp.Error = api.AppRespErrors.SetupAPINoHost
 
 			jsonValue, _ := json.Marshal(apiResp)
 			w.Write(jsonValue)
 			return
 		}
 
-		if host != "::1" {
 
-			conf.AppConf.DetectedIp = host
-			conf.SaveAppConfig()
-
-			apiResp.Success = true
-			apiResp.Data = host
-
-			jsonValue, _ := json.Marshal(apiResp)
-			w.Write(jsonValue)
-
-			return
-
-		} else {
+		// Note "::1"  is the ipV6 version of localhost
+		// Check to see we are not using "localhost" - we need an ip
+		if host == "::1" {
 
 			w.WriteHeader(http.StatusBadRequest)
-			apiResp.Error = api.ApiRespErrors.SetupAPIUsingLocalHost
+			apiResp.Error = api.AppRespErrors.SetupAPIUsingLocalHost
 
 			jsonValue, _ := json.Marshal(apiResp)
 			w.Write(jsonValue)
@@ -66,6 +55,21 @@ func rangeSetHandler() http.Handler {
 
 		}
 
+		// we made it here so we are good - so set the config and save to the file
+		strSplit := strings.Split(host, ".")
+
+		strSplit[len(strSplit) -1 ] = "*"
+		strSplit[len(strSplit) -2 ] = "*"
+
+		conf.AppConf.DetectedIp = host
+		conf.SaveAppConfig()
+
+		//Set the rep data
+		apiResp.Success = true
+		apiResp.Data = host
+
+		jsonValue, _ := json.Marshal(apiResp)
+		w.Write(jsonValue)
 
 	})
 }
