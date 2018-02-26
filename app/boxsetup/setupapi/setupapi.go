@@ -61,6 +61,8 @@ func rangeSetHandler() http.Handler {
 		strSplit[len(strSplit) -1 ] = "*"
 		strSplit[len(strSplit) -2 ] = "*"
 
+		host = strings.Join(strSplit, ".")
+
 		conf.AppConf.DetectedIp = host
 		conf.SaveAppConfig()
 
