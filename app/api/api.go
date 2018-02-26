@@ -25,8 +25,11 @@ type errorCode struct {
 
 type appErrorsStruct struct {
 
+	ServerError 			errorCode
 	SetupAPIUsingLocalHost errorCode
 	SetupAPINoHost         errorCode
+
+	SetupAPIProtectUI 		errorCode
 
 }
 
@@ -41,8 +44,14 @@ func BuildAppErrors()  {
 
 	AppRespErrors = appErrorsStruct{}
 
+	AppRespErrors.SetupAPIUsingLocalHost = errorCode{"SERVER_ERROR", "There was an unexpected error - please try again"}
+
+
 	AppRespErrors.SetupAPIUsingLocalHost = errorCode{"SETUP_HOST_NOT_FOUND", "The host was not found"}
-	AppRespErrors.SetupAPINoHost = errorCode{"USING_LOCAL_HOST", "You are using localhost, please use 127.0.01 or your network ip address"}
+	AppRespErrors.SetupAPINoHost = errorCode{"SETUP_USING_LOCAL_HOST", "You are using localhost, please use 127.0.01 or your network ip address"}
+
+
+	AppRespErrors.SetupAPIProtectUI = errorCode{"SETUP_MISSING_USERNAME_PASSWORD", "You are missing the username and/or password"}
 
 }
 
