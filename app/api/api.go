@@ -10,16 +10,21 @@ import (
 
 // The generic resp that will be used for the api
 type Response struct {
-	Data    string    `json:"data"`
-	Success bool      `json:"success"`
-	Error   errorCode `json:"error"`
+	Data    interface{}    	`json:"data"`
+	Success bool      		`json:"success"`
+	Error   errorCode 		`json:"error,omitempty"`
+}
+
+func (i *Response) Send (w http.ResponseWriter) {
+	jsonValue, _ := json.Marshal(i)
+	w.Write(jsonValue)
 }
 
 
 type errorCode struct {
 
-	 Code string `json:"code"`
-	 ErrorMessage string `json:"errorMessage"`
+	 Code string `json:"code,omitempty"`
+	 ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
 
@@ -35,6 +40,9 @@ type appErrorsStruct struct {
 
 
 var AppRespErrors appErrorsStruct
+
+
+
 
 /**
 Build errors builds all the error messages that the app
@@ -61,6 +69,7 @@ func InitMetaHandlers(r *mux.Router, prefix string) {
 
 	nameSpace := "meta"
 
+
 	r.Handle( fmt.Sprintf("/%s/%s/v1/errorcode", prefix, nameSpace), middleware.Adapt(metaErrorDisplayHandler()))
 
 }
@@ -72,8 +81,11 @@ func InitMetaHandlers(r *mux.Router, prefix string) {
 func metaErrorDisplayHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		jsonValue, _ := json.Marshal(AppRespErrors)
-		w.Write(jsonValue)
+		appResp := Response{}
+		appResp.Success = true
+		appResp.Data = AppRespErrors
+
+		appResp.Send(w)
 
 	})
 }
