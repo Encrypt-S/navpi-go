@@ -22,7 +22,7 @@ func (i *Response) Send (w http.ResponseWriter) {
 
 type errorCode struct {
 
-	 Code string `json:"code,omitempty"`
+	 Code string 		`json:"code,omitempty"`
 	 ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
