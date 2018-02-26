@@ -14,11 +14,14 @@ import (
 	"github.com/gorilla/mux"
 	"os"
 	"runtime"
+	"github.com/NAVCoin/navpi-go/app/api"
 )
 
 var server *http.Server
 
 func main() {
+
+	api.BuildAppErrors()
 
 	// log out server runtime OS and Architecture
 	log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
@@ -35,18 +38,21 @@ func main() {
 
 	router := mux.NewRouter()
 
+	// Init the meta api
+	api.InitMetaHandlers(router, "api")
+
 	// check to see if we have a defined running config
 	// If not we are only going to boot the setup apis, otherwise we will start the app
 	if conf.AppConf.RunningNavVersion == "" {
 
-		log.Println("App config undetected :: creating mock config, initializing setup handlers")
+		//log.Println("App config undetected :: creating mock config, initializing setup handlers")
 
-		appConfig, err := conf.MockAppConfig()
-		if err != nil {
-			log.Fatal("Failed to create the mock config: " + err.Error())
-		} else {
-			log.Println("appConfig", appConfig)
-		}
+		//appConfig, err := conf.MockAppConfig()
+		//if err != nil {
+		//	log.Fatal("Failed to create the mock config: " + err.Error())
+		//} else {
+		//	log.Println("appConfig", appConfig)
+		//}
 
 		setupapi.InitSetupHandlers(router, "api")
 

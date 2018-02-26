@@ -1,0 +1,70 @@
+package api
+
+import (
+	"github.com/gorilla/mux"
+	"fmt"
+	"github.com/NAVCoin/navpi-go/app/middleware"
+	"encoding/json"
+	"net/http"
+)
+
+// The generic resp that will be used for the api
+type Response struct {
+	Data    string    `json:"data"`
+	Success bool      `json:"success"`
+	Error   errorCode `json:"error"`
+}
+
+
+type errorCode struct {
+
+	 Code string `json:"code"`
+	 ErrorMessage string `json:"errorMessage"`
+}
+
+
+type appErrorsStruct struct {
+
+	SetupAPIUsingLocalHost errorCode
+	SetupAPINoHost         errorCode
+
+}
+
+
+var AppRespErrors appErrorsStruct
+
+/**
+Build errors builds all the error messages that the app
+will use and display to the error.
+ */
+func BuildAppErrors()  {
+
+	AppRespErrors = appErrorsStruct{}
+
+	AppRespErrors.SetupAPIUsingLocalHost = errorCode{"SETUP_HOST_NOT_FOUND", "The host was not found"}
+	AppRespErrors.SetupAPINoHost = errorCode{"USING_LOCAL_HOST", "You are using localhost, please use 127.0.01 or your network ip address"}
+
+}
+
+
+// Starts the meta api handlers
+func InitMetaHandlers(r *mux.Router, prefix string) {
+
+	nameSpace := "meta"
+
+	r.Handle( fmt.Sprintf("/%s/%s/v1/errorcode", prefix, nameSpace), middleware.Adapt(metaErrorDisplayHandler()))
+
+}
+
+
+
+// metaErrorDisplayHandler displays all the application errors
+// to the frontend
+func metaErrorDisplayHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		jsonValue, _ := json.Marshal(AppRespErrors)
+		w.Write(jsonValue)
+
+	})
+}
