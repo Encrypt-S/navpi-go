@@ -41,27 +41,40 @@ func protectUIHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		var uiProtection UIProtection
-		//params := mux.Vars(r)
-		err := json.NewDecoder(r.Body).Decode(&uiProtection)
-
 		apiResp := api.Response{}
+
+
+		//Get the json from the post data
+		err := json.NewDecoder(r.Body).Decode(&uiProtection)
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			apiResp.Error = api.AppRespErrors.ServerError
+			apiResp.Error.ErrorMessage = fmt.Sprintf("Server error: %v", err)
+			apiResp.Send(w)
+			return
 		}
 
+		// Check we have a username and password
 		if uiProtection.Username == "" || uiProtection.Password == "" {
 			w.WriteHeader(http.StatusBadRequest)
 			apiResp.Error = api.AppRespErrors.SetupAPIProtectUI
-
+			apiResp.Send(w)
+			return
 		}
 
+		// Check the password strength
 		validator := crunchy.NewValidator()
 		err = validator.Check(uiProtection.Password)
 
 		if err != nil {
-			fmt.Printf("The password '%s' is considered unsafe: %v\n", uiProtection.Password, err)
+
+			w.WriteHeader(http.StatusBadRequest)
+			apiResp.Error = api.AppRespErrors.InvalidPasswordStrength
+			apiResp.Error.ErrorMessage = fmt.Sprintf("The password is considered unsafe: %v", err)
+			apiResp.Send(w)
+			return
+
 		}
 
 		// has the details for later
@@ -72,19 +85,16 @@ func protectUIHandler() http.Handler {
 
 			w.WriteHeader(http.StatusInternalServerError)
 			apiResp.Error = api.AppRespErrors.ServerError
-
-		} else {
-
-			//update the uihash
-			conf.AppConf.UIPassword = hashedDetails
-			conf.SaveAppConfig()
-
-			apiResp.Success = true
+			apiResp.Error.ErrorMessage = fmt.Sprintf("The password is considered unsafe: %v", err)
+			apiResp.Send(w)
+			return
 
 		}
 
-		jsonValue, _ := json.Marshal(apiResp)
-		w.Write(jsonValue)
+		// Everything is good store the hash
+		conf.AppConf.UIPassword = hashedDetails
+		conf.SaveAppConfig()
+		apiResp.Send(w)
 
 	})
 }
@@ -102,10 +112,9 @@ func rangeSetHandler() http.Handler {
 
 			w.WriteHeader(http.StatusInternalServerError)
 			apiResp.Error = api.AppRespErrors.SetupAPINoHost
-
-			jsonValue, _ := json.Marshal(apiResp)
-			w.Write(jsonValue)
+			apiResp.Send(w)
 			return
+
 		}
 
 
@@ -115,9 +124,7 @@ func rangeSetHandler() http.Handler {
 
 			w.WriteHeader(http.StatusBadRequest)
 			apiResp.Error = api.AppRespErrors.SetupAPIUsingLocalHost
-
-			jsonValue, _ := json.Marshal(apiResp)
-			w.Write(jsonValue)
+			apiResp.Send(w)
 			return
 
 		}
@@ -135,11 +142,8 @@ func rangeSetHandler() http.Handler {
 		conf.SaveAppConfig()
 
 		//Set the rep data
-		apiResp.Success = true
 		apiResp.Data = host
-
-		jsonValue, _ := json.Marshal(apiResp)
-		w.Write(jsonValue)
+		apiResp.Send(w)
 
 	})
 }
