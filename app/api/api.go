@@ -14,6 +14,7 @@ type Response struct {
 	Error   errorCode 		`json:"error,omitempty"`
 }
 
+// Send marshal the response and writes it our
 func (i *Response) Send (w http.ResponseWriter) {
 	jsonValue, _ := json.Marshal(i)
 	w.Write(jsonValue)
@@ -21,7 +22,6 @@ func (i *Response) Send (w http.ResponseWriter) {
 
 
 type errorCode struct {
-
 	 Code string 		`json:"code,omitempty"`
 	 ErrorMessage string `json:"errorMessage,omitempty"`
 }
@@ -52,15 +52,13 @@ func BuildAppErrors()  {
 
 	AppRespErrors = appErrorsStruct{}
 
+	// Generic errors
+	AppRespErrors.ServerError = errorCode{"SERVER_ERROR", "There was an unexpected error - please try again"}
 	AppRespErrors.InvalidPasswordStrength = errorCode{"INVALID_PASSWORD_STRENGTH", ""}
 
-
-	AppRespErrors.SetupAPIUsingLocalHost = errorCode{"SERVER_ERROR", "There was an unexpected error - please try again"}
-
-
+	// Setup API Errors
 	AppRespErrors.SetupAPIUsingLocalHost = errorCode{"SETUP_HOST_NOT_FOUND", "The host was not found"}
 	AppRespErrors.SetupAPINoHost = errorCode{"SETUP_USING_LOCAL_HOST", "You are using localhost, please use 127.0.01 or your network ip address"}
-
 	AppRespErrors.SetupAPIProtectUI = errorCode{"SETUP_MISSING_USERNAME_PASSWORD", "You are missing the username and/or password"}
 
 }
