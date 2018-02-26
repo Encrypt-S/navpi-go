@@ -10,28 +10,39 @@ import (
 
 // The generic resp that will be used for the api
 type Response struct {
-	Data    string    `json:"data"`
-	Success bool      `json:"success"`
-	Error   errorCode `json:"error"`
+	Data    interface{}    	`json:"data,omitempty"`
+	Error   errorCode 		`json:"error,omitempty"`
+}
+
+// Send marshal the response and writes it our
+func (i *Response) Send (w http.ResponseWriter) {
+	jsonValue, _ := json.Marshal(i)
+	w.Write(jsonValue)
 }
 
 
 type errorCode struct {
-
-	 Code string `json:"code"`
-	 ErrorMessage string `json:"errorMessage"`
+	 Code string 		`json:"code,omitempty"`
+	 ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
 
 type appErrorsStruct struct {
 
-	SetupAPIUsingLocalHost errorCode
-	SetupAPINoHost         errorCode
+	ServerError             	errorCode
+	InvalidPasswordStrength 	errorCode
+
+	SetupAPIUsingLocalHost 	errorCode
+	SetupAPINoHost         	errorCode
+	SetupAPIProtectUI 		errorCode
 
 }
 
 
 var AppRespErrors appErrorsStruct
+
+
+
 
 /**
 Build errors builds all the error messages that the app
@@ -41,8 +52,14 @@ func BuildAppErrors()  {
 
 	AppRespErrors = appErrorsStruct{}
 
+	// Generic errors
+	AppRespErrors.ServerError = errorCode{"SERVER_ERROR", "There was an unexpected error - please try again"}
+	AppRespErrors.InvalidPasswordStrength = errorCode{"INVALID_PASSWORD_STRENGTH", ""}
+
+	// Setup API Errors
 	AppRespErrors.SetupAPIUsingLocalHost = errorCode{"SETUP_HOST_NOT_FOUND", "The host was not found"}
-	AppRespErrors.SetupAPINoHost = errorCode{"USING_LOCAL_HOST", "You are using localhost, please use 127.0.01 or your network ip address"}
+	AppRespErrors.SetupAPINoHost = errorCode{"SETUP_USING_LOCAL_HOST", "You are using localhost, please use 127.0.01 or your network ip address"}
+	AppRespErrors.SetupAPIProtectUI = errorCode{"SETUP_MISSING_USERNAME_PASSWORD", "You are missing the username and/or password"}
 
 }
 
@@ -63,8 +80,9 @@ func InitMetaHandlers(r *mux.Router, prefix string) {
 func metaErrorDisplayHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		jsonValue, _ := json.Marshal(AppRespErrors)
-		w.Write(jsonValue)
+		appResp := Response{}
+		appResp.Data = AppRespErrors
+		appResp.Send(w)
 
 	})
 }

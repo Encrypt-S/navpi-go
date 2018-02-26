@@ -10,18 +10,95 @@ import (
 	"encoding/json"
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"strings"
+	"github.com/muesli/crunchy"
 )
+
+type UIProtection struct {
+
+	Username string `json:"username"`
+	Password string `json:"password"`
+
+}
+
 
 // InitSetupHandlers sets the api
 func InitSetupHandlers(r *mux.Router, prefix string) {
 
 	var nameSpace string = "setup"
 
-	var path_ip_detect string = fmt.Sprintf("/%s/%s/v1/setrange", prefix, nameSpace)
+	r.Handle(fmt.Sprintf("/%s/%s/v1/setrange", prefix, nameSpace), middleware.Adapt(rangeSetHandler(), middleware.Notify()))
 
-	r.Handle(path_ip_detect, middleware.Adapt(rangeSetHandler(), middleware.Notify()))
+	// Protect UI with username and password
+	r.Handle(fmt.Sprintf("/%s/%s/v1/protectui", prefix, nameSpace), middleware.Adapt(protectUIHandler())).Methods("POST")
 
 }
+
+
+
+
+// rangeSetHandler takes the users ip address and saves it to the config as a range
+func protectUIHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		var uiProtection UIProtection
+		apiResp := api.Response{}
+
+
+		//Get the json from the post data
+		err := json.NewDecoder(r.Body).Decode(&uiProtection)
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			apiResp.Error = api.AppRespErrors.ServerError
+			apiResp.Error.ErrorMessage = fmt.Sprintf("Server error: %v", err)
+			apiResp.Send(w)
+			return
+		}
+
+		// Check we have a username and password
+		if uiProtection.Username == "" || uiProtection.Password == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			apiResp.Error = api.AppRespErrors.SetupAPIProtectUI
+			apiResp.Send(w)
+			return
+		}
+
+		// Check the password strength
+		validator := crunchy.NewValidator()
+		err = validator.Check(uiProtection.Password)
+
+		if err != nil {
+
+			w.WriteHeader(http.StatusBadRequest)
+			apiResp.Error = api.AppRespErrors.InvalidPasswordStrength
+			apiResp.Error.ErrorMessage = fmt.Sprintf("The password is considered unsafe: %v", err)
+			apiResp.Send(w)
+			return
+
+		}
+
+		// has the details for later
+		hashedDetails, err := api.HashDetails(uiProtection.Username, uiProtection.Password)
+
+		// if there was an error hasing the details then error
+		if err != nil {
+
+			w.WriteHeader(http.StatusInternalServerError)
+			apiResp.Error = api.AppRespErrors.ServerError
+			apiResp.Error.ErrorMessage = fmt.Sprintf("The password is considered unsafe: %v", err)
+			apiResp.Send(w)
+			return
+
+		}
+
+		// Everything is good store the hash
+		conf.AppConf.UIPassword = hashedDetails
+		conf.SaveAppConfig()
+		apiResp.Send(w)
+
+	})
+}
+
 
 // rangeSetHandler takes the users ip address and saves it to the config as a range
 func rangeSetHandler() http.Handler {
@@ -35,10 +112,9 @@ func rangeSetHandler() http.Handler {
 
 			w.WriteHeader(http.StatusInternalServerError)
 			apiResp.Error = api.AppRespErrors.SetupAPINoHost
-
-			jsonValue, _ := json.Marshal(apiResp)
-			w.Write(jsonValue)
+			apiResp.Send(w)
 			return
+
 		}
 
 
@@ -48,9 +124,7 @@ func rangeSetHandler() http.Handler {
 
 			w.WriteHeader(http.StatusBadRequest)
 			apiResp.Error = api.AppRespErrors.SetupAPIUsingLocalHost
-
-			jsonValue, _ := json.Marshal(apiResp)
-			w.Write(jsonValue)
+			apiResp.Send(w)
 			return
 
 		}
@@ -68,11 +142,10 @@ func rangeSetHandler() http.Handler {
 		conf.SaveAppConfig()
 
 		//Set the rep data
-		apiResp.Success = true
 		apiResp.Data = host
-
-		jsonValue, _ := json.Marshal(apiResp)
-		w.Write(jsonValue)
+		apiResp.Send(w)
 
 	})
 }
+
+
