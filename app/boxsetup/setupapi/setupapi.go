@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"strings"
+	"github.com/muesli/crunchy"
 )
 
 type UIProtection struct {
@@ -56,16 +57,31 @@ func protectUIHandler() http.Handler {
 
 		}
 
-
-		hashedDetails, err := api.HashDetails(uiProtection.Username, uiProtection.Password)
+		validator := crunchy.NewValidator()
+		err = validator.Check(uiProtection.Password)
 
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			apiResp.Error = api.AppRespErrors.ServerError
+			fmt.Printf("The password '%s' is considered unsafe: %v\n", uiProtection.Password, err)
 		}
 
+		// has the details for later
+		hashedDetails, err := api.HashDetails(uiProtection.Username, uiProtection.Password)
 
+		// if there was an error hasing the details then error
+		if err != nil {
 
+			w.WriteHeader(http.StatusInternalServerError)
+			apiResp.Error = api.AppRespErrors.ServerError
+
+		} else {
+
+			//update the uihash
+			conf.AppConf.UIPassword = hashedDetails
+			conf.SaveAppConfig()
+
+			apiResp.Success = true
+
+		}
 
 		jsonValue, _ := json.Marshal(apiResp)
 		w.Write(jsonValue)
