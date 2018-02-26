@@ -10,8 +10,7 @@ import (
 
 // The generic resp that will be used for the api
 type Response struct {
-	Data    interface{}    	`json:"data"`
-	Success bool      		`json:"success"`
+	Data    interface{}    	`json:"data,omitempty"`
 	Error   errorCode 		`json:"error,omitempty"`
 }
 
