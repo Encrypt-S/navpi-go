@@ -9,20 +9,20 @@ package whitelist
 // from an allowed IP range.
 
 // type WhitelistHandler struct {
-// 	allowedRanges []ipRange
+// 	allowedRanges []IpRange
 // 	next          http.Handler
 // }
 
-// type ipRange struct {
+// type IpRange struct {
 // 	start net.IP
 // 	end   net.IP
 // }
 
-// func newIPRange(start, end net.IP) ipRange {
-// 	return ipRange{start: start, end: end}
+// func newIPRange(start, end net.IP) IpRange {
+// 	return IpRange{start: start, end: end}
 // }
 
-// func (i ipRange) contains(ip net.IP) bool {
+// func (i IpRange) contains(ip net.IP) bool {
 // 	return bytes.Compare(ip, i.start) >= 0 && bytes.Compare(ip, i.end) <= 0
 // }
 
@@ -35,8 +35,8 @@ package whitelist
 // 	return false
 // }
 
-// func buildRanges(stringRanges []string) []ipRange {
-// 	ranges := make([]ipRange, 0)
+// func buildRanges(stringRanges []string) []IpRange {
+// 	ranges := make([]IpRange, 0)
 // 	for _, ip := range stringRanges {
 // 		start, end := createRangesFromString(ip)
 // 		ranges = append(ranges, newIPRange(start, end))
@@ -68,18 +68,18 @@ package whitelist
 // // RangeHandler is a middleware handler that
 // // restricts requests based on allowed IP range
 // type RangeHandler struct {
-// 	//allowedRanges []ipRange
+// 	//allowedRanges []IpRange
 // 	next          http.Handler
 // }
 
 //
 // notes :: patterns :: possible approaches
 //
-//func newIPRange(start, end net.IP) ipRange {
-//	return ipRange{start: start, end: end}
+//func newIPRange(start, end net.IP) IpRange {
+//	return IpRange{start: start, end: end}
 //}
 //
-//func (i ipRange) contains(ip net.IP) bool {
+//func (i IpRange) contains(ip net.IP) bool {
 //	return bytes.Compare(ip, i.start) >= 0 && bytes.Compare(ip, i.end) <= 0
 //}
 
@@ -92,8 +92,8 @@ package whitelist
 //	return false
 //}
 
-//func buildRanges(stringRanges []string) []ipRange {
-//	ranges := make([]ipRange, 0)
+//func buildRanges(stringRanges []string) []IpRange {
+//	ranges := make([]IpRange, 0)
 //	for _, ip := range stringRanges {
 //		start, end := createRangesFromString(ip)
 //		ranges = append(ranges, newIPRange(start, end))

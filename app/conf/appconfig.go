@@ -15,8 +15,12 @@ import (
 type AppConfig struct {
 	NavConf           string `json:"navconf"`
 	RunningNavVersion string `json:"runningNavVersion"`
-	DetectedIp        string `json:"detectedIp"`
+
+	AllowedIps []string `json:"allowedIps"`
+
 }
+
+
 
 func StartConfigManager() {
 	ticker := time.NewTicker(time.Millisecond * 500)
@@ -51,7 +55,7 @@ func MockAppConfig() (AppConfig, error) {
 	mockConfig := AppConfig{}
 	mockConfig.NavConf = "$HOME/Library/Application Support/NavCoin4/navcoin.conf"
 	mockConfig.RunningNavVersion = "4.1.1"
-	mockConfig.DetectedIp = "1.1.1.1.1"
+	//mockConfig.DetectedIp = "1.1.1.1.1"
 
 	AppConf = mockConfig
 
@@ -68,7 +72,7 @@ func parseAppConfig(appconf AppConfig) AppConfig {
 
 	appconf.NavConf = viper.GetString("navconf")
 	appconf.RunningNavVersion = viper.GetString("runningNavVersion")
-	appconf.DetectedIp = viper.GetString("detectedIp")
+	appconf.AllowedIps = viper.GetStringSlice("allowedIps")
 
 	return appconf
 
@@ -121,7 +125,7 @@ func SaveAppConfig() error {
 	jsonData, err := json.MarshalIndent(AppConfig{
 		NavConf:           AppConf.NavConf,
 		RunningNavVersion: AppConf.RunningNavVersion,
-		DetectedIp:        AppConf.DetectedIp,
+		AllowedIps:        AppConf.AllowedIps,
 	}, "", "\t")
 	if err != nil {
 		return err

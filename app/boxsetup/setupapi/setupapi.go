@@ -56,14 +56,15 @@ func rangeSetHandler() http.Handler {
 		}
 
 		// we made it here so we are good - so set the config and save to the file
-		strSplit := strings.Split(host, ".")
 
+		// separate and make the range wildcard
+		strSplit := strings.Split(host, ".")
 		strSplit[len(strSplit) -1 ] = "*"
 		strSplit[len(strSplit) -2 ] = "*"
-
 		host = strings.Join(strSplit, ".")
 
-		conf.AppConf.DetectedIp = host
+
+		conf.AppConf.AllowedIps = append(conf.AppConf.AllowedIps, host)
 		conf.SaveAppConfig()
 
 		//Set the rep data
