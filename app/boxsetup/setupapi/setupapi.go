@@ -12,16 +12,67 @@ import (
 	"strings"
 )
 
+type UIProtection struct {
+
+	Username string `json:"username"`
+	Password string `json:"password"`
+
+}
+
+
 // InitSetupHandlers sets the api
 func InitSetupHandlers(r *mux.Router, prefix string) {
 
 	var nameSpace string = "setup"
 
-	var path_ip_detect string = fmt.Sprintf("/%s/%s/v1/setrange", prefix, nameSpace)
+	r.Handle(fmt.Sprintf("/%s/%s/v1/setrange", prefix, nameSpace), middleware.Adapt(rangeSetHandler(), middleware.Notify()))
 
-	r.Handle(path_ip_detect, middleware.Adapt(rangeSetHandler(), middleware.Notify()))
+	// Protect UI with username and password
+	r.Handle(fmt.Sprintf("/%s/%s/v1/protectui", prefix, nameSpace), middleware.Adapt(protectUIHandler())).Methods("POST")
 
 }
+
+
+
+
+// rangeSetHandler takes the users ip address and saves it to the config as a range
+func protectUIHandler() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		var uiProtection UIProtection
+		//params := mux.Vars(r)
+		err := json.NewDecoder(r.Body).Decode(&uiProtection)
+
+		apiResp := api.Response{}
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			apiResp.Error = api.AppRespErrors.ServerError
+		}
+
+		if uiProtection.Username == "" || uiProtection.Password == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			apiResp.Error = api.AppRespErrors.SetupAPIProtectUI
+
+		}
+
+
+		hashedDetails, err := api.HashDetails(uiProtection.Username, uiProtection.Password)
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			apiResp.Error = api.AppRespErrors.ServerError
+		}
+
+
+
+
+		jsonValue, _ := json.Marshal(apiResp)
+		w.Write(jsonValue)
+
+	})
+}
+
 
 // rangeSetHandler takes the users ip address and saves it to the config as a range
 func rangeSetHandler() http.Handler {
@@ -76,3 +127,5 @@ func rangeSetHandler() http.Handler {
 
 	})
 }
+
+

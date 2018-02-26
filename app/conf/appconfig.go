@@ -15,9 +15,8 @@ import (
 type AppConfig struct {
 	NavConf           string `json:"navconf"`
 	RunningNavVersion string `json:"runningNavVersion"`
-
 	AllowedIps []string `json:"allowedIps"`
-
+	UIPassword string `json:"uiPassword"`
 }
 
 
@@ -126,6 +125,7 @@ func SaveAppConfig() error {
 		NavConf:           AppConf.NavConf,
 		RunningNavVersion: AppConf.RunningNavVersion,
 		AllowedIps:        AppConf.AllowedIps,
+		UIPassword:			AppConf.UIPassword,
 	}, "", "\t")
 	if err != nil {
 		return err
