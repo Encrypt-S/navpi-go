@@ -20,7 +20,6 @@ type UIProtection struct {
 
 }
 
-
 // InitSetupHandlers sets the api
 func InitSetupHandlers(r *mux.Router, prefix string) {
 
