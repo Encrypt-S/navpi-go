@@ -11,7 +11,8 @@ import (
 // The generic resp that will be used for the api
 type Response struct {
 	Data    interface{}    	`json:"data,omitempty"`
-	Error   errorCode 		`json:"error,omitempty"`
+	Meta 	interface{} 	`json:"meta,omitempty"`
+	Errors	[]errorCode 	`json:"errors,omitempty"`
 }
 
 // Send marshal the response and writes it our
