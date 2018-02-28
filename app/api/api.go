@@ -1,54 +1,46 @@
 package api
 
 import (
-	"github.com/gorilla/mux"
+	"encoding/json"
 	"fmt"
 	"github.com/NAVCoin/navpi-go/app/middleware"
-	"encoding/json"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
 // The generic resp that will be used for the api
 type Response struct {
-	Data    interface{}    	`json:"data,omitempty"`
-	Error   errorCode 		`json:"error,omitempty"`
+	Data  interface{} `json:"data,omitempty"`
+	Error errorCode   `json:"error,omitempty"`
 }
 
 // Send marshal the response and writes it our
-func (i *Response) Send (w http.ResponseWriter) {
+func (i *Response) Send(w http.ResponseWriter) {
 	jsonValue, _ := json.Marshal(i)
 	w.Write(jsonValue)
 }
 
-
 type errorCode struct {
-	 Code string 		`json:"code,omitempty"`
-	 ErrorMessage string `json:"errorMessage,omitempty"`
+	Code         string `json:"code,omitempty"`
+	ErrorMessage string `json:"errorMessage,omitempty"`
 }
-
 
 type appErrorsStruct struct {
+	ServerError             errorCode
+	InvalidPasswordStrength errorCode
 
-	ServerError             	errorCode
-	InvalidPasswordStrength 	errorCode
-
-	SetupAPIUsingLocalHost 	errorCode
-	SetupAPINoHost         	errorCode
-	SetupAPIProtectUI 		errorCode
-
+	SetupAPIUsingLocalHost errorCode
+	SetupAPINoHost         errorCode
+	SetupAPIProtectUI      errorCode
 }
 
-
 var AppRespErrors appErrorsStruct
-
-
-
 
 /**
 Build errors builds all the error messages that the app
 will use and display to the error.
- */
-func BuildAppErrors()  {
+*/
+func BuildAppErrors() {
 
 	AppRespErrors = appErrorsStruct{}
 
@@ -63,17 +55,14 @@ func BuildAppErrors()  {
 
 }
 
-
 // Starts the meta api handlers
 func InitMetaHandlers(r *mux.Router, prefix string) {
 
 	nameSpace := "meta"
 
-	r.Handle( fmt.Sprintf("/%s/%s/v1/errorcode", prefix, nameSpace), middleware.Adapt(metaErrorDisplayHandler()))
+	r.Handle(fmt.Sprintf("/%s/%s/v1/errorcode", prefix, nameSpace), middleware.Adapt(metaErrorDisplayHandler()))
 
 }
-
-
 
 // metaErrorDisplayHandler displays all the application errors
 // to the frontend

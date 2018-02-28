@@ -6,9 +6,8 @@ func HashDetails(username string, password string) (string, error) {
 	return hashStr(username + ":" + password)
 }
 
-
 func CheckHashDetails(username string, password string, hash string) bool {
-	return checkHashStr(username + ":" + password, hash)
+	return checkHashStr(username+":"+password, hash)
 }
 
 func hashStr(password string) (string, error) {
@@ -20,4 +19,3 @@ func checkHashStr(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
-

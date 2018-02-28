@@ -25,7 +25,7 @@ func InitSetupHandlers(r *mux.Router, prefix string) {
 
 	var nameSpace string = "setup"
 
-	r.Handle(fmt.Sprintf("/%s/%s/v1/setrange", prefix, nameSpace), middleware.Adapt(rangeSetHandler(), middleware.Notify()))
+	r.Handle(fmt.Sprintf("/%s/%s/v1/setrange", prefix, nameSpace), middleware.Adapt(rangeSetHandler()))
 
 	// Protect UI with username and password
 	r.Handle(fmt.Sprintf("/%s/%s/v1/protectui", prefix, nameSpace), middleware.Adapt(protectUIHandler())).Methods("POST")
