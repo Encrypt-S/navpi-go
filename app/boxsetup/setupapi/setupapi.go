@@ -48,18 +48,26 @@ func protectUIHandler() http.Handler {
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			apiResp.Error = api.AppRespErrors.ServerError
-			apiResp.Error.ErrorMessage = fmt.Sprintf("Server error: %v", err)
+
+			returnErr := api.AppRespErrors.ServerError
+			returnErr.ErrorMessage = fmt.Sprintf("Server error: %v", err)
+			apiResp.Errors = append(apiResp.Errors, returnErr)
 			apiResp.Send(w)
+
 			return
 		}
 
 		// Check we have a username and password
 		if uiProtection.Username == "" || uiProtection.Password == "" {
+
 			w.WriteHeader(http.StatusBadRequest)
-			apiResp.Error = api.AppRespErrors.SetupAPIProtectUI
+
+			returnErr := api.AppRespErrors.SetupAPIProtectUI
+			apiResp.Errors = append(apiResp.Errors, returnErr)
 			apiResp.Send(w)
+
 			return
+
 		}
 
 		// Check the password strength
@@ -69,9 +77,13 @@ func protectUIHandler() http.Handler {
 		if err != nil {
 
 			w.WriteHeader(http.StatusBadRequest)
-			apiResp.Error = api.AppRespErrors.InvalidPasswordStrength
-			apiResp.Error.ErrorMessage = fmt.Sprintf("The password is considered unsafe: %v", err)
+
+			returnErr := api.AppRespErrors.InvalidPasswordStrength
+			returnErr.ErrorMessage = fmt.Sprintf("The password is considered unsafe: %v", err)
+
+			apiResp.Errors = append(apiResp.Errors, returnErr)
 			apiResp.Send(w)
+
 			return
 
 		}
@@ -83,9 +95,12 @@ func protectUIHandler() http.Handler {
 		if err != nil {
 
 			w.WriteHeader(http.StatusInternalServerError)
-			apiResp.Error = api.AppRespErrors.ServerError
-			apiResp.Error.ErrorMessage = fmt.Sprintf("The password is considered unsafe: %v", err)
+
+			returnErr := api.AppRespErrors.ServerError
+			returnErr.ErrorMessage = fmt.Sprintf("The password is considered unsafe: %v", err)
+			apiResp.Errors = append(apiResp.Errors, returnErr)
 			apiResp.Send(w)
+
 			return
 
 		}
@@ -110,8 +125,11 @@ func rangeSetHandler() http.Handler {
 		if err != nil || host == "" {
 
 			w.WriteHeader(http.StatusInternalServerError)
-			apiResp.Error = api.AppRespErrors.SetupAPINoHost
+
+			returnErr := api.AppRespErrors.SetupAPINoHost
+			apiResp.Errors = append(apiResp.Errors, returnErr)
 			apiResp.Send(w)
+
 			return
 
 		}
@@ -122,7 +140,10 @@ func rangeSetHandler() http.Handler {
 		if host == "::1" {
 
 			w.WriteHeader(http.StatusBadRequest)
-			apiResp.Error = api.AppRespErrors.SetupAPIUsingLocalHost
+
+			returnErr := api.AppRespErrors.SetupAPIUsingLocalHost
+			apiResp.Errors = append(apiResp.Errors, returnErr)
+
 			apiResp.Send(w)
 			return
 
