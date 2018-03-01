@@ -1,6 +1,6 @@
 ## NavPi 2.0 Kowhai
 
-![](./img/kowhai.jpg)
+![](./img/stakebox.jpg)
 
 This is the official github repository for the NavPi 2.0 Kowhai project, the next generation of the NAVCoin Stake Box.
 

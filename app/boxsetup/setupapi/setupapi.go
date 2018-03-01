@@ -1,23 +1,22 @@
 package setupapi
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/NAVCoin/navpi-go/app/middleware"
-	"github.com/gorilla/mux"
 	"net"
 	"net/http"
-	"github.com/NAVCoin/navpi-go/app/api"
-	"encoding/json"
-	"github.com/NAVCoin/navpi-go/app/conf"
 	"strings"
+
+	"github.com/NAVCoin/navpi-go/app/api"
+	"github.com/NAVCoin/navpi-go/app/conf"
+	"github.com/NAVCoin/navpi-go/app/middleware"
+	"github.com/gorilla/mux"
 	"github.com/muesli/crunchy"
 )
 
 type UIProtection struct {
-
 	Username string `json:"username"`
 	Password string `json:"password"`
-
 }
 
 // InitSetupHandlers sets the api
@@ -32,16 +31,12 @@ func InitSetupHandlers(r *mux.Router, prefix string) {
 
 }
 
-
-
-
 // rangeSetHandler takes the users ip address and saves it to the config as a range
 func protectUIHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		var uiProtection UIProtection
 		apiResp := api.Response{}
-
 
 		//Get the json from the post data
 		err := json.NewDecoder(r.Body).Decode(&uiProtection)
@@ -113,7 +108,6 @@ func protectUIHandler() http.Handler {
 	})
 }
 
-
 // rangeSetHandler takes the users ip address and saves it to the config as a range
 func rangeSetHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -134,7 +128,6 @@ func rangeSetHandler() http.Handler {
 
 		}
 
-
 		// Note "::1"  is the ipV6 version of localhost
 		// Check to see we are not using "localhost" - we need an ip
 		if host == "::1" {
@@ -153,10 +146,9 @@ func rangeSetHandler() http.Handler {
 
 		// separate and make the range wildcard
 		strSplit := strings.Split(host, ".")
-		strSplit[len(strSplit) -1 ] = "*"
-		strSplit[len(strSplit) -2 ] = "*"
+		strSplit[len(strSplit)-1] = "*"
+		strSplit[len(strSplit)-2] = "*"
 		host = strings.Join(strSplit, ".")
-
 
 		conf.AppConf.AllowedIps = append(conf.AppConf.AllowedIps, host)
 		conf.SaveAppConfig()
@@ -167,5 +159,3 @@ func rangeSetHandler() http.Handler {
 
 	})
 }
-
-
