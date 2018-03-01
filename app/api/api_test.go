@@ -10,10 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// test structs
-
-
-
 // metaErrorDisplayHandler test
 func Test_metaErrorDisplayHandler(t *testing.T) {
 	r := gofight.New()

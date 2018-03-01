@@ -15,7 +15,7 @@ type Response struct {
 	Errors []errorCode `json:"errors,omitempty"`
 }
 
-// Send marshal the response and writes it our
+// Send marshal the response and write value
 func (i *Response) Send(w http.ResponseWriter) {
 	jsonValue, _ := json.Marshal(i)
 	w.Write(jsonValue)
@@ -65,8 +65,7 @@ func InitMetaHandlers(r *mux.Router, prefix string) {
 
 }
 
-// metaErrorDisplayHandler displays all the application errors
-// to the frontend
+// metaErrorDisplayHandler displays all the application errors to frontend
 func metaErrorDisplayHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
