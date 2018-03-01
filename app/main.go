@@ -76,6 +76,10 @@ func main() {
 
 	}
 
+
+	//load the dev config file if one is set
+	conf.LoadDevConfig()
+
 	// Start the server
 	port := fmt.Sprintf(":%d", serverConfig.ManagerApiPort)
 	srv := &http.Server{
