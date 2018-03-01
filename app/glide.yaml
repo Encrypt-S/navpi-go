@@ -1,0 +1,20 @@
+package: github.com/NAVCoin/navpi-go/app
+import:
+- package: github.com/Sirupsen/logrus
+  version: v1.0.4
+- package: github.com/dustin/go-humanize
+- package: github.com/gorilla/handlers
+  version: v1.3.0
+- package: github.com/gorilla/mux
+  version: v1.6.1
+- package: github.com/muesli/crunchy
+- package: github.com/spf13/viper
+  version: v1.0.0
+- package: golang.org/x/crypto
+  subpackages:
+  - bcrypt
+testImport:
+- package: github.com/stretchr/testify
+  version: v1.2.1
+  subpackages:
+  - suite
