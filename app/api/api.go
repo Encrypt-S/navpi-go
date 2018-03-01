@@ -44,7 +44,6 @@ var AppRespErrors appErrorsStruct
 
 
 
-
 /**
 Build errors builds all the error messages that the app
 will use and display to the error.

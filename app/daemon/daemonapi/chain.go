@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 
-	"fmt"
 	"io"
 )
 
@@ -18,7 +17,7 @@ func InitChainHandlers(r *mux.Router, prefix string)  {
 
 	//config = conf
 	//
-	r.HandleFunc(fmt.Sprintf("/%s/blockchain/v1/getblockcount", prefix), getBlockCount).Methods("GET")
+	//r.HandleFunc(fmt.Sprintf("/%s/blockchain/v1/getblockcount", prefix), getBlockCount)
 
 	//// not implemented
 	//r.HandleFunc("/blockchain/v1/getbestblockhash", api.NotImplemented).Methods("GET")
