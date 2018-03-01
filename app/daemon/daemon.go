@@ -1,33 +1,37 @@
 package daemon
 
 import (
-	"time"
-	"github.com/NAVCoin/navpi-go/app/conf"
+	"encoding/json"
+	"errors"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os/exec"
 	"path/filepath"
-	"archive/zip"
-	"os"
-	"strings"
-	"io"
-	"net/http"
-	"io/ioutil"
-	"encoding/json"
 	"runtime"
-	"errors"
+	"strings"
+	"time"
+
+	"github.com/NAVCoin/navpi-go/app/conf"
+	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
+	"github.com/NAVCoin/navpi-go/app/fs"
 )
 
 const (
 	WindowsDaemonName string = "navcoind.exe"
+	DarwinDaemonName  string = "navcoind"
 )
-
 
 type OSInfo struct {
 	DaemonName string
-	OS string
+	OS         string
 }
 
-type GitHubRelease struct {
+type GitHubReleases []struct {
+	GitHubReleaseData
+}
+
+type GitHubReleaseData struct {
 	URL             string `json:"url"`
 	AssetsURL       string `json:"assets_url"`
 	UploadURL       string `json:"upload_url"`
@@ -96,29 +100,86 @@ type GitHubRelease struct {
 	Body       string `json:"body"`
 }
 
+var runningDaemon *exec.Cmd
+var minHeartbeat int64 = 500 // the lowest value the hb checker can be set to
 
-func DownloadAndStart(serverConfig *conf.ServerConfig, userConfig *conf.Config) (*exec.Cmd) {
+// StartManager is a simple system that checks if
+// the daemon is alive. If not it tries to start it
+func StartManager() {
 
-	path, err := CheckForDaemon(serverConfig, userConfig)
-
-	if(err != nil) {
-		//downloadDaemon
-	}else {
-		return start(path)
+	// set the heartbeat interval but make sure it is not
+	// less than the min heartbeat setting
+	hbInterval := minHeartbeat
+	if conf.ServerConf.DaemonHeartbeat > hbInterval {
+		hbInterval = conf.ServerConf.DaemonHeartbeat
 	}
 
-	return start(path)
+	ticker := time.NewTicker(time.Duration(hbInterval) * time.Millisecond)
+	go func() {
+		for t := range ticker.C {
+
+			log.Println(t)
+
+			// check to see if the daemon is alive
+			if isAlive() {
+				log.Println("NAVCoin daemon is alive!")
+			} else {
+
+				log.Println("NAVCoin daemon is unresponsive...")
+
+				if runningDaemon != nil {
+					Stop(runningDaemon)
+				}
+
+				// start the daemon and download it if necessary
+				cmd, err := DownloadAndStart(conf.ServerConf, conf.AppConf)
+
+				if err != nil {
+					log.Println(err)
+				} else {
+					runningDaemon = cmd
+				}
+
+			}
+
+		}
+	}()
+}
+
+// isAlive performs a simple rpc command to the Daemon
+// returns false on error
+func isAlive() bool {
+
+	isLiving := true
+
+	n := daemonrpc.RpcRequestData{}
+	n.Method = "getblockcount"
+
+	_, err := daemonrpc.RequestDaemon(n, conf.NavConf)
+
+	if err != nil {
+		isLiving = false
+	}
+
+	return isLiving
 
 }
 
+func DownloadAndStart(serverConfig conf.ServerConfig, appConfig conf.AppConfig) (*exec.Cmd, error) {
 
-func start(daemonPath string) (*exec.Cmd)  {
-	
-	log.Println("Booting deamon")
-	cmd := exec.Command(daemonPath)
-	cmd.Start()
+	if appConfig.RunningNavVersion == "" {
+		return nil, errors.New("no nav version set in the user config")
+	}
 
-	return cmd
+	path, err := CheckForDaemon(serverConfig, appConfig)
+
+	if err != nil {
+		downloadDaemon(serverConfig, appConfig.RunningNavVersion)
+	} else {
+		return start(path), nil
+	}
+
+	return start(path), nil
 
 }
 
@@ -129,183 +190,135 @@ func Stop(cmd *exec.Cmd) {
 	}
 }
 
-func NewDaemonAvailable(config *conf.ServerConfig) (bool, error) {
-
-	log.Println("Checking daemon")
+func CheckForDaemon(serverConfig conf.ServerConfig, appConfig conf.AppConfig) (string, error) {
 
 	// get the latest release info
-	releaseVersion, versionErr := getReleaseVersion(config)
-	if versionErr != nil {
-		return false, versionErr
-	}
+	releaseVersion := appConfig.RunningNavVersion
 
-	log.Println("Latest version: " + releaseVersion)
+	log.Println("Checking NAVCoin daemon for v" + releaseVersion)
 
 	// get the apps current path
-	path, err := getCurrentPath()
-	if err != nil {
-		return false, err
-	}
-
-	// append the deamon name
-
-	path += "/lib/navcoin-" + releaseVersion + "/bin/"+ getOSInfo().DaemonName
-	log.Println("Looking for Navcoin Daemon at " + path )
-
-
-	// check the daemon exists
-	if !exists(path) {
-		log.Println("No Daemon found for version: " + releaseVersion)
-
-		return true, nil
-	}else {
-		log.Println("Located Daemon for version: " + releaseVersion)
-		return false, nil
-	}
-
-}
-
-func CheckForDaemon (serverConfig *conf.ServerConfig, userConfig *conf.Config) (string, error) {
-
-	log.Println("Checking daemon")
-
-	// get the latest release info
-	releaseVersion := userConfig.RunningNavVersion
-
-	log.Println("Looking for version: " + releaseVersion)
-
-	// get the apps current path
-	path, err := getCurrentPath()
+	path, err := fs.GetCurrentPath()
 	if err != nil {
 		return "", err
 	}
 
-	// append the deamon name
-
-	path += "/lib/navcoin-" + releaseVersion + "/bin/"+ getOSInfo().DaemonName
-	log.Println("Looking for Navcoin Daemon at " + path )
-
+	// build the path
+	path += "/lib/navcoin-" + releaseVersion + "/bin/" + getOSInfo().DaemonName
+	log.Println("Searching for NAVCoin daemon at " + path)
 
 	// check the daemon exists
-	if !exists(path) {
-		log.Println("No Daemon found for version: " + releaseVersion)
-		return "", errors.New("No Daemon found for version: " + releaseVersion)
-	}else {
-		log.Println("Located Daemon for version: " + releaseVersion)
+	if !fs.Exists(path) {
+		log.Println("NAVCoin daemon not found for v" + releaseVersion)
+		return "", errors.New("NAVCoin daemon found for v" + releaseVersion)
+	} else {
+		log.Println("NAVCoin daemon located for v" + releaseVersion)
 	}
 
 	return path, nil
 
 }
 
+func start(daemonPath string) *exec.Cmd {
 
-func getDaemonDownloadPath(version string) {
+	log.Println("Booting NAVCoin daemon")
+	cmd := exec.Command(daemonPath)
+	cmd.Start()
 
-	
-
-}
-
-func downloadDaemon(config *conf.ServerConfig) error {
-
-	log.Println("Updating Daemon")
-	path, err := getCurrentPath()
-
-	assetPath, assetName, err := getReleaseAssetInfo(config)
-
-	downloadLocation := path+ "/" + assetName
-
-	log.Println("Downloading", assetPath, "to", downloadLocation)
-
-	download(assetPath, downloadLocation)
-
-	if filepath.Ext(assetName) == ".zip" {
-		unzip(downloadLocation, path + "/lib")
-	}
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return cmd
 
 }
 
-func unzip(src, dest string) error {
+// Get the current os info and the Daemon name for that os
+func getOSInfo() OSInfo {
 
-	r, err := zip.OpenReader(src)
-	if err != nil {
-		return err
-	}
-	defer r.Close()
+	osInfo := OSInfo{}
 
-	for _, f := range r.File {
-		rc, err := f.Open()
-		if err != nil {
-			return err
+	//const goosList = "android darwin dragonfly freebsd linux nacl netbsd openbsd plan9 solaris windows zos "
+	//const goarchList = "386 amd64 amd64p32 arm armbe arm64 arm64be ppc64 ppc64le mips mipsle mips64 mips64le mips64p32 mips64p32le ppc s390 s390x sparc sparc64"
+
+	switch runtime.GOARCH {
+
+	case "amd64":
+
+		switch runtime.GOOS {
+
+		case "windows":
+
+			osInfo.DaemonName = WindowsDaemonName
+			osInfo.OS = "win64"
+			break
+
+		case "darwin":
+
+			osInfo.DaemonName = DarwinDaemonName
+			osInfo.OS = "osx64"
+			break
 		}
-		defer rc.Close()
 
-		fpath := filepath.Join(dest, f.Name)
-		if f.FileInfo().IsDir() {
-			os.MkdirAll(fpath, f.Mode())
-		} else {
-			var fdir string
-			if lastIndex := strings.LastIndex(fpath,string(os.PathSeparator)); lastIndex > -1 {
-				fdir = fpath[:lastIndex]
-			}
+		break
+	}
 
-			err = os.MkdirAll(fdir, f.Mode())
-			if err != nil {
-				log.Fatal(err)
-				return err
-			}
-			f, err := os.OpenFile(
-				fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-			if err != nil {
-				return err
-			}
-			defer f.Close()
+	return osInfo
 
-			_, err = io.Copy(f, rc)
-			if err != nil {
-				return err
-			}
+}
+
+func downloadDaemon(serverConf conf.ServerConfig, version string) {
+
+	releaseInfo, _ := getReleaseDataForVersion(serverConf.ReleaseAPI, version)
+
+	dlPath, dlName, _ := getDownloadPathAndName(releaseInfo)
+
+	fs.DownloadExtract(dlPath, dlName)
+
+}
+
+func getReleaseDataForVersion(releaseAPI string, version string) (GitHubReleaseData, error) {
+
+	log.Println("Attempting to get release data for NAVCoin v" + version)
+
+	releases, err := gitHubReleaseInfo(releaseAPI)
+
+	var e GitHubReleaseData = GitHubReleaseData{}
+
+	for _, elem := range releases {
+		if elem.TagName == version {
+			log.Println("Release data found for NAVCoin v" + version)
+			e = elem.GitHubReleaseData
 		}
 	}
-	return nil
-}
 
-func download(url string, fileName string)  {
-
-	output, err := os.Create(fileName)
-
-	response, err := http.Get(url)
-	if err != nil {
-		log.Println("Error while downloading", url, "-", err)
-		return
-	}
-	defer response.Body.Close()
-
-	n, err := io.Copy(output, response.Body)
-	if err != nil {
-		log.Println("Error while downloading", url, "-", err)
-		return
-	}
-
-	log.Println(n, "bytes downloaded")
+	return e, err
 
 }
 
+func gitHubReleaseInfo(releaseAPI string) (GitHubReleases, error) {
+	log.Println("Retrieving NAVCoin Github release data from: " + releaseAPI)
+	response, err := http.Get(releaseAPI)
 
-
-
-
-func getReleaseAssetInfo(config *conf.ServerConfig) (string, string, error) {
-
-	releaseInfo, err := gitHubReleaseInfo(config)
 	if err != nil {
-		return "", "", err
+		log.Printf("The HTTP request failed with error %s\n", err)
+		return GitHubReleases{}, err
 	}
+
+	// read the data out to json
+	data, _ := ioutil.ReadAll(response.Body)
+	c := GitHubReleases{}
+	jsonErr := json.Unmarshal(data, &c)
+
+	if jsonErr != nil {
+		return GitHubReleases{}, jsonErr
+		log.Fatal(jsonErr)
+	}
+
+	return c, nil
+}
+
+func getDownloadPathAndName(gitHubReleaseData GitHubReleaseData) (string, string, error) {
+
+	log.Println("Getting download path/name for OS from release assest data")
+
+	releaseInfo := gitHubReleaseData
 
 	downloadPath := ""
 	downloadName := ""
@@ -315,106 +328,28 @@ func getReleaseAssetInfo(config *conf.ServerConfig) (string, string, error) {
 		asset := releaseInfo.Assets[e]
 
 		if strings.Contains(asset.Name, getOSInfo().OS) {
-
-			// extra windows os check as we only want the zip
+			// windows os check to provide .zip
 			if strings.Contains(asset.Name, "win") {
-				//println(filepath.Ext(asset.Name))
 				if filepath.Ext(asset.Name) == ".zip" {
+					log.Println("win64 detected - preparing NAVCoin .zip download")
 					downloadPath = releaseInfo.Assets[e].BrowserDownloadURL
 					downloadName = releaseInfo.Assets[e].Name
 				}
-			}else {
+			}
+			// osx64 check to provide gzip package :: tar.gz
+			if strings.Contains(asset.Name, "osx64") {
+				log.Println("osx64 detected - preparing NAVCoin tar.gz download")
+				downloadPath = releaseInfo.Assets[e].BrowserDownloadURL
+				downloadName = releaseInfo.Assets[e].Name
+			} else {
+				// TODO: more checks to be added for other systems
+				// fall through to defaults :: fire-in-the-hole mode
 				downloadPath = releaseInfo.Assets[e].BrowserDownloadURL
 				downloadName = releaseInfo.Assets[e].Name
 			}
-
 		}
 	}
 
 	return downloadPath, downloadName, nil
 
 }
-
-func gitHubReleaseInfo(serverConfig *conf.ServerConfig) (GitHubRelease, error) {
-
-	log.Println("Retreving NAVCoin Github release info from: " + serverConfig.LatestReleaseAPI)
-
-	response, err := http.Get(serverConfig.LatestReleaseAPI)
-
-	if err != nil {
-		log.Printf("The HTTP request failed with error %s\n", err)
-		return  GitHubRelease{}, err
-	}
-
-	// read the data out to json
-	data, _ := ioutil.ReadAll(response.Body)
-	c := GitHubRelease{}
-	jsonErr := json.Unmarshal(data, &c)
-
-	if jsonErr != nil {
-		return  GitHubRelease{}, jsonErr
-		log.Fatal(jsonErr)
-	}
-
-	return c, nil
-}
-
-
-func getReleaseVersion(serverConfig *conf.ServerConfig) (string, error) {
-
-	releaseInfo, err := gitHubReleaseInfo(serverConfig)
-	if err != nil {
-		return "", nil
-	}
-
-	return releaseInfo.TagName, nil
-}
-
-
-func getCurrentPath() (string, error)  {
-
-	ex, err := os.Executable()
-	if err != nil {
-		return "", err
-	}
-	exPath := filepath.Dir(ex)
-	return exPath, nil
-}
-
-
-// Exists reports whether the named file or directory exists.
-func exists(name string) bool {
-	if _, err := os.Stat(name); err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-	}
-	return true
-}
-
-
-func getOSInfo () OSInfo {
-
-	osInfo := OSInfo{}
-
-	//const goosList = "android darwin dragonfly freebsd linux nacl netbsd openbsd plan9 solaris windows zos "
-	//const goarchList = "386 amd64 amd64p32 arm armbe arm64 arm64be ppc64 ppc64le mips mipsle mips64 mips64le mips64p32 mips64p32le ppc s390 s390x sparc sparc64 "
-
-
-	switch runtime.GOARCH {
-
-		case "amd64":
-
-			switch runtime.GOOS {
-				case "windows":
-					osInfo.DaemonName = WindowsDaemonName
-					osInfo.OS = "win64"
-			}
-
-	}
-
-
-	return osInfo
-
-}
-
