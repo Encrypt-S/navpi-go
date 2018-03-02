@@ -3,9 +3,10 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"github.com/NAVCoin/navpi-go/app/middleware"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 // The generic resp that will be used for the api
