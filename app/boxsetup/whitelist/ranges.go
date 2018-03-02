@@ -1,9 +1,9 @@
 package whitelist
 
-import (
-	"net"
-	"strings"
-)
+// import (
+// 	"net"
+// 	"strings"
+// )
 
 // TODO: ranges.go contains methods for parsing IP addresses
 // and for determining whether a given IP is contained within
@@ -15,14 +15,14 @@ import (
 // 	"strings"
 // )
 
- //type IpRange struct {
- //	start net.IP
- //	end   net.IP
- //}
- //
- //func newIPRange(start, end net.IP) IpRange {
- //	return IpRange{start: start, end: end}
- //}
+//type IpRange struct {
+//	start net.IP
+//	end   net.IP
+//}
+//
+//func newIPRange(start, end net.IP) IpRange {
+//	return IpRange{start: start, end: end}
+//}
 
 // func (i IpRange) contains(ip net.IP) bool {
 // 	return bytes.Compare(ip, i.start) >= 0 && bytes.Compare(ip, i.end) <= 0
