@@ -2,8 +2,7 @@ package conf
 
 import "github.com/spf13/viper"
 
-
-func LoadDevConfig() (error) {
+func LoadDevConfig() error {
 
 	viper.SetConfigName("dev-config")
 	viper.AddConfigPath(".")

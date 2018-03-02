@@ -1,19 +1,15 @@
 package daemonapi
 
 import (
-	"net/http"
 	"github.com/gorilla/mux"
 	"log"
+	"net/http"
 
 	"io"
 )
 
-
-
-
-
 // Setup all the handlers for the blockchain rpc interface
-func InitChainHandlers(r *mux.Router, prefix string)  {
+func InitChainHandlers(r *mux.Router, prefix string) {
 
 	//config = conf
 	//
@@ -41,8 +37,6 @@ func InitChainHandlers(r *mux.Router, prefix string)  {
 
 }
 
-
-
 func getBlockCount(w http.ResponseWriter, r *http.Request) {
 	//fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
 
@@ -63,5 +57,3 @@ func getBlockCount(w http.ResponseWriter, r *http.Request) {
 	//w.Write(bodyText)
 	io.WriteString(w, "hello world\n")
 }
-
-

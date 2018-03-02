@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"net/http"
 	"fmt"
+	"net/http"
 )
 
 // User is a set of username and password.

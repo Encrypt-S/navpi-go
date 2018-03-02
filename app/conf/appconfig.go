@@ -10,13 +10,11 @@ import (
 )
 
 type AppConfig struct {
-	NavConf           string `json:"navconf"`
-	RunningNavVersion string `json:"runningNavVersion"`
-	AllowedIps []string `json:"allowedIps"`
-	UIPassword string `json:"uiPassword"`
+	NavConf           string   `json:"navconf"`
+	RunningNavVersion string   `json:"runningNavVersion"`
+	AllowedIps        []string `json:"allowedIps"`
+	UIPassword        string   `json:"uiPassword"`
 }
-
-
 
 func StartConfigManager() {
 	ticker := time.NewTicker(time.Millisecond * 500)
@@ -74,14 +72,13 @@ func parseAppConfig(appconf AppConfig) AppConfig {
 
 }
 
-
 func SaveAppConfig() error {
 
 	jsonData, err := json.MarshalIndent(AppConfig{
 		NavConf:           AppConf.NavConf,
 		RunningNavVersion: AppConf.RunningNavVersion,
 		AllowedIps:        AppConf.AllowedIps,
-		UIPassword:			AppConf.UIPassword,
+		UIPassword:        AppConf.UIPassword,
 	}, "", "\t")
 	if err != nil {
 		return err

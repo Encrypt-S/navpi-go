@@ -1,33 +1,24 @@
 package managerapi
 
 import (
-	"net/http"
-	"github.com/gorilla/mux"
-	"log"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io"
+	"log"
+	"net/http"
 )
 
-
-
-
-
 // Setup all the handlers for the blockchain rpc interface
-func InitManagerhandlers(r *mux.Router, prefix string)  {
-
+func InitManagerhandlers(r *mux.Router, prefix string) {
 
 	r.HandleFunc(fmt.Sprintf("/%s/manager/v1/daemon/restart", prefix), startDaemon).Methods("GET")
 
 }
 
-
-
 func startDaemon(w http.ResponseWriter, r *http.Request) {
 	//fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
 
 	log.Println("resart daemon requested")
-
-
 
 	//n := daemonrpc.RpcRequestData{}
 	//n.Method = "getblockcount"
@@ -44,5 +35,3 @@ func startDaemon(w http.ResponseWriter, r *http.Request) {
 	//w.Write(bodyText)
 	io.WriteString(w, "Start")
 }
-
-

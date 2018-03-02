@@ -5,6 +5,10 @@ import (
 	"log"
 	"net/http"
 
+	"os"
+	"runtime"
+
+	"github.com/NAVCoin/navpi-go/app/api"
 	"github.com/NAVCoin/navpi-go/app/boxsetup/setupapi"
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/NAVCoin/navpi-go/app/daemon"
@@ -12,9 +16,6 @@ import (
 	"github.com/NAVCoin/navpi-go/app/manager/managerapi"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"os"
-	"runtime"
-	"github.com/NAVCoin/navpi-go/app/api"
 )
 
 var server *http.Server
@@ -76,7 +77,6 @@ func main() {
 
 	}
 
-
 	//load the dev config file if one is set
 	conf.LoadDevConfig()
 
@@ -85,6 +85,8 @@ func main() {
 	srv := &http.Server{
 		Addr:    port,
 		Handler: handlers.CORS()(router)}
+
+	log.Println("port", port)
 
 	srv.ListenAndServe()
 
