@@ -7,6 +7,9 @@
 # dependencies
 vendor
 
+# test coverage
+c.out
+
 # IDEs and editors
 /.idea
 .project

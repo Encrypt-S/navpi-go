@@ -1,19 +1,24 @@
 package setupapi
 
-import (
-	"github.com/stretchr/testify/suite"
-	"testing"
-)
+//import (
+//	"fmt"
+//	"net/http"
+//	"testing"
+//
+//	"github.com/appleboy/gofight"
+//	"github.com/magiconair/properties/assert"
+//)
 
-type SetupApiSuite struct {
-	suite.Suite
-}
-
-func (suite *SetupApiSuite) InitSetupHandlersSuccess() {
-
-	suite.Equal(expectedURL, result)
-}
-
-func TestSuite(t *testing.T) {
-	suite.Run(t, new(SetupApiSuite))
-}
+// rangeSetHandler test
+//func Test_rangeSetHandler(t *testing.T) {
+//	r := gofight.New()
+//
+//	r.GET("http://localhost:9002").
+//		SetDebug(true).
+//		Run(rangeSetHandler(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+//
+//			assert.Equal(t, jsonStr, r.Body.String())
+//			assert.Equal(t, http.StatusOK, r.Code)
+//
+//		})
+//}

@@ -1,17 +1,16 @@
 package conf
 
 import (
-	"os"
-	"io/ioutil"
-	"regexp"
 	"errors"
+	"io/ioutil"
+	"os"
+	"regexp"
 )
 
 type NavConfig struct {
 	RpcUser     string `json:"rpcUser"`
 	RpcPassword string `json:"rpcPassword"`
 }
-
 
 func LoadRPCDetails(appconfig AppConfig) error {
 
