@@ -5,17 +5,17 @@ import (
 	"encoding/base64"
 )
 
+// NavConfig defines a structure to store rpc data
 type NavConfig struct {
-	RpcUser     string `json:"rpcUser"`
-	RpcPassword string `json:"rpcPassword"`
+	RPCUser     string `json:"rpcUser"`
+	RPCPassword string `json:"rpcPassword"`
 }
 
-
 // CreateRPCDetails generate rpc details for this run
-func CreateRPCDetails () {
+func CreateRPCDetails() {
 
-	NavConf.RpcUser, _ = generateRandomString(32)
-	NavConf.RpcPassword, _ = generateRandomString(32)
+	NavConf.RPCUser, _ = generateRandomString(32)
+	NavConf.RPCPassword, _ = generateRandomString(32)
 
 }
 
@@ -43,7 +43,6 @@ func generateRandomString(s int) (string, error) {
 	b, err := GenerateRandomBytes(s)
 	return base64.URLEncoding.EncodeToString(b), err
 }
-
 
 //
 ////func LoadRPCDetails(appconfig AppConfig) error {
@@ -81,8 +80,8 @@ func generateRandomString(s int) (string, error) {
 //		return errors.New("No RPC Password set")
 //	}
 //
-//	NavConf.RpcUser = string(userSubmatches[1])
-//	NavConf.RpcPassword = string(passSubmatches[1])
+//	NavConf.RPCUser = string(userSubmatches[1])
+//	NavConf.RPCPassword = string(passSubmatches[1])
 //
 //	return nil
 //

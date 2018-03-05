@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// The generic resp that will be used for the api
+// Response is the generic resp that will be used for the api
 type Response struct {
 	Data   interface{} `json:"data,omitempty"`
 	Meta   interface{} `json:"meta,omitempty"`
@@ -36,12 +36,10 @@ type appErrorsStruct struct {
 	SetupAPIProtectUI      errorCode
 }
 
+// AppRespErrors variable
 var AppRespErrors appErrorsStruct
 
-/**
-Build errors builds all the error messages that the app
-will use and display to the error.
-*/
+// BuildAppErrors builds all the error messages that the app
 func BuildAppErrors() {
 
 	AppRespErrors = appErrorsStruct{}
@@ -57,7 +55,7 @@ func BuildAppErrors() {
 
 }
 
-// Starts the meta api handlers
+// InitMetaHandlers starts the meta api handlers
 func InitMetaHandlers(r *mux.Router, prefix string) {
 
 	nameSpace := "meta"

@@ -3,12 +3,14 @@ package conf
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/viper"
 	"io/ioutil"
 	"log"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
+// AppConfig defines a structure to store app config data
 type AppConfig struct {
 	NavConf           string   `json:"navconf"`
 	RunningNavVersion string   `json:"runningNavVersion"`
@@ -16,6 +18,7 @@ type AppConfig struct {
 	UIPassword        string   `json:"uiPassword"`
 }
 
+// StartConfigManager sets up the ticker loop to load app config
 func StartConfigManager() {
 	ticker := time.NewTicker(time.Millisecond * 500)
 	go func() {
@@ -25,6 +28,7 @@ func StartConfigManager() {
 	}()
 }
 
+// LoadAppConfig sets up viper, reads and parses app config
 func LoadAppConfig() error {
 
 	viper.SetConfigName("app-config")
@@ -44,6 +48,7 @@ func LoadAppConfig() error {
 	return nil
 }
 
+// MockAppConfig mocks out and saves the app config
 func MockAppConfig() (AppConfig, error) {
 
 	mockConfig := AppConfig{}
@@ -62,6 +67,7 @@ func MockAppConfig() (AppConfig, error) {
 	return mockConfig, nil
 }
 
+// parseAppConfig takes AppConfig, parses and returns appconf
 func parseAppConfig(appconf AppConfig) AppConfig {
 
 	appconf.NavConf = viper.GetString("navconf")
@@ -72,6 +78,7 @@ func parseAppConfig(appconf AppConfig) AppConfig {
 
 }
 
+// SaveAppConfig formats/indents json and saves to app-config.json
 func SaveAppConfig() error {
 
 	jsonData, err := json.MarshalIndent(AppConfig{

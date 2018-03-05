@@ -4,13 +4,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// Resp defines a structure to store response data
 type Resp struct {
 	Code    int
 	Data    string
 	Message string
 }
 
-// Setup all the handlers for the blockchain rpc interface
+// InitAddressHandlers sets up handlers for the blockchain rpc interface
 func InitAddressHandlers(r *mux.Router, prefix string) {
 
 	println(prefix)

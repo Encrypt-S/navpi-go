@@ -224,8 +224,8 @@ func start(daemonPath string) *exec.Cmd {
 
 	log.Println("Booting NAVCoin daemon")
 
-	rpcUser := fmt.Sprintf("-rpcuser=%s", conf.NavConf.RpcUser)
-	rpcPassword := fmt.Sprintf("-rpcpassword=%s", conf.NavConf.RpcPassword)
+	rpcUser := fmt.Sprintf("-rpcuser=%s", conf.NavConf.RPCUser)
+	rpcPassword := fmt.Sprintf("-rpcpassword=%s", conf.NavConf.RPCPassword)
 
 	cmd := exec.Command(daemonPath, rpcUser, rpcPassword )
 	err := cmd.Start()

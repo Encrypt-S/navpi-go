@@ -1,17 +1,18 @@
 package fs
 
 import (
+	"archive/tar"
 	"archive/zip"
 	"compress/gzip"
 	"fmt"
-	"github.com/dustin/go-humanize"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
-	"archive/tar"
+
+	"github.com/dustin/go-humanize"
 )
 
 // WriteCounter counts the number of bytes written to it. It implements to the io.Writer
@@ -28,12 +29,12 @@ func (wc *WriteCounter) Write(p []byte) (int, error) {
 	return n, nil
 }
 
+// PrintProgress will print current status of download
 func (wc WriteCounter) PrintProgress() {
 	// Clear the line by using a character return to go back to the start and remove
 	// the remaining characters by filling it with spaces
 	fmt.Printf("\r%s", strings.Repeat(" ", 35))
 
-	// Return again and print current status of download
 	// We use the humanize package to print the bytes in a meaningful way (e.g. 10 MB)
 	fmt.Printf("\rDownloading... %s complete", humanize.Bytes(wc.Total))
 }
@@ -125,6 +126,7 @@ func Download(url string, downloadTofileName string) {
 
 }
 
+// Extract will call Unzip or Untar depending on the detected file extension
 func Extract(assetName string, downloadLocation string, extractPath string) {
 
 	switch filepath.Ext(assetName) {
@@ -138,6 +140,7 @@ func Extract(assetName string, downloadLocation string, extractPath string) {
 
 }
 
+// Unzip takes a src and destination path and unzips accordingly
 func Unzip(src, dest string) error {
 
 	log.Println("Unzip the zip file from " + dest)
