@@ -23,8 +23,8 @@ type RpcResp struct {
 // it also allows auto switches between the testnet and live depending on the config
 func RequestDaemon(rpcReqData RpcRequestData, navConf conf.NavConfig) (*http.Response, error) {
 
-	username := navConf.RpcUser
-	password := navConf.RpcPassword
+	username := navConf.RPCUser
+	password := navConf.RPCPassword
 
 	client := &http.Client{}
 

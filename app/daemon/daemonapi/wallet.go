@@ -10,22 +10,25 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// Setup all the handlers for the blockchain rpc interface
+// InitWalletHandlers sets up handlers for the blockchain rpc interface
 func InitWalletHandlers(r *mux.Router, prefix string) {
 
-	r.HandleFunc(fmt.Sprintf("/%s/wallet/v1/getstakereport", prefix), geStakeReport).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/wallet/v1/getstakereport", prefix), getStakeReport).Methods("GET")
 
 }
 
-func geStakeReport(w http.ResponseWriter, r *http.Request) {
-	//fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
+// getStakeReport takes writer, request - writes out stake report
+func getStakeReport(w http.ResponseWriter, r *http.Request) {
+
+	// fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
 
 	n := daemonrpc.RpcRequestData{}
 	n.Method = "getstakereport"
 
 	resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
 
-	if err != nil { // Handle errors requesting the daemon
+	// Handle errors requesting the daemon
+	if err != nil {
 		daemonrpc.RpcFailed(err, w, r)
 		return
 	}

@@ -1,18 +1,20 @@
 package daemonapi
 
 import (
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 
-	"io"
+	"github.com/gorilla/mux"
+
 	"fmt"
-	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
+	"io"
 	"io/ioutil"
+
 	"github.com/NAVCoin/navpi-go/app/conf"
+	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
 )
 
-// Setup all the handlers for the blockchain rpc interface
+// InitChainHandlers sets up handlers for the blockchain rpc interface
 func InitChainHandlers(r *mux.Router, prefix string) {
 
 	//config = conf
