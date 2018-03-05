@@ -6,6 +6,10 @@ import (
 	"net/http"
 
 	"io"
+	"fmt"
+	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
+	"io/ioutil"
+	"github.com/NAVCoin/navpi-go/app/conf"
 )
 
 // Setup all the handlers for the blockchain rpc interface
@@ -13,7 +17,7 @@ func InitChainHandlers(r *mux.Router, prefix string) {
 
 	//config = conf
 	//
-	//r.HandleFunc(fmt.Sprintf("/%s/blockchain/v1/getblockcount", prefix), getBlockCount)
+	r.HandleFunc(fmt.Sprintf("/%s/blockchain/v1/getblockcount", prefix), getBlockCount)
 
 	//// not implemented
 	//r.HandleFunc("/blockchain/v1/getbestblockhash", api.NotImplemented).Methods("GET")
@@ -42,18 +46,18 @@ func getBlockCount(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("getBlockCount")
 
-	//n := daemonrpc.RpcRequestData{}
-	//n.Method = "getblockcount"
-	//
-	//resp, err := daemonrpc.RequestDaemon(n, config)
-	//
-	//if err != nil { // Handle errors requesting the daemon
-	//	daemonrpc.RpcFailed(err, w, r)
-	//	return
-	//}
-	//
-	//bodyText, err := ioutil.ReadAll(resp.Body)
-	//w.WriteHeader(resp.StatusCode)
-	//w.Write(bodyText)
+	n := daemonrpc.RpcRequestData{}
+	n.Method = "getblockcount"
+
+	resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
+
+	if err != nil { // Handle errors requesting the daemon
+		daemonrpc.RpcFailed(err, w, r)
+		return
+	}
+
+	bodyText, err := ioutil.ReadAll(resp.Body)
+	w.WriteHeader(resp.StatusCode)
+	w.Write(bodyText)
 	io.WriteString(w, "hello world\n")
 }

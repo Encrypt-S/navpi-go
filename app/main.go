@@ -22,7 +22,7 @@ var server *http.Server
 
 func main() {
 
-	api.BuildAppErrors()
+	initMain()
 
 	// log out server runtime OS and Architecture
 	log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
@@ -34,44 +34,32 @@ func main() {
 		log.Fatal("Failed to load the server config: " + err.Error())
 	}
 
-	conf.LoadAppConfig()
+	// Load the App config
+	err = conf.LoadAppConfig()
+	if err != nil {
+		log.Fatal("Failed to load the app config: " + err.Error())
+	}
+
 	conf.StartConfigManager()
 
+	// setup the router and the api
 	router := mux.NewRouter()
-
-	// Init the meta api
 	api.InitMetaHandlers(router, "api")
 
 	// check to see if we have a defined running config
 	// If not we are only going to boot the setup apis, otherwise we will start the app
 	if conf.AppConf.RunningNavVersion == "" {
 
-		//log.Println("App config undetected :: creating mock config, initializing setup handlers")
-
-		//appConfig, err := conf.MockAppConfig()
-		//if err != nil {
-		//	log.Fatal("Failed to create the mock config: " + err.Error())
-		//} else {
-		//	log.Println("appConfig", appConfig)
-		//}
-
+		log.Println("No App Config starting the setup api")
 		setupapi.InitSetupHandlers(router, "api")
 
 	} else {
 
 		log.Println("App config found :: booting all apis!")
-
-		err := conf.LoadRPCDetails(conf.AppConf)
-
-		if err != nil {
-			//TODO: Fix this
-			log.Println("RPC Details Not found!")
-			log.Println("err", err)
-		}
-
 		// we have a user config so start the app in running mode
 		daemon.StartManager()
 
+		// stat all app API's
 		managerapi.InitManagerhandlers(router, "api")
 		daemonapi.InitChainHandlers(router, "api")
 
@@ -87,7 +75,14 @@ func main() {
 		Handler: handlers.CORS()(router)}
 
 	log.Println("port", port)
-
 	srv.ListenAndServe()
+
+}
+
+// Start everything before we get going
+func initMain() {
+
+	api.BuildAppErrors()
+	conf.CreateRPCDetails()
 
 }
