@@ -15,6 +15,7 @@ import (
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
 	"github.com/NAVCoin/navpi-go/app/fs"
+	"fmt"
 )
 
 const (
@@ -101,7 +102,7 @@ type GitHubReleaseData struct {
 }
 
 var runningDaemon *exec.Cmd
-var minHeartbeat int64 = 500 // the lowest value the hb checker can be set to
+var minHeartbeat int64 = 5000 // the lowest value the hb checker can be set to
 
 // StartManager is a simple system that checks if
 // the daemon is alive. If not it tries to start it
@@ -113,7 +114,7 @@ func StartManager() {
 	if conf.ServerConf.DaemonHeartbeat > hbInterval {
 		hbInterval = conf.ServerConf.DaemonHeartbeat
 	}
-
+	
 	ticker := time.NewTicker(time.Duration(hbInterval) * time.Millisecond)
 	go func() {
 		for t := range ticker.C {
@@ -222,8 +223,16 @@ func CheckForDaemon(serverConfig conf.ServerConfig, appConfig conf.AppConfig) (s
 func start(daemonPath string) *exec.Cmd {
 
 	log.Println("Booting NAVCoin daemon")
-	cmd := exec.Command(daemonPath)
-	cmd.Start()
+
+	rpcUser := fmt.Sprintf("-rpcuser=%s", conf.NavConf.RpcUser)
+	rpcPassword := fmt.Sprintf("-rpcpassword=%s", conf.NavConf.RpcPassword)
+
+	cmd := exec.Command(daemonPath, rpcUser, rpcPassword )
+	err := cmd.Start()
+
+	if err != nil {
+		log.Fatal("Failed to start the daemon: " + err.Error())
+	}
 
 	return cmd
 

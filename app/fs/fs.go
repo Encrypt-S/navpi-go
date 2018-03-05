@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"archive/tar"
 )
 
 // WriteCounter counts the number of bytes written to it. It implements to the io.Writer
@@ -130,7 +131,7 @@ func Extract(assetName string, downloadLocation string, extractPath string) {
 	case ".zip":
 		Unzip(downloadLocation, extractPath)
 	case ".gz":
-		Ungzip(downloadLocation, extractPath)
+		Untar(downloadLocation, extractPath)
 	}
 
 	log.Println("File extracted to " + extractPath)
@@ -185,34 +186,69 @@ func Unzip(src, dest string) error {
 	return nil
 }
 
-// Ungzip uncompresses the given tar.gz file
-func Ungzip(gzStream, dest string) error {
+// Untar takes a destination path and a reader; a tar reader loops over the tarfile
+// creating the file structure at 'dst' along the way, and writing any files
+func Untar(gzStream string, dst string) error {
+	r, err := os.Open(gzStream)
+	gzr, err := gzip.NewReader(r)
 
-	log.Println("Ungzip the tar.gz from " + dest)
-
-	gzReader, err := os.Open(gzStream)
+	defer gzr.Close()
 	if err != nil {
 		return err
 	}
-	defer gzReader.Close()
 
-	gzArchive, err := gzip.NewReader(gzReader)
-	if err != nil {
-		return err
+	tr := tar.NewReader(gzr)
+
+	for {
+		header, err := tr.Next()
+
+		switch {
+
+		// if no more files are found return
+		case err == io.EOF:
+			return nil
+
+			// return any other error
+		case err != nil:
+			return err
+
+			// if the header is nil, just skip it (not sure how this happens)
+		case header == nil:
+			continue
+		}
+
+		// the target location where the dir/file should be created
+		target := filepath.Join(dst, header.Name)
+
+		// the following switch could also be done using fi.Mode(), not sure if there
+		// a benefit of using one vs. the other.
+		// fi := header.FileInfo()
+
+		// check the file type
+		switch header.Typeflag {
+
+		// if its a dir and it doesn't exist create it
+		case tar.TypeDir:
+			if _, err := os.Stat(target); err != nil {
+				if err := os.MkdirAll(target, 0755); err != nil {
+					return err
+				}
+			}
+
+			// if it's a file create it
+		case tar.TypeReg:
+			f, err := os.OpenFile(target, os.O_CREATE|os.O_RDWR, os.FileMode(header.Mode))
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+
+			// copy over contents
+			if _, err := io.Copy(f, tr); err != nil {
+				return err
+			}
+		}
 	}
-	defer gzArchive.Close()
-
-	dest = filepath.Join(dest, gzArchive.Name)
-
-	writer, err := os.Create(dest)
-	if err != nil {
-		return err
-	}
-	defer writer.Close()
-
-	_, err = io.Copy(writer, gzArchive)
-
-	return err
 }
 
 // GetCurrentPath gets the path of the go app
