@@ -11,3 +11,8 @@ This software will turn your Raspberry Pi into a low cost and convenient way to 
 For more information please visit the website:
 
 https://navcoin.org/project-roadmap/
+
+
+License
+---------------------
+Distributed under the [MIT software license](http://www.opensource.org/licenses/mit-license.php).
