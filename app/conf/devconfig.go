@@ -29,9 +29,8 @@ func parseDevConfig() {
 	if viper.GetString("navConfig.rpcUser") != "" {
 		NavConf.RPCUser = viper.GetString("navConfig.rpcUser")
 	}
-
 	if viper.GetString("navConfig.rpcPassword") != "" {
-		NavConf.RPCUser = viper.GetString("navConfig.rpcPassword")
+		NavConf.RPCPassword = viper.GetString("navConfig.rpcPassword")
 	}
 
 }

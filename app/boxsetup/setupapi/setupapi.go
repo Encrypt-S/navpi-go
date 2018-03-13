@@ -24,13 +24,13 @@ type UIProtection struct {
 func InitSetupHandlers(r *mux.Router, prefix string) {
 
 	// setup namespace
-	var nameSpace = "setup"
+	namespace := "setup"
 
 	// setup setrange route - takes the users ip address and saves it to the config as a range
-	r.Handle(fmt.Sprintf("/%s/%s/v1/setrange", prefix, nameSpace), middleware.Adapt(rangeSetHandler()))
+	r.Handle(fmt.Sprintf("/%s/%s/v1/setrange", prefix, namespace), middleware.Adapt(rangeSetHandler()))
 
 	// setup protectui route - protect UI with username and password
-	r.Handle(fmt.Sprintf("/%s/%s/v1/protectui", prefix, nameSpace), middleware.Adapt(protectUIHandler())).Methods("POST")
+	r.Handle(fmt.Sprintf("/%s/%s/v1/protectui", prefix, namespace), middleware.Adapt(protectUIHandler())).Methods("POST")
 
 }
 
