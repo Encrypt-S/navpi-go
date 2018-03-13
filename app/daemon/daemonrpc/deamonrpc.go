@@ -30,7 +30,7 @@ func RequestDaemon(rpcReqData RpcRequestData, navConf conf.NavConfig) (*http.Res
 
 	jsonValue, _ := json.Marshal(rpcReqData)
 
-	url := "http://127.0.0.1:44444"
+	url := "http://127.0.0.1:44445"
 
 	//if(config.TestNet) {
 	//	url = "http://127.0.0.1:44445"

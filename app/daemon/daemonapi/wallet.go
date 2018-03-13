@@ -13,7 +13,12 @@ import (
 // InitWalletHandlers sets up handlers for the blockchain rpc interface
 func InitWalletHandlers(r *mux.Router, prefix string) {
 
-	r.HandleFunc(fmt.Sprintf("/%s/wallet/v1/getstakereport", prefix), getStakeReport).Methods("GET")
+	namespace := "wallet"
+	r.HandleFunc(fmt.Sprintf("/%s/%s/v1/getstakereport", prefix, namespace), getStakeReport).Methods("GET")
+
+}
+
+func encryptWallet() {
 
 }
 
@@ -21,7 +26,6 @@ func InitWalletHandlers(r *mux.Router, prefix string) {
 func getStakeReport(w http.ResponseWriter, r *http.Request) {
 
 	// fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
-
 	n := daemonrpc.RpcRequestData{}
 	n.Method = "getstakereport"
 
