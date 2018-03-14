@@ -89,7 +89,7 @@ func protectUIHandler() http.Handler {
 		// has the details for later
 		hashedDetails, err := api.HashDetails(uiProtection.Username, uiProtection.Password)
 
-		// if there was an error hasing the details then error
+		// if there was an error hashing the details then error
 		if err != nil {
 
 			w.WriteHeader(http.StatusInternalServerError)
