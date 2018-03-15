@@ -3,7 +3,7 @@
   steps:
     - service: navpi-go
       command: printenv
-    - service: codeship_example
+    - service: navpi-go
       command: ls
 - name: example_tagged_step
   tag: master
