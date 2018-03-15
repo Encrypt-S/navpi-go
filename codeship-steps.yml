@@ -1,0 +1,11 @@
+- type: parallel
+  name: example_parallel_step
+  steps:
+    - service: navpi-go
+      command: printenv
+    - service: codeship_example
+      command: ls
+- name: example_tagged_step
+  tag: master
+  service: navpi-go
+  command: echo "Deploy here!"
