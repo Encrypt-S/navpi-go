@@ -16,13 +16,6 @@ var (
 		"87654321",
 		"abcdefgh",
 		"hgfedcba",
-
-		"password",
-		"intoxicate",
-		"p@ssw0rd",    // dictionary with mangling
-		"!pass@word?", // dictionary with mangling
-		"drowssap",    // reversed dictionary
-		"?drow@ssap!", // reversed dictionary with mangling
 	}
 	validPws = []string{"d1924ce3d0510b2b2b4604c99453e2e1"}
 )
