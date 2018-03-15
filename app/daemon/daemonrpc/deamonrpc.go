@@ -11,6 +11,7 @@ import (
 
 type RpcRequestData struct {
 	Method string `json:"method"`
+	Args   string `json:"arguments"`
 }
 
 type RpcResp struct {
