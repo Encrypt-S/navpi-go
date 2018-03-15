@@ -3,9 +3,17 @@
   steps:
     - service: navpi-go
       command: go test ./...
-#    - service: navpi-go
+
+
+#storing this here for later
+#- type: parallel
+#  name: example_parallel_step
+#  steps:
+#    - service: codeship_example
+#      command: printenv
+#    - service: codeship_example
 #      command: ls
 #- name: example_tagged_step
 #  tag: master
-#  service: navpi-go
+#  service: codeship_example
 #  command: echo "Deploy here!"
