@@ -12,11 +12,11 @@ RUN go get ./
 # Install test dependencies
 RUN go get -t -v ./...
 
-# Build
-RUN go build
-
-# Test
-RUN go test
+## Build
+#RUN go build
+#
+## Test
+#RUN go test
 
 CMD if [ ${APP_ENV} = production ]; \
 	then \
