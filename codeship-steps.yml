@@ -2,7 +2,7 @@
   name: test_navpi
   steps:
     - service: navpi-go
-      command: ls
+      command: go test ./...
 #    - service: navpi-go
 #      command: ls
 #- name: example_tagged_step
