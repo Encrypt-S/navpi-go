@@ -1,11 +1,11 @@
 - type: parallel
-  name: example_parallel_step
+  name: test_navpi
   steps:
     - service: navpi-go
-      command: printenv
-    - service: navpi-go
       command: ls
-- name: example_tagged_step
-  tag: master
-  service: navpi-go
-  command: echo "Deploy here!"
+#    - service: navpi-go
+#      command: ls
+#- name: example_tagged_step
+#  tag: master
+#  service: navpi-go
+#  command: echo "Deploy here!"
