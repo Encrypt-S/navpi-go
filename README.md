@@ -1,13 +1,11 @@
-## NavPi 2.0 Kowhai
+# NavPi 2.0 (Kowhai)
+
+[ ![Codeship Status for NAVCoin/navpi-go](https://app.codeship.com/projects/21fc5730-0a0e-0136-036a-5ec6e672f094/status?branch=v2.0.0-kowhai)](https://app.codeship.com/projects/281605)
 
 ![](./img/stakebox.jpg)
 
-This is the official github repository for the NavPi 2.0 Kowhai project, the next generation of the NAVCoin Stake Box.
+The next generation of the NAVCoin Stake Box.
 
-Due to the success of the original NavPi 1.0 project, NavCore have decided to fully re-engineer the NavPi from the ground up to make it even better and easier to use.
+For more information please visit the Community Roadmap:
 
-This software will turn your Raspberry Pi into a low cost and convenient way to earn Proof of Stake rewards.
-
-For more information please visit the website:
-
-https://navcoin.org/project-roadmap/
+https://navcoin.org/community-roadmap/
