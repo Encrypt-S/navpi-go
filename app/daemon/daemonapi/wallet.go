@@ -35,6 +35,7 @@ func checkPasswordStrength(pass string) error {
 // encryptWallet executes json RPC command and returns response
 func encryptWallet(w http.ResponseWriter, r *http.Request) {
 
+	// temp valid password until we have UI setup
 	validPass := "d1924ce3d0510b2b2b4604c99453e2e1"
 	err := checkPasswordStrength(validPass)
 
