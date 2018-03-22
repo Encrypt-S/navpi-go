@@ -15,6 +15,7 @@ import (
 	"github.com/NAVCoin/navpi-go/app/manager/managerapi"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/NAVCoin/navpi-go/app/daemon"
 )
 
 var server *http.Server
@@ -57,11 +58,12 @@ func main() {
 		log.Println("App config found :: booting all apis!")
 		// we have a user config so start the app in running mode
 		// TODO: make dependent on the dev config
-		//daemon.StartManager()
+		daemon.StartManager()
 
 		// stat all app API's
 		managerapi.InitManagerhandlers(router, "api")
 		daemonapi.InitChainHandlers(router, "api")
+		daemonapi.InitWalletHandlers(router, "api")
 
 	}
 
