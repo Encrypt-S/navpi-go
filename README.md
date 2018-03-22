@@ -8,3 +8,6 @@ The next generation of the NAVCoin Stake Box.
 
 For more information please visit the Community Roadmap:
 https://navcoin.org/community-roadmap/
+
+## UX Flow Map
+![](./ux/NavPi-Kowhai-UX-Flow.png)
