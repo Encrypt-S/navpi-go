@@ -117,7 +117,7 @@ func StartManager() {
 	
 	ticker := time.NewTicker(time.Duration(hbInterval) * time.Millisecond)
 	go func() {
-		for _ := range ticker.C {
+		for range ticker.C {
 
 			//log.Println(t)
 
