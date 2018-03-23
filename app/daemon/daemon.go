@@ -117,13 +117,13 @@ func StartManager() {
 	
 	ticker := time.NewTicker(time.Duration(hbInterval) * time.Millisecond)
 	go func() {
-		for t := range ticker.C {
+		for _ := range ticker.C {
 
-			log.Println(t)
+			//log.Println(t)
 
 			// check to see if the daemon is alive
 			if isAlive() {
-				log.Println("NAVCoin daemon is alive!")
+				//log.Println("NAVCoin daemon is alive!")
 			} else {
 
 				log.Println("NAVCoin daemon is unresponsive...")
