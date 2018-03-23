@@ -1,6 +1,7 @@
 {
-	"navconf": "~/Library/Application Support/NavCoin4/navcoin.conf",
+	"navconf": "",
 	"runningNavVersion": "4.1.1",
 	"allowedIps": null,
-	"uiPassword": ""
+	"uiPassword": "$2a$14$/oYsm.EKOXhcg9UrU1f5oOzY1pYYBNiZAK3aFl647Pw/23S9R6qIO"
+
 }

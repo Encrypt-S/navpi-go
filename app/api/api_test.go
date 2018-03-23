@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/appleboy/gofight"
+	"go"
 	"github.com/stretchr/testify/assert"
 )
 
