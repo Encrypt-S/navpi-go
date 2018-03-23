@@ -102,7 +102,7 @@ type GitHubReleaseData struct {
 }
 
 var runningDaemon *exec.Cmd
-var minHeartbeat int64 = 5000 // the lowest value the hb checker can be set to
+var minHeartbeat int64 = 1000 // the lowest value the hb checker can be set to
 
 // StartManager is a simple system that checks if
 // the daemon is alive. If not it tries to start it
