@@ -227,7 +227,14 @@ func start(daemonPath string) *exec.Cmd {
 	rpcUser := fmt.Sprintf("-rpcuser=%s", conf.NavConf.RPCUser)
 	rpcPassword := fmt.Sprintf("-rpcpassword=%s", conf.NavConf.RPCPassword)
 
-	cmd := exec.Command(daemonPath, rpcUser, rpcPassword )
+	// setup to use the testnet if needed
+	testnet := ""
+
+	if conf.ServerConf.UseTestnet {
+		testnet = "-testnet"
+	}
+
+	cmd := exec.Command(daemonPath, rpcUser, rpcPassword, testnet)
 	err := cmd.Start()
 
 	if err != nil {
