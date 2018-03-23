@@ -55,7 +55,7 @@ func loginHandler() http.Handler {
 			return
 		}
 
-		// has the details for later
+		// load the hash and check the details
 		hashedDetails := conf.AppConf.UIPassword
 		isValid := api.CheckHashDetails(loginDetail.Username, loginDetail.Password, hashedDetails)
 
