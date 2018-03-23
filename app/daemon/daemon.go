@@ -12,10 +12,10 @@ import (
 	"strings"
 	"time"
 
+	"fmt"
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
 	"github.com/NAVCoin/navpi-go/app/fs"
-	"fmt"
 )
 
 const (
@@ -114,7 +114,7 @@ func StartManager() {
 	if conf.ServerConf.DaemonHeartbeat > hbInterval {
 		hbInterval = conf.ServerConf.DaemonHeartbeat
 	}
-	
+
 	ticker := time.NewTicker(time.Duration(hbInterval) * time.Millisecond)
 	go func() {
 		for range ticker.C {

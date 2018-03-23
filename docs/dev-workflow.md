@@ -32,6 +32,21 @@ To run the service that spawns a Docker container running the navcoind daemon, s
     cd nav-docker/docker-navcoind
     docker-compose up
 
+#### did it work?
+the install will take ages, but if you see the following you're good to go:
+
+    Starting dockernavcoind_testnet_1 ... done
+    Attaching to dockernavcoind_testnet_1
+
+#### now access the navcoin cli
+Open up a new terminal tab/window
+
+    docker exec -it dockernavcoind_testnet_1 /bin/bash
+
+you should now be in cli mode with something like this...
+
+    root@795b5c0525c0:/#
+
 #### local testing
 - Once the app is running it will be accessible at `127.0.0.1:9002`
 - The default `managerApiPort` is `9002` and set in `server-config.json`

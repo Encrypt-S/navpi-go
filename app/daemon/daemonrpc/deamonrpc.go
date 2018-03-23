@@ -6,12 +6,13 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/NAVCoin/navpi-go/app/conf"
 	"fmt"
+	"github.com/NAVCoin/navpi-go/app/conf"
 )
 
 type RpcRequestData struct {
 	Method string `json:"method"`
+	Args   string `json:"arguments"`
 }
 
 type RpcResp struct {
