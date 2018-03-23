@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"fmt"
 	"github.com/NAVCoin/navpi-go/app/conf"
 )
 
@@ -24,6 +25,8 @@ type RpcResp struct {
 // it also allows auto switches between the testnet and live depending on the config
 func RequestDaemon(rpcReqData RpcRequestData, navConf conf.NavConfig) (*http.Response, error) {
 
+	serverConf := conf.ServerConf
+
 	username := navConf.RPCUser
 	password := navConf.RPCPassword
 
@@ -31,12 +34,18 @@ func RequestDaemon(rpcReqData RpcRequestData, navConf conf.NavConfig) (*http.Res
 
 	jsonValue, _ := json.Marshal(rpcReqData)
 
-	url := "http://127.0.0.1:44445"
+	// set the port to live
+	port := serverConf.LivePort
 
-	//if(config.TestNet) {
-	//	url = "http://127.0.0.1:44445"
-	//}
+	// check to see if we are in test net mode
+	if serverConf.UseTestnet {
+		port = serverConf.TestPort
+	}
 
+	// build the url
+	url := fmt.Sprintf("http://127.0.0.1:%d", port)
+
+	//  build the request
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonValue))
 	req.SetBasicAuth(username, password)
 	req.Header.Add("Content-Type", "application/json")

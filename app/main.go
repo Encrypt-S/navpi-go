@@ -11,11 +11,11 @@ import (
 	"github.com/NAVCoin/navpi-go/app/api"
 	"github.com/NAVCoin/navpi-go/app/boxsetup/setupapi"
 	"github.com/NAVCoin/navpi-go/app/conf"
+	"github.com/NAVCoin/navpi-go/app/daemon"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonapi"
 	"github.com/NAVCoin/navpi-go/app/manager/managerapi"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/NAVCoin/navpi-go/app/daemon"
 )
 
 var server *http.Server
@@ -42,6 +42,9 @@ func main() {
 
 	conf.StartConfigManager()
 
+	//load the dev config file if one is set
+	conf.LoadDevConfig()
+
 	// setup the router and the api
 	router := mux.NewRouter()
 	api.InitMetaHandlers(router, "api")
@@ -66,9 +69,6 @@ func main() {
 		daemonapi.InitWalletHandlers(router, "api")
 
 	}
-
-	//load the dev config file if one is set
-	conf.LoadDevConfig()
 
 	// Start the server
 	port := fmt.Sprintf(":%d", serverConfig.ManagerAPIPort)
