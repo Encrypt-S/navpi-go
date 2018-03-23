@@ -41,6 +41,7 @@ type appErrorsStruct struct {
 // AppRespErrors variable
 var AppRespErrors appErrorsStruct
 
+
 // BuildAppErrors builds all the error messages that the app
 func BuildAppErrors() {
 
