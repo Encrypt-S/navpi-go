@@ -12,6 +12,10 @@ type ServerConfig struct {
 	LatestReleaseAPI string
 	ReleaseAPI       string
 	DaemonHeartbeat  int64
+
+	LivePort   int64
+	TestPort   int64
+	UseTestnet bool
 }
 
 // LoadServerConfig sets up viper, reads and parses server config
@@ -44,6 +48,10 @@ func parseServerConfig(serverconf ServerConfig) ServerConfig {
 	serverconf.LatestReleaseAPI = viper.GetString("latestReleaseAPI")
 	serverconf.ReleaseAPI = viper.GetString("releaseAPI")
 	serverconf.DaemonHeartbeat = viper.GetInt64("daemonHeartbeat")
+
+	serverconf.LivePort = viper.GetInt64("navCoinPorts.LivePort")
+	serverconf.TestPort = viper.GetInt64("navCoinPorts.testnetPort")
+	serverconf.UseTestnet = viper.GetBool("useTestnet")
 
 	return serverconf
 
