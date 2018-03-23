@@ -27,7 +27,7 @@ func InitSetupHandlers(r *mux.Router, prefix string) {
 	// setup namespace
 	namespace := "user"
 
-	// setup setrange route - takes the users ip address and saves it to the config as a range
+	// login route - takes the username, password and retruns a jwt
 	r.Handle(fmt.Sprintf("/%s/%s/v1/login", prefix, namespace), middleware.Adapt(loginHandler())).Methods("POST")
 
 
