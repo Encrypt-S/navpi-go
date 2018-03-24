@@ -6,7 +6,7 @@ import (
 )
 
 // TODO: Generate this and store it in the app config
-var signingKey = []byte("secret")
+var SigningKey = []byte("secret")
 
 // GenerateJWT accepts a duration of
 // time that will be added to the current
@@ -23,7 +23,7 @@ func GenerateJWT(exp time.Duration) string  {
 	claims["exp"] = time.Now().Add(exp).Unix()
 
 	/* Sign the token with our secret */
-	tokenString, _ := token.SignedString(signingKey)
+	tokenString, _ := token.SignedString(SigningKey)
 
 	return tokenString
 
