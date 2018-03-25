@@ -2,6 +2,7 @@ package conf
 
 import (
 	"github.com/spf13/viper"
+	"github.com/NAVCoin/navpi-go/app/utils"
 )
 
 // ServerConfig defines a structure to store server config data
@@ -16,6 +17,8 @@ type ServerConfig struct {
 	LivePort   int64
 	TestPort   int64
 	UseTestnet bool
+
+	JWTSecret string // this is self generated on each start
 }
 
 // LoadServerConfig sets up viper, reads and parses server config
@@ -55,4 +58,10 @@ func parseServerConfig(serverconf ServerConfig) ServerConfig {
 
 	return serverconf
 
+}
+
+
+
+func GenerateJWTSecret () {
+	ServerConf.JWTSecret, _ = utils.GenerateRandomString(32)
 }

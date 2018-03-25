@@ -5,13 +5,10 @@ import (
 	"time"
 )
 
-// TODO: Generate this and store it in the app config
-var SigningKey = []byte("secret")
-
 // GenerateJWT accepts a duration of
 // time that will be added to the current
 // time to generate the expiry date
-func GenerateJWT(exp time.Duration) string  {
+func GenerateJWT(exp time.Duration, signingKey []byte) string  {
 
 	token := jwt.New(jwt.SigningMethodHS256)
 
@@ -23,7 +20,7 @@ func GenerateJWT(exp time.Duration) string  {
 	claims["exp"] = time.Now().Add(exp).Unix()
 
 	/* Sign the token with our secret */
-	tokenString, _ := token.SignedString(SigningKey)
+	tokenString, _ := token.SignedString(signingKey)
 
 	return tokenString
 

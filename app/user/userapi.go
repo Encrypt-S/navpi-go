@@ -71,7 +71,7 @@ func loginHandler() http.Handler {
 		}
 
 
-		apiResp.Data = utils.GenerateJWT(time.Hour * 24)
+		apiResp.Data = utils.GenerateJWT(time.Hour * 24, []byte(conf.ServerConf.JWTSecret))
 		apiResp.Send(w)
 
 	})
