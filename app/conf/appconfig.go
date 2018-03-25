@@ -73,6 +73,7 @@ func parseAppConfig(appconf AppConfig) AppConfig {
 	appconf.NavConf = viper.GetString("navconf")
 	appconf.RunningNavVersion = viper.GetString("runningNavVersion")
 	appconf.AllowedIps = viper.GetStringSlice("allowedIps")
+	appconf.UIPassword = viper.GetString("uiPassword")
 
 	return appconf
 

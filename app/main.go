@@ -16,6 +16,7 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/NAVCoin/navpi-go/app/daemon"
+	"github.com/NAVCoin/navpi-go/app/user"
 )
 
 var server *http.Server
@@ -37,7 +38,7 @@ func main() {
 	// Load the App config
 	err = conf.LoadAppConfig()
 	if err != nil {
-		log.Fatal("Failed to load the app config: " + err.Error())
+		log.Println("Failed to load the app config: " + err.Error())
 	}
 
 	conf.StartConfigManager()
@@ -65,6 +66,7 @@ func main() {
 		// stat all app API's
 		managerapi.InitManagerhandlers(router, "api")
 		daemonapi.InitChainHandlers(router, "api")
+		user.InitSetupHandlers(router, "api")
 
 	}
 

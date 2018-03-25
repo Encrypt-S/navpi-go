@@ -49,7 +49,7 @@ func parseServerConfig(serverconf ServerConfig) ServerConfig {
 	serverconf.ReleaseAPI = viper.GetString("releaseAPI")
 	serverconf.DaemonHeartbeat = viper.GetInt64("daemonHeartbeat")
 
-	serverconf.LivePort = viper.GetInt64("navCoinPorts.LivePort")
+	serverconf.LivePort = viper.GetInt64("navCoinPorts.livePort")
 	serverconf.TestPort = viper.GetInt64("navCoinPorts.testnetPort")
 	serverconf.UseTestnet = viper.GetBool("useTestnet")
 
