@@ -10,6 +10,20 @@ import (
 	"github.com/NAVCoin/navpi-go/app/conf"
 )
 
+
+type RpcRequestData struct {
+	Method string `json:"method"`
+	Params interface{} `json:"params"`
+}
+
+type RpcResp struct {
+	Code    int    `json:"code"`
+	Data    string `json:"data"`
+	Message string `json:"message"`
+}
+
+
+/*
 type RpcRequestData struct {
 	Method string `json:"method"`
 	Args   string `json:"arguments"`
@@ -20,6 +34,8 @@ type RpcResp struct {
 	Data    string `json:"data"`
 	Message string `json:"message"`
 }
+
+*/
 
 // RequestDaemon request the data via the daemon's rpc api
 // it also allows auto switches between the testnet and live depending on the config
@@ -49,6 +65,8 @@ func RequestDaemon(rpcReqData RpcRequestData, navConf conf.NavConfig) (*http.Res
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonValue))
 	req.SetBasicAuth(username, password)
 	req.Header.Add("Content-Type", "application/json")
+
+	// TODO: Handled 500 errors
 
 	resp, err := client.Do(req)
 

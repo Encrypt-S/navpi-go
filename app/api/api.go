@@ -28,12 +28,14 @@ type errorCode struct {
 }
 
 type appErrorsStruct struct {
-	ServerError             errorCode
-	InvalidPasswordStrength errorCode
+	ServerError     errorCode
+	InvalidStrength errorCode
 
 	SetupAPIUsingLocalHost errorCode
 	SetupAPINoHost         errorCode
 	SetupAPIProtectUI      errorCode
+
+
 }
 
 // AppRespErrors variable
@@ -46,7 +48,7 @@ func BuildAppErrors() {
 
 	// Generic errors
 	AppRespErrors.ServerError = errorCode{"SERVER_ERROR", "There was an unexpected error - please try again"}
-	AppRespErrors.InvalidPasswordStrength = errorCode{"INVALID_PASSWORD_STRENGTH", ""}
+	AppRespErrors.InvalidStrength = errorCode{"INVALID_STRENGTH", ""}
 
 	// Setup API Errors
 	AppRespErrors.SetupAPIUsingLocalHost = errorCode{"SETUP_HOST_NOT_FOUND", "The host was not found"}

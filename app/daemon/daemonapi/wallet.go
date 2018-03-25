@@ -5,12 +5,12 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"log"
-
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
 	"github.com/gorilla/mux"
 	"github.com/muesli/crunchy"
+	"encoding/json"
+	"github.com/NAVCoin/navpi-go/app/api"
 )
 
 // InitWalletHandlers sets up handlers for the blockchain rpc interface
@@ -18,7 +18,7 @@ func InitWalletHandlers(r *mux.Router, prefix string) {
 
 	namespace := "wallet"
 	r.HandleFunc(fmt.Sprintf("/%s/%s/v1/getstakereport", prefix, namespace), getStakeReport).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/%s/%s/v1/encryptwallet", prefix, namespace), encryptWallet).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/%s/v1/encryptwallet", prefix, namespace), encryptWallet).Methods("POST")
 
 }
 
@@ -32,23 +32,55 @@ func checkPasswordStrength(pass string) error {
 
 }
 
+//------------------------------------------------------------------
+type encryptPassStruct struct {
+	PassPhrase string `json:"passPhrase"`
+}
+
+
 // encryptWallet executes json RPC command and returns response
 func encryptWallet(w http.ResponseWriter, r *http.Request) {
 
-	// temp valid password until we have UI setup
-	validPass := "d1924ce3d0510b2b2b4604c99453e2e1"
-	err := checkPasswordStrength(validPass)
+	var encryptPassData encryptPassStruct
+	apiResp := api.Response{}
+
+	// get the json from the post data
+	err := json.NewDecoder(r.Body).Decode(&encryptPassData)
+
 
 	if err != nil {
-		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+
+		returnErr := api.AppRespErrors.ServerError
+		returnErr.ErrorMessage = fmt.Sprintf("Server error: %v", err)
+		apiResp.Errors = append(apiResp.Errors, returnErr)
+		apiResp.Send(w)
+
 		return
+	}
+
+	err = checkPasswordStrength(encryptPassData.PassPhrase)
+
+	if err != nil {
+
+		w.WriteHeader(http.StatusBadRequest)
+		returnErr := api.AppRespErrors.InvalidStrength
+		returnErr.ErrorMessage = fmt.Sprintf("Invalid strength error: %v", err)
+		apiResp.Errors = append(apiResp.Errors, returnErr)
+		apiResp.Send(w)
+
+		return
+
 	}
 
 	n := daemonrpc.RpcRequestData{}
 	n.Method = "encryptwallet"
-	n.Args = validPass
+	n.Params = []string{encryptPassData.PassPhrase}
+
 
 	resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
+
+
 
 	if err != nil {
 		daemonrpc.RpcFailed(err, w, r)
@@ -61,6 +93,7 @@ func encryptWallet(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//------------------------------------------------------------------------------
 // getStakeReport takes writer, request - writes out stake report
 func getStakeReport(w http.ResponseWriter, r *http.Request) {
 
