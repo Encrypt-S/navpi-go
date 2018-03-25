@@ -11,11 +11,14 @@ import (
 	"net/http"
 	"github.com/dgrijalva/jwt-go"
 	"fmt"
-	"github.com/NAVCoin/navpi-go/app/utils"
 )
 
 
 func Test_loginHandler_correct(t *testing.T) {
+
+	conf.ServerConf = conf.ServerConfig{}
+	conf.GenerateJWTSecret()
+
 
 
 	api.BuildAppErrors()
@@ -58,9 +61,9 @@ func Test_loginHandler_correct(t *testing.T) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("There was an error")
 			}
-			return utils.SigningKey, nil
+			return []byte(conf.ServerConf.JWTSecret), nil
 		})
-		assert.Equal(t, token.Valid, true)
+		assert.Equal(t,true, token.Valid)
 
 
 	})
