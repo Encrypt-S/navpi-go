@@ -5,8 +5,6 @@ import (
 	"time"
 )
 
-// TODO: Generate this and store it in the app config
-
 // GenerateJWT accepts a duration of
 // time that will be added to the current
 // time to generate the expiry date

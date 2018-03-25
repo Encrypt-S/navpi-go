@@ -9,10 +9,12 @@ import (
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"net/http"
+	"github.com/dgrijalva/jwt-go"
+	"fmt"
+	"github.com/NAVCoin/navpi-go/app/utils"
 )
 
 
-// metaErrorDisplayHandler test
 func Test_loginHandler_correct(t *testing.T) {
 
 
@@ -49,6 +51,17 @@ func Test_loginHandler_correct(t *testing.T) {
 		//base test we have a jwt
 		split := strings.Split(apiResp.Data.(string), ".")
 		assert.NotEqual(t, len(split), 2)
+
+
+		strToken := apiResp.Data.(string)
+		token, _ := jwt.Parse(strToken, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("There was an error")
+			}
+			return utils.SigningKey, nil
+		})
+		assert.Equal(t, token.Valid, true)
+
 
 	})
 
