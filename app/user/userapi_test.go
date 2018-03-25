@@ -15,14 +15,11 @@ import (
 
 
 func Test_loginHandler_correct(t *testing.T) {
-
+	// setup the tests
 	conf.ServerConf = conf.ServerConfig{}
 	conf.GenerateJWTSecret()
-
-
-
 	api.BuildAppErrors()
-	// setup the tests
+
 	username := "user"
 	password := "password"
 
