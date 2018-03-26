@@ -27,15 +27,14 @@ type errorCode struct {
 	ErrorMessage string `json:"errorMessage,omitempty"`
 }
 
+// appErrorsStruct defines errors, errorCodes
 type appErrorsStruct struct {
-	ServerError     errorCode
-	InvalidStrength errorCode
-
+	LoginError             errorCode
+	InvalidStrength        errorCode
+	ServerError            errorCode
 	SetupAPIUsingLocalHost errorCode
 	SetupAPINoHost         errorCode
 	SetupAPIProtectUI      errorCode
-
-
 }
 
 // AppRespErrors variable
@@ -55,6 +54,7 @@ func BuildAppErrors() {
 	AppRespErrors.SetupAPINoHost = errorCode{"SETUP_USING_LOCAL_HOST", "You are using localhost, please use 127.0.01 or your network ip address"}
 	AppRespErrors.SetupAPIProtectUI = errorCode{"SETUP_MISSING_USERNAME_PASSWORD", "You are missing the username and/or password"}
 
+	AppRespErrors.LoginError = errorCode{"LOGIN_ERROR", "Your username and/or password is wrong"}
 }
 
 // InitMetaHandlers starts the meta api handlers

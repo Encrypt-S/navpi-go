@@ -1,6 +1,7 @@
 package conf
 
 import (
+	"github.com/NAVCoin/navpi-go/app/utils"
 	"github.com/spf13/viper"
 )
 
@@ -16,6 +17,8 @@ type ServerConfig struct {
 	LivePort   int64
 	TestPort   int64
 	UseTestnet bool
+
+	JWTSecret string // this is self generated on each start
 }
 
 // LoadServerConfig sets up viper, reads and parses server config
@@ -49,10 +52,14 @@ func parseServerConfig(serverconf ServerConfig) ServerConfig {
 	serverconf.ReleaseAPI = viper.GetString("releaseAPI")
 	serverconf.DaemonHeartbeat = viper.GetInt64("daemonHeartbeat")
 
-	serverconf.LivePort = viper.GetInt64("navCoinPorts.LivePort")
+	serverconf.LivePort = viper.GetInt64("navCoinPorts.livePort")
 	serverconf.TestPort = viper.GetInt64("navCoinPorts.testnetPort")
 	serverconf.UseTestnet = viper.GetBool("useTestnet")
 
 	return serverconf
 
+}
+
+func GenerateJWTSecret() {
+	ServerConf.JWTSecret, _ = utils.GenerateRandomString(32)
 }

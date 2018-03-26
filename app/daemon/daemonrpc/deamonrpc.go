@@ -10,9 +10,8 @@ import (
 	"github.com/NAVCoin/navpi-go/app/conf"
 )
 
-
 type RpcRequestData struct {
-	Method string `json:"method"`
+	Method string      `json:"method"`
 	Params interface{} `json:"params"`
 }
 
@@ -21,7 +20,6 @@ type RpcResp struct {
 	Data    string `json:"data"`
 	Message string `json:"message"`
 }
-
 
 /*
 type RpcRequestData struct {

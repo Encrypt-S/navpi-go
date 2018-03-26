@@ -14,6 +14,7 @@ import (
 	"github.com/NAVCoin/navpi-go/app/daemon"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonapi"
 	"github.com/NAVCoin/navpi-go/app/manager/managerapi"
+	"github.com/NAVCoin/navpi-go/app/user"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
@@ -37,7 +38,7 @@ func main() {
 	// Load the App config
 	err = conf.LoadAppConfig()
 	if err != nil {
-		log.Fatal("Failed to load the app config: " + err.Error())
+		log.Println("Failed to load the app config: " + err.Error())
 	}
 
 	conf.StartConfigManager()
@@ -67,6 +68,7 @@ func main() {
 		managerapi.InitManagerhandlers(router, "api")
 		daemonapi.InitChainHandlers(router, "api")
 		daemonapi.InitWalletHandlers(router, "api")
+		user.InitSetupHandlers(router, "api")
 
 	}
 
@@ -86,5 +88,6 @@ func initMain() {
 
 	api.BuildAppErrors()
 	conf.CreateRPCDetails()
+	conf.GenerateJWTSecret()
 
 }

@@ -104,6 +104,8 @@ type GitHubReleaseData struct {
 var runningDaemon *exec.Cmd
 var minHeartbeat int64 = 1000 // the lowest value the hb checker can be set to
 
+var isGettingDaemon = false
+
 // StartManager is a simple system that checks if
 // the daemon is alive. If not it tries to start it
 func StartManager() {
@@ -126,19 +128,22 @@ func StartManager() {
 				//log.Println("NAVCoin daemon is alive!")
 			} else {
 
-				log.Println("NAVCoin daemon is unresponsive...")
+				// only do thing if we are already not getting the daemon
+				if !isGettingDaemon {
+					log.Println("NAVCoin daemon is unresponsive...")
 
-				if runningDaemon != nil {
-					Stop(runningDaemon)
-				}
+					if runningDaemon != nil {
+						Stop(runningDaemon)
+					}
 
-				// start the daemon and download it if necessary
-				cmd, err := DownloadAndStart(conf.ServerConf, conf.AppConf)
+					// start the daemon and download it if necessary
+					cmd, err := DownloadAndStart(conf.ServerConf, conf.AppConf)
 
-				if err != nil {
-					log.Println(err)
-				} else {
-					runningDaemon = cmd
+					if err != nil {
+						log.Println(err)
+					} else {
+						runningDaemon = cmd
+					}
 				}
 
 			}
@@ -285,7 +290,11 @@ func downloadDaemon(serverConf conf.ServerConfig, version string) {
 
 	dlPath, dlName, _ := getDownloadPathAndName(releaseInfo)
 
+	isGettingDaemon = true // flag we are getting the daemon
+
 	fs.DownloadExtract(dlPath, dlName)
+
+	isGettingDaemon = false // flag we have finished
 
 }
 
