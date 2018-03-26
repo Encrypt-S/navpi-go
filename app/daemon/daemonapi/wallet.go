@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"encoding/json"
+
 	"github.com/NAVCoin/navpi-go/app/api"
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
@@ -32,19 +33,18 @@ func checkPasswordStrength(pass string) error {
 
 }
 
-// ----------------------------------------------------------------
-// encryptPassStruct defines parameters used to encrypt wallet
-type encryptPassStruct struct {
+// EncryptWalletCmd defines the "encryptwallet" JSON-RPC command.
+type EncryptWalletCmd struct {
 	PassPhrase string `json:"passPhrase"`
 }
 
 // encryptWallet executes "encryptwallet" json RPC command.
 func encryptWallet(w http.ResponseWriter, r *http.Request) {
 
-	var encryptPassData encryptPassStruct
+	var encryptWalletCmd EncryptWalletCmd
 	apiResp := api.Response{}
 
-	err := json.NewDecoder(r.Body).Decode(&encryptPassData)
+	err := json.NewDecoder(r.Body).Decode(&encryptWalletCmd)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -57,7 +57,7 @@ func encryptWallet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = checkPasswordStrength(encryptPassData.PassPhrase)
+	err = checkPasswordStrength(encryptWalletCmd.PassPhrase)
 
 	if err != nil {
 
@@ -73,7 +73,7 @@ func encryptWallet(w http.ResponseWriter, r *http.Request) {
 
 	n := daemonrpc.RpcRequestData{}
 	n.Method = "encryptwallet"
-	n.Params = []string{encryptPassData.PassPhrase}
+	n.Params = []string{encryptWalletCmd.PassPhrase}
 
 	resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
 
@@ -88,7 +88,6 @@ func encryptWallet(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// ----------------------------------------------------------------
 // getStakeReport takes writer, request - writes out stake report
 func getStakeReport(w http.ResponseWriter, r *http.Request) {
 

@@ -54,16 +54,14 @@ func BuildAppErrors() {
 	AppRespErrors.SetupAPINoHost = errorCode{"SETUP_USING_LOCAL_HOST", "You are using localhost, please use 127.0.01 or your network ip address"}
 	AppRespErrors.SetupAPIProtectUI = errorCode{"SETUP_MISSING_USERNAME_PASSWORD", "You are missing the username and/or password"}
 
+	// Login Errors
 	AppRespErrors.LoginError = errorCode{"LOGIN_ERROR", "Your username and/or password is wrong"}
 }
 
 // InitMetaHandlers starts the meta api handlers
 func InitMetaHandlers(r *mux.Router, prefix string) {
-
 	nameSpace := "meta"
-
 	r.Handle(fmt.Sprintf("/%s/%s/v1/errorcode", prefix, nameSpace), middleware.Adapt(metaErrorDisplayHandler()))
-
 }
 
 // metaErrorDisplayHandler displays all the application errors to frontend

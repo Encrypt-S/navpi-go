@@ -35,7 +35,7 @@ func Test_loginHandler_correct(t *testing.T) {
 		Run(loginHandler(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			var apiResp api.Response
-			//
+
 			// get the json from the post data
 			err := json.NewDecoder(r.Body).Decode(&apiResp)
 

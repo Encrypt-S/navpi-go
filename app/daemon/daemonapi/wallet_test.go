@@ -1,7 +1,13 @@
 package daemonapi
 
 import (
+	"encoding/json"
+	"net/http"
 	"testing"
+
+	"github.com/NAVCoin/navpi-go/app/api"
+	"github.com/appleboy/gofight"
+	"github.com/stretchr/testify/assert"
 )
 
 var (
@@ -40,11 +46,33 @@ func Test_checkPasswordStrength(t *testing.T) {
 
 }
 
-// func Test_encryptWallet(t *testing.T) {
+func Test_encryptWallet_correct(t *testing.T) {
 
-//var encryptPassData encryptPassStruct
-//encryptPassData = "d1924ce3d0510b2b2b4604c99453e2e1"
+	// setup tests
+	api.BuildAppErrors()
 
-//encryptWallet(w http.R)
+	testPhrase := "d1924ce3d0510b2b2b4604c99453e2e1"
 
-// }
+	r := gofight.New()
+	r.POST("/").
+		SetJSON(gofight.D{
+			"passPhrase": testPhrase,
+		}).
+		SetDebug(true).
+		Run(encryptWallet(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+
+			var apiResp api.Response
+
+			// get the json from the post data
+			err := json.NewDecoder(r.Body).Decode(&apiResp)
+
+			if err != nil {
+				t.Error(err.Error())
+			}
+
+			assert.Equal(t, r.Code, http.StatusOK)
+			assert.NotEqual(t, len(apiResp.Data.(string)), 0)
+
+		})
+
+}
