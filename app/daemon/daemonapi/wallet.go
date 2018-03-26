@@ -39,53 +39,52 @@ type EncryptWalletCmd struct {
 }
 
 // encryptWallet executes "encryptwallet" json RPC command.
-func encryptWallet(w http.ResponseWriter, r *http.Request) {
+func encryptWallet() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-	var encryptWalletCmd EncryptWalletCmd
-	apiResp := api.Response{}
+		var encryptWalletCmd EncryptWalletCmd
+		apiResp := api.Response{}
 
-	err := json.NewDecoder(r.Body).Decode(&encryptWalletCmd)
+		err := json.NewDecoder(r.Body).Decode(&encryptWalletCmd)
 
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
 
-		returnErr := api.AppRespErrors.ServerError
-		returnErr.ErrorMessage = fmt.Sprintf("Server error: %v", err)
-		apiResp.Errors = append(apiResp.Errors, returnErr)
-		apiResp.Send(w)
+			returnErr := api.AppRespErrors.ServerError
+			returnErr.ErrorMessage = fmt.Sprintf("Server error: %v", err)
+			apiResp.Errors = append(apiResp.Errors, returnErr)
+			apiResp.Send(w)
 
-		return
-	}
+			return
+		}
 
-	err = checkPasswordStrength(encryptWalletCmd.PassPhrase)
+		err = checkPasswordStrength(encryptWalletCmd.PassPhrase)
 
-	if err != nil {
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			returnErr := api.AppRespErrors.InvalidStrength
+			returnErr.ErrorMessage = fmt.Sprintf("Invalid strength error: %v", err)
+			apiResp.Errors = append(apiResp.Errors, returnErr)
+			apiResp.Send(w)
+			return
+		}
 
-		w.WriteHeader(http.StatusBadRequest)
-		returnErr := api.AppRespErrors.InvalidStrength
-		returnErr.ErrorMessage = fmt.Sprintf("Invalid strength error: %v", err)
-		apiResp.Errors = append(apiResp.Errors, returnErr)
-		apiResp.Send(w)
+		n := daemonrpc.RpcRequestData{}
+		n.Method = "encryptwallet"
+		n.Params = []string{encryptWalletCmd.PassPhrase}
 
-		return
+		resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
 
-	}
+		if err != nil {
+			daemonrpc.RpcFailed(err, w, r)
+			return
+		}
 
-	n := daemonrpc.RpcRequestData{}
-	n.Method = "encryptwallet"
-	n.Params = []string{encryptWalletCmd.PassPhrase}
+		bodyText, err := ioutil.ReadAll(resp.Body)
+		w.WriteHeader(resp.StatusCode)
+		w.Write(bodyText)
 
-	resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
-
-	if err != nil {
-		daemonrpc.RpcFailed(err, w, r)
-		return
-	}
-
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	w.WriteHeader(resp.StatusCode)
-	w.Write(bodyText)
-
+	})
 }
 
 // getStakeReport takes writer, request - writes out stake report
