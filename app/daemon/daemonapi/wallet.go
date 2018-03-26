@@ -10,6 +10,7 @@ import (
 	"github.com/NAVCoin/navpi-go/app/api"
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
+	"github.com/NAVCoin/navpi-go/app/middleware"
 	"github.com/gorilla/mux"
 	"github.com/muesli/crunchy"
 )
@@ -18,8 +19,12 @@ import (
 func InitWalletHandlers(r *mux.Router, prefix string) {
 
 	namespace := "wallet"
+
+	// setup getstakereport
 	r.HandleFunc(fmt.Sprintf("/%s/%s/v1/getstakereport", prefix, namespace), getStakeReport).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/%s/%s/v1/encryptwallet", prefix, namespace), encryptWallet).Methods("POST")
+
+	// setup encryptwallet
+	r.Handle(fmt.Sprintf("/%s/%s/v1/encryptwallet", prefix, namespace), middleware.Adapt(encryptWallet())).Methods("POST")
 
 }
 
@@ -87,7 +92,7 @@ func encryptWallet() http.Handler {
 	})
 }
 
-// getStakeReport takes writer, request - writes out stake report
+// getStakeReport: return SubTotal of the staked coin in last 24H, 7 days
 func getStakeReport(w http.ResponseWriter, r *http.Request) {
 
 	n := daemonrpc.RpcRequestData{}
