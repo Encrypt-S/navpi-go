@@ -46,17 +46,15 @@ func Test_checkPasswordStrength(t *testing.T) {
 
 }
 
-func Test_encryptWallet_correct(t *testing.T) {
+func Test_encryptWallet_empty_passphrase(t *testing.T) {
 
 	// setup tests
 	api.BuildAppErrors()
 
-	testPhrase := "d1924ce3d0510b2b2b4604c99453e2e1"
-
 	r := gofight.New()
 	r.POST("/").
 		SetJSON(gofight.D{
-			"passPhrase": testPhrase,
+			"passPhrase": "",
 		}).
 		SetDebug(true).
 		Run(encryptWallet(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
@@ -70,9 +68,38 @@ func Test_encryptWallet_correct(t *testing.T) {
 				t.Error(err.Error())
 			}
 
-			assert.Equal(t, r.Code, http.StatusOK)
-			assert.NotEqual(t, len(apiResp.Data.(string)), 0)
+			assert.Equal(t, r.Code, http.StatusBadRequest)
+			assert.NotNil(t, apiResp.Errors)
+			assert.Equal(t, len(apiResp.Errors), 1)
 
 		})
+
+}
+
+
+func Test_encryptWallet_no_passphrase(t *testing.T) {
+
+	// setup tests
+	api.BuildAppErrors()
+
+	r := gofight.New()
+	r.POST("/").
+		SetDebug(true).
+		Run(encryptWallet(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+
+		var apiResp api.Response
+
+		// get the json from the post data
+		err := json.NewDecoder(r.Body).Decode(&apiResp)
+
+		if err != nil {
+			t.Error(err.Error())
+		}
+
+		assert.Equal(t, r.Code, http.StatusInternalServerError)
+		assert.NotNil(t, apiResp.Errors)
+		assert.Equal(t, len(apiResp.Errors), 1)
+
+	})
 
 }
