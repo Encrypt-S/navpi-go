@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"testing"
 	"github.com/stretchr/testify/assert"
+	"fmt"
 )
 
 
@@ -47,4 +48,19 @@ func Test_jwt_FromAuthHeader_wrong_format(t *testing.T) {
 	extractedToken, err = FromAuthHeader(&r)
 	assert.Equal(t, "", extractedToken)
 	assert.NotNil(t, err)
+}
+
+
+// check that the
+func Test_jwt_FromAuthHeader_correct(t *testing.T) {
+
+	// no bearer
+	h := http.Header{}
+	h.Add(defaultAuthorizationHeaderName, fmt.Sprintf("bearer %s", jwtToken))
+	r := http.Request{Header:h}
+
+	extractedToken, err := FromAuthHeader(&r)
+
+	assert.Equal(t, jwtToken, extractedToken)
+	assert.Nil(t, err)
 }
