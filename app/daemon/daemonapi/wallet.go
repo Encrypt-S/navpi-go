@@ -10,17 +10,21 @@ import (
 	"github.com/NAVCoin/navpi-go/app/api"
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
+	"github.com/NAVCoin/navpi-go/app/middleware"
 	"github.com/gorilla/mux"
 	"github.com/muesli/crunchy"
-	"github.com/NAVCoin/navpi-go/app/middleware"
 )
 
 // InitWalletHandlers sets up handlers for the blockchain rpc interface
 func InitWalletHandlers(r *mux.Router, prefix string) {
 
 	namespace := "wallet"
+
+	// setup getstakereport
 	r.HandleFunc(fmt.Sprintf("/%s/%s/v1/getstakereport", prefix, namespace), getStakeReport).Methods("GET")
-	r.Handle(fmt.Sprintf("/%s/%s/v1/login", prefix, namespace), middleware.Adapt(encryptWallet())).Methods("POST")
+
+	// setup encryptwallet
+	r.Handle(fmt.Sprintf("/%s/%s/v1/encryptwallet", prefix, namespace), middleware.Adapt(encryptWallet())).Methods("POST")
 
 }
 
