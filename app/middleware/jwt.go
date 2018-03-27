@@ -24,7 +24,7 @@ func JwtHandler() Adapter {
 			}
 
 			// Parse out the token
-			token, _ := jwt.Parse(headerToken, func(token *jwt.Token) (interface{}, error) {
+			token, err := jwt.Parse(headerToken, func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, fmt.Errorf("There was an error")
 				}
@@ -32,7 +32,7 @@ func JwtHandler() Adapter {
 			})
 
 			// check that the toke is valid - otherwise
-			if !token.Valid {
+			if !token.Valid || err != nil {
 				status := http.StatusUnauthorized
 				http.Error(w, http.StatusText(status), status)
 				return
