@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
-	"github.com/NAVCoin/navpi-go/app/middleware"
 	"github.com/gorilla/mux"
 )
 
@@ -65,7 +63,7 @@ func InitMetaHandlers(r *mux.Router, prefix string) {
 
 	nameSpace := "meta"
 
-	r.Handle(fmt.Sprintf("/%s/%s/v1/errorcode", prefix, nameSpace), middleware.Adapt(metaErrorDisplayHandler()))
+	r.Handle(fmt.Sprintf("/%s/%s/v1/errorcode", prefix, nameSpace), metaErrorDisplayHandler())
 
 }
 

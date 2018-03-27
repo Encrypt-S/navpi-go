@@ -4,14 +4,35 @@ import (
 	"net/http"
 	"strings"
 	"errors"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/NAVCoin/navpi-go/app/conf"
+	"fmt"
 )
 
-func jwtHandler() Adapter {
+func JwtHandler() Adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
+			headerToken, _ := FromAuthHeader(r)
+
+			token, _ := jwt.Parse(headerToken, func(token *jwt.Token) (interface{}, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, fmt.Errorf("There was an error")
+				}
+				return []byte(conf.ServerConf.JWTSecret), nil
+			})
+
+			if !token.Valid {
+
+				status := http.StatusUnauthorized
+				http.Error(w, http.StatusText(status), status)
+				return
+
+			}
 
 
+			// all good continue
+			h.ServeHTTP(w, r)
 		})
 	}
 }
