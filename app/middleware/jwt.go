@@ -13,8 +13,17 @@ func JwtHandler() Adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			headerToken, _ := FromAuthHeader(r)
+			//read token from the header
+			headerToken, err := FromAuthHeader(r)
 
+			// if there is and error or the token is missing - exit
+			if err != nil || headerToken == "" {
+				status := http.StatusUnauthorized
+				http.Error(w, http.StatusText(status), status)
+				return
+			}
+
+			// Parse out the token
 			token, _ := jwt.Parse(headerToken, func(token *jwt.Token) (interface{}, error) {
 				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 					return nil, fmt.Errorf("There was an error")
@@ -22,12 +31,11 @@ func JwtHandler() Adapter {
 				return []byte(conf.ServerConf.JWTSecret), nil
 			})
 
+			// check that the toke is valid - otherwise
 			if !token.Valid {
-
 				status := http.StatusUnauthorized
 				http.Error(w, http.StatusText(status), status)
 				return
-
 			}
 
 
