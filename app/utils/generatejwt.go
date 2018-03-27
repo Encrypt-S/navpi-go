@@ -8,7 +8,7 @@ import (
 // GenerateJWT accepts a duration of
 // time that will be added to the current
 // time to generate the expiry date
-func GenerateJWT(exp time.Duration, signingKey []byte) string  {
+func GenerateJWT(exp time.Duration, signingKey []byte) string {
 
 	token := jwt.New(jwt.SigningMethodHS256)
 

@@ -1,8 +1,8 @@
 package conf
 
 import (
-	"github.com/spf13/viper"
 	"github.com/NAVCoin/navpi-go/app/utils"
+	"github.com/spf13/viper"
 )
 
 // ServerConfig defines a structure to store server config data
@@ -60,8 +60,6 @@ func parseServerConfig(serverconf ServerConfig) ServerConfig {
 
 }
 
-
-
-func GenerateJWTSecret () {
+func GenerateJWTSecret() {
 	ServerConf.JWTSecret, _ = utils.GenerateRandomString(32)
 }

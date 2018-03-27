@@ -4,7 +4,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-
 // InitAddressHandlers sets up handlers for the blockchain rpc interface
 func InitAddressHandlers(r *mux.Router, prefix string) {
 

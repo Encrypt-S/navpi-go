@@ -5,8 +5,12 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"encoding/json"
+
+	"github.com/NAVCoin/navpi-go/app/api"
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
+	"github.com/NAVCoin/navpi-go/app/middleware"
 	"github.com/gorilla/mux"
 	"github.com/muesli/crunchy"
 )
@@ -15,8 +19,12 @@ import (
 func InitWalletHandlers(r *mux.Router, prefix string) {
 
 	namespace := "wallet"
+
+	// setup getstakereport
 	r.HandleFunc(fmt.Sprintf("/%s/%s/v1/getstakereport", prefix, namespace), getStakeReport).Methods("GET")
-	//r.HandleFunc(fmt.Sprintf("/%s/%s/v1/encryptwallet", prefix, namespace), encryptWallet).Methods("GET")
+
+	// setup encryptwallet
+	r.Handle(fmt.Sprintf("/%s/%s/v1/encryptwallet", prefix, namespace), middleware.Adapt(encryptWallet())).Methods("POST")
 
 }
 
@@ -30,27 +38,63 @@ func checkPasswordStrength(pass string) error {
 
 }
 
-// encryptWallet executes json RPC command and returns...
-// func encryptWallet(w http.ResponseWriter, r *http.Request) {
+// EncryptWalletCmd defines the "encryptwallet" JSON-RPC command.
+type EncryptWalletCmd struct {
+	PassPhrase string `json:"passPhrase"`
+}
 
-// 	pass := "im the"
-// 	apiResp, err := checkPasswordStrength(pass)
+// encryptWallet executes "encryptwallet" json RPC command.
+func encryptWallet() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-// 	if err != nil {
-// 		apiResp.Send(w)
-// 		return
-// 	}
+		var encryptWalletCmd EncryptWalletCmd
+		apiResp := api.Response{}
 
-// 	// now execute ecnrypt command...
+		err := json.NewDecoder(r.Body).Decode(&encryptWalletCmd)
 
-// 	// respond
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
 
-// }
+			returnErr := api.AppRespErrors.ServerError
+			returnErr.ErrorMessage = fmt.Sprintf("Server error: %v", err)
+			apiResp.Errors = append(apiResp.Errors, returnErr)
+			apiResp.Send(w)
+
+			return
+		}
+
+		err = checkPasswordStrength(encryptWalletCmd.PassPhrase)
+
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			returnErr := api.AppRespErrors.InvalidStrength
+			returnErr.ErrorMessage = fmt.Sprintf("Invalid strength error: %v", err)
+			apiResp.Errors = append(apiResp.Errors, returnErr)
+			apiResp.Send(w)
+			return
+		}
+
+		n := daemonrpc.RpcRequestData{}
+		n.Method = "encryptwallet"
+		n.Params = []string{encryptWalletCmd.PassPhrase}
+
+		resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
+
+		if err != nil {
+			daemonrpc.RpcFailed(err, w, r)
+			return
+		}
+
+		bodyText, err := ioutil.ReadAll(resp.Body)
+		w.WriteHeader(resp.StatusCode)
+		w.Write(bodyText)
+
+	})
+}
 
 // getStakeReport takes writer, request - writes out stake report
 func getStakeReport(w http.ResponseWriter, r *http.Request) {
 
-	// fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
 	n := daemonrpc.RpcRequestData{}
 	n.Method = "getstakereport"
 

@@ -76,7 +76,7 @@ func protectUIHandler() http.Handler {
 
 			w.WriteHeader(http.StatusBadRequest)
 
-			returnErr := api.AppRespErrors.InvalidPasswordStrength
+			returnErr := api.AppRespErrors.InvalidStrength
 			returnErr.ErrorMessage = fmt.Sprintf("The password is considered unsafe: %v", err)
 
 			apiResp.Errors = append(apiResp.Errors, returnErr)
