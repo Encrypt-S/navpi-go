@@ -13,7 +13,6 @@ import (
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
 	"github.com/NAVCoin/navpi-go/app/middleware"
-	"github.com/NAVCoin/navpi-go/app/api"
 )
 
 // InitChainHandlers sets up handlers for the blockchain rpc interface
