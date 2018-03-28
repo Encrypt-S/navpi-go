@@ -1,18 +1,17 @@
 package user
 
 import (
-	"testing"
-	"github.com/appleboy/gofight"
-	"github.com/NAVCoin/navpi-go/app/conf"
-	"github.com/NAVCoin/navpi-go/app/api"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
-	"strings"
-	"net/http"
-	"github.com/dgrijalva/jwt-go"
 	"fmt"
+	"github.com/NAVCoin/navpi-go/app/api"
+	"github.com/NAVCoin/navpi-go/app/conf"
+	"github.com/appleboy/gofight"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/stretchr/testify/assert"
+	"net/http"
+	"strings"
+	"testing"
 )
-
 
 func Test_loginHandler_correct(t *testing.T) {
 	// setup the tests
@@ -26,7 +25,6 @@ func Test_loginHandler_correct(t *testing.T) {
 	hash, _ := api.HashDetails(username, password)
 	conf.AppConf.UIPassword = hash
 
-
 	r := gofight.New()
 	r.POST("/").
 		SetJSON(gofight.D{
@@ -36,38 +34,34 @@ func Test_loginHandler_correct(t *testing.T) {
 		SetDebug(true).
 		Run(loginHandler(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
-		var apiResp api.Response
-		//
-		// get the json from the post data
-		err := json.NewDecoder(r.Body).Decode(&apiResp)
+			var apiResp api.Response
 
-		if err != nil {
-			t.Error(err.Error())
-		}
+			// get the json from the post data
+			err := json.NewDecoder(r.Body).Decode(&apiResp)
 
-		assert.Equal(t, r.Code, http.StatusOK)
-		assert.NotEqual(t, len(apiResp.Data.(string)), 0)
-
-		//base test we have a jwt
-		split := strings.Split(apiResp.Data.(string), ".")
-		assert.NotEqual(t, len(split), 2)
-
-
-		strToken := apiResp.Data.(string)
-		token, _ := jwt.Parse(strToken, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("There was an error")
+			if err != nil {
+				t.Error(err.Error())
 			}
-			return []byte(conf.ServerConf.JWTSecret), nil
+
+			assert.Equal(t, r.Code, http.StatusOK)
+			assert.NotEqual(t, len(apiResp.Data.(string)), 0)
+
+			//base test we have a jwt
+			split := strings.Split(apiResp.Data.(string), ".")
+			assert.NotEqual(t, len(split), 2)
+
+			strToken := apiResp.Data.(string)
+			token, _ := jwt.Parse(strToken, func(token *jwt.Token) (interface{}, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, fmt.Errorf("There was an error")
+				}
+				return []byte(conf.ServerConf.JWTSecret), nil
+			})
+			assert.Equal(t, true, token.Valid)
+
 		})
-		assert.Equal(t,true, token.Valid)
-
-
-	})
 
 }
-
-
 
 func Test_loginHandler_no_post_data(t *testing.T) {
 
@@ -77,35 +71,32 @@ func Test_loginHandler_no_post_data(t *testing.T) {
 	r.POST("/").
 		SetJSON(gofight.D{}).
 		SetDebug(true).
-
 		Run(loginHandler(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
-		var apiResp api.Response
-		//
-		// get the json from the post data
-		err := json.NewDecoder(r.Body).Decode(&apiResp)
+			var apiResp api.Response
+			//
+			// get the json from the post data
+			err := json.NewDecoder(r.Body).Decode(&apiResp)
 
-		if err != nil {
-			t.Error(err.Error())
-		}
+			if err != nil {
+				t.Error(err.Error())
+			}
 
-		// should be a 400
-		assert.Equal(t, r.Code, http.StatusBadRequest)
+			// should be a 400
+			assert.Equal(t, r.Code, http.StatusBadRequest)
 
-		// should have 1 error
-		assert.Equal(t, len(apiResp.Errors), 1)
+			// should have 1 error
+			assert.Equal(t, len(apiResp.Errors), 1)
 
-		// check it has the right login error
-		resErr := apiResp.Errors[0]
-		assert.Equal(t, resErr.Code, api.AppRespErrors.LoginError.Code)
+			// check it has the right login error
+			resErr := apiResp.Errors[0]
+			assert.Equal(t, resErr.Code, api.AppRespErrors.LoginError.Code)
 
-	})
+		})
 
 }
 
-
 func Test_loginHandler_wrong_username(t *testing.T) {
-
 
 	api.BuildAppErrors()
 	// setup the tests
@@ -114,7 +105,6 @@ func Test_loginHandler_wrong_username(t *testing.T) {
 
 	hash, _ := api.HashDetails(username, password)
 	conf.AppConf.UIPassword = hash
-
 
 	r := gofight.New()
 	r.POST("/").
@@ -123,36 +113,32 @@ func Test_loginHandler_wrong_username(t *testing.T) {
 			"password": password,
 		}).
 		SetDebug(true).
-
 		Run(loginHandler(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
-		var apiResp api.Response
-		//
-		// get the json from the post data
-		err := json.NewDecoder(r.Body).Decode(&apiResp)
+			var apiResp api.Response
+			//
+			// get the json from the post data
+			err := json.NewDecoder(r.Body).Decode(&apiResp)
 
-		if err != nil {
-			t.Error(err.Error())
-		}
+			if err != nil {
+				t.Error(err.Error())
+			}
 
-		// should be a 400
-		assert.Equal(t, r.Code, http.StatusBadRequest)
+			// should be a 400
+			assert.Equal(t, r.Code, http.StatusBadRequest)
 
-		// should have 1 error
-		assert.Equal(t, len(apiResp.Errors), 1)
+			// should have 1 error
+			assert.Equal(t, len(apiResp.Errors), 1)
 
-		// check it has the right login error
-		resErr := apiResp.Errors[0]
-		assert.Equal(t, resErr.Code, api.AppRespErrors.LoginError.Code)
+			// check it has the right login error
+			resErr := apiResp.Errors[0]
+			assert.Equal(t, resErr.Code, api.AppRespErrors.LoginError.Code)
 
-	})
+		})
 
 }
 
-
-
 func Test_loginHandler_wrong_password(t *testing.T) {
-
 
 	api.BuildAppErrors()
 	// setup the tests
@@ -162,37 +148,34 @@ func Test_loginHandler_wrong_password(t *testing.T) {
 	hash, _ := api.HashDetails(username, password)
 	conf.AppConf.UIPassword = hash
 
-
-
 	r := gofight.New()
 	r.POST("/").
 		SetJSON(gofight.D{
-		"username": username,
-		"password": "wrong_password",
-	}).
+			"username": username,
+			"password": "wrong_password",
+		}).
 		SetDebug(true).
-
 		Run(loginHandler(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
-		var apiResp api.Response
-		//
-		// get the json from the post data
-		err := json.NewDecoder(r.Body).Decode(&apiResp)
+			var apiResp api.Response
+			//
+			// get the json from the post data
+			err := json.NewDecoder(r.Body).Decode(&apiResp)
 
-		if err != nil {
-			t.Error(err.Error())
-		}
+			if err != nil {
+				t.Error(err.Error())
+			}
 
-		// should be a 400
-		assert.Equal(t, r.Code, http.StatusBadRequest)
+			// should be a 400
+			assert.Equal(t, r.Code, http.StatusBadRequest)
 
-		// should have 1 error
-		assert.Equal(t, len(apiResp.Errors), 1)
+			// should have 1 error
+			assert.Equal(t, len(apiResp.Errors), 1)
 
-		// check it has the right login error
-		resErr := apiResp.Errors[0]
-		assert.Equal(t, resErr.Code, api.AppRespErrors.LoginError.Code)
+			// check it has the right login error
+			resErr := apiResp.Errors[0]
+			assert.Equal(t, resErr.Code, api.AppRespErrors.LoginError.Code)
 
-	})
+		})
 
 }

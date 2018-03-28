@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 // General us
@@ -16,7 +16,6 @@ func Test_GenerateRandomBytes(t *testing.T) {
 	assert.Equal(t, l, len(b1))
 	assert.Equal(t, l, len(b2))
 
-
 }
 
 // test the byte length generation up to 5000 bytes
@@ -26,7 +25,7 @@ func Test_GenerateRandomBytes_len(t *testing.T) {
 
 	b1, _ := GenerateRandomBytes(1)
 
-	for i:= 1; i<= stopTestLen; i++ {
+	for i := 1; i <= stopTestLen; i++ {
 
 		b1, _ = GenerateRandomBytes(i)
 		assert.Equal(t, i, len(b1))
@@ -34,8 +33,6 @@ func Test_GenerateRandomBytes_len(t *testing.T) {
 	}
 
 }
-
-
 
 // General us
 func Test_GenerateRandomString(t *testing.T) {

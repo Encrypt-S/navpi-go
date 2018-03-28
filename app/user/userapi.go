@@ -1,25 +1,22 @@
 package user
 
 import (
-	"github.com/gorilla/mux"
-	"fmt"
-	"github.com/NAVCoin/navpi-go/app/middleware"
-	"net/http"
-	"github.com/NAVCoin/navpi-go/app/api"
 	"encoding/json"
+	"fmt"
+	"github.com/NAVCoin/navpi-go/app/api"
 	"github.com/NAVCoin/navpi-go/app/conf"
+	"github.com/NAVCoin/navpi-go/app/middleware"
 	"github.com/NAVCoin/navpi-go/app/utils"
+	"github.com/gorilla/mux"
+	"net/http"
 	"time"
 )
-
 
 // UIProtection defines a structure to store username and password
 type LoginDetail struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
-
-
 
 // InitSetupHandlers sets the api
 func InitSetupHandlers(r *mux.Router, prefix string) {
@@ -30,9 +27,7 @@ func InitSetupHandlers(r *mux.Router, prefix string) {
 	// login route - takes the username, password and retruns a jwt
 	r.Handle(fmt.Sprintf("/%s/%s/v1/login", prefix, namespace), middleware.Adapt(loginHandler())).Methods("POST")
 
-
 }
-
 
 // protectUIHandler takes the api response and checks username and password
 func loginHandler() http.Handler {
@@ -59,7 +54,6 @@ func loginHandler() http.Handler {
 		hashedDetails := conf.AppConf.UIPassword
 		isValid := api.CheckHashDetails(loginDetail.Username, loginDetail.Password, hashedDetails)
 
-
 		if !isValid {
 			w.WriteHeader(http.StatusBadRequest)
 
@@ -70,10 +64,8 @@ func loginHandler() http.Handler {
 			return
 		}
 
-
-		apiResp.Data = utils.GenerateJWT(time.Hour * 24, []byte(conf.ServerConf.JWTSecret))
+		apiResp.Data = utils.GenerateJWT(time.Hour*24, []byte(conf.ServerConf.JWTSecret))
 		apiResp.Send(w)
 
 	})
 }
-

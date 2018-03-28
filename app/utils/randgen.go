@@ -1,12 +1,9 @@
 package utils
 
-
 import (
 	"crypto/rand"
 	"encoding/base64"
 )
-
-
 
 // GenerateRandomBytes returns securely generated random bytes.
 // It will return an error if the system's secure random
@@ -32,4 +29,3 @@ func GenerateRandomString(s int) (string, error) {
 	b, err := GenerateRandomBytes(s)
 	return base64.URLEncoding.EncodeToString(b), err
 }
-
