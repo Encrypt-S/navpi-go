@@ -12,14 +12,21 @@ import (
 
 	"github.com/NAVCoin/navpi-go/app/conf"
 	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
+	"github.com/NAVCoin/navpi-go/app/middleware"
+	"github.com/NAVCoin/navpi-go/app/api"
 )
 
 // InitChainHandlers sets up handlers for the blockchain rpc interface
 func InitChainHandlers(r *mux.Router, prefix string) {
 
+
+	namespace := "chain"
 	//config = conf
 	//
-	r.HandleFunc(fmt.Sprintf("/%s/blockchain/v1/getblockcount", prefix), getBlockCount)
+	//r.HandleFunc(fmt.Sprintf("/%s/blockchain/v1/getblockcount", prefix), getBlockCount)
+
+	r.Handle(fmt.Sprintf("/%s/%s/v1/getblockcount", prefix, namespace), middleware.Adapt(getBlockCount(),
+																								middleware.JwtHandler())).Methods("GET")
 
 	//// not implemented
 	//r.HandleFunc("/blockchain/v1/getbestblockhash", api.NotImplemented).Methods("GET")
@@ -43,23 +50,28 @@ func InitChainHandlers(r *mux.Router, prefix string) {
 
 }
 
-func getBlockCount(w http.ResponseWriter, r *http.Request) {
-	//fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
 
-	log.Println("getBlockCount")
+// protectUIHandler takes the api response and checks username and password
+func getBlockCount() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-	n := daemonrpc.RpcRequestData{}
-	n.Method = "getblockcount"
+		//fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
 
-	resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
+		log.Println("getBlockCount")
 
-	if err != nil { // Handle errors requesting the daemon
-		daemonrpc.RpcFailed(err, w, r)
-		return
-	}
+		n := daemonrpc.RpcRequestData{}
+		n.Method = "getblockcount"
 
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	w.WriteHeader(resp.StatusCode)
-	w.Write(bodyText)
-	io.WriteString(w, "hello world\n")
+		resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
+
+		if err != nil { // Handle errors requesting the daemon
+			daemonrpc.RpcFailed(err, w, r)
+			return
+		}
+
+		bodyText, err := ioutil.ReadAll(resp.Body)
+		w.WriteHeader(resp.StatusCode)
+		w.Write(bodyText)
+		io.WriteString(w, "hello world\n")
+	})
 }

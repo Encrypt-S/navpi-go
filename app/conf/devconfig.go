@@ -33,4 +33,8 @@ func parseDevConfig() {
 		NavConf.RPCPassword = viper.GetString("navConfig.rpcPassword")
 	}
 
+	if viper.GetString("serverConfig.jwtSecret") != "" {
+		ServerConf.JWTSecret = viper.GetString("serverConfig.jwtSecret")
+	}
+
 }
