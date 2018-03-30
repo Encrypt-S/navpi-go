@@ -1,6 +1,6 @@
 # NavPi 2.0 (Kowhai)
 
-[ ![Codeship Status for NAVCoin/navpi-go](https://app.codeship.com/projects/21fc5730-0a0e-0136-036a-5ec6e672f094/status?branch=v2.0.0-kowhai)](https://app.codeship.com/projects/281605)
+[ ![Codeship Status for Encrypt-S/navpi-go](https://app.codeship.com/projects/4dae2810-149a-0136-bc77-1235dd539385/status?branch=v2.0.0-kowhai)](https://app.codeship.com/projects/283373)
 
 ![](./img/stakebox.jpg)
 
