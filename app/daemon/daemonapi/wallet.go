@@ -21,7 +21,7 @@ func InitWalletHandlers(r *mux.Router, prefix string) {
 	namespace := "wallet"
 
 	// setup getstakereport
-	r.HandleFunc(fmt.Sprintf("/%s/%s/v1/getstakereport", prefix, namespace), getStakeReport).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("%s/%s/v1/getstakereport", prefix, namespace), middleware.Adapt(getStakeReport())).Methods("GET")
 
 	// setup encryptwallet
 	r.Handle(fmt.Sprintf("/%s/%s/v1/encryptwallet", prefix, namespace), middleware.Adapt(encryptWallet())).Methods("POST")
@@ -92,21 +92,24 @@ func encryptWallet() http.Handler {
 	})
 }
 
-// getStakeReport takes writer, request - writes out stake report
-func getStakeReport(w http.ResponseWriter, r *http.Request) {
+// getstakereport: return SubTotal of the staked coin in last 24H, 7 days, etc.. of all owns address
+func getStakeReport() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-	n := daemonrpc.RpcRequestData{}
-	n.Method = "getstakereport"
+		n := daemonrpc.RpcRequestData{}
+		n.Method = "getstakereport"
 
-	resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
+		resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
 
-	// Handle errors requesting the daemon
-	if err != nil {
-		daemonrpc.RpcFailed(err, w, r)
-		return
-	}
+		// Handle errors requesting the daemon
+		if err != nil {
+			daemonrpc.RpcFailed(err, w, r)
+			return
+		}
 
-	bodyText, err := ioutil.ReadAll(resp.Body)
-	w.WriteHeader(resp.StatusCode)
-	w.Write(bodyText)
+		bodyText, err := ioutil.ReadAll(resp.Body)
+		w.WriteHeader(resp.StatusCode)
+		w.Write(bodyText)
+
+	})
 }

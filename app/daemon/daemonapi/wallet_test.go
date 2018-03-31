@@ -76,7 +76,6 @@ func Test_encryptWallet_empty_passphrase(t *testing.T) {
 
 }
 
-
 func Test_encryptWallet_no_passphrase(t *testing.T) {
 
 	// setup tests
@@ -87,19 +86,19 @@ func Test_encryptWallet_no_passphrase(t *testing.T) {
 		SetDebug(true).
 		Run(encryptWallet(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
-		var apiResp api.Response
+			var apiResp api.Response
 
-		// get the json from the post data
-		err := json.NewDecoder(r.Body).Decode(&apiResp)
+			// get the json from the post data
+			err := json.NewDecoder(r.Body).Decode(&apiResp)
 
-		if err != nil {
-			t.Error(err.Error())
-		}
+			if err != nil {
+				t.Error(err.Error())
+			}
 
-		assert.Equal(t, r.Code, http.StatusInternalServerError)
-		assert.NotNil(t, apiResp.Errors)
-		assert.Equal(t, len(apiResp.Errors), 1)
+			assert.Equal(t, r.Code, http.StatusInternalServerError)
+			assert.NotNil(t, apiResp.Errors)
+			assert.Equal(t, len(apiResp.Errors), 1)
 
-	})
+		})
 
 }
