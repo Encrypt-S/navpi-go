@@ -1,6 +1,6 @@
 package daemonapi
 
-import "github.com/NAVCoin/navpi-go/app/conf"
+import "github.com/Encrypt-S/navpi-go/app/conf"
 
 // NavConfig holds pointer to NavConfig
 // RPCUser     string `json:"rpcUser"`

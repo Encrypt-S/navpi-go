@@ -1,12 +1,13 @@
 package middleware
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"strings"
-	"errors"
+
+	"github.com/Encrypt-S/navpi-go/app/conf"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/NAVCoin/navpi-go/app/conf"
-	"fmt"
 )
 
 func JwtHandler() Adapter {
@@ -38,14 +39,11 @@ func JwtHandler() Adapter {
 				return
 			}
 
-
 			// all good continue
 			h.ServeHTTP(w, r)
 		})
 	}
 }
-
-
 
 // FromAuthHeader is a "TokenExtractor" that takes a give request and extracts
 // the JWT token from the Authorization header.
