@@ -1,12 +1,11 @@
 package middleware
 
 import (
+	"fmt"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
-	"github.com/stretchr/testify/assert"
-	"fmt"
 )
-
 
 // defaultAuthorizationHeaderName is the default header name where the Auth
 // token should be written
@@ -17,14 +16,13 @@ const jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwI
 // variable
 const envVarClientSecretName = "CLIENT_SECRET_VAR_SHHH"
 
-
 // check that the
 func Test_jwt_FromAuthHeader_wrong_format(t *testing.T) {
 
 	// no bearer
 	h := http.Header{}
 	h.Add(defaultAuthorizationHeaderName, jwtToken)
-	r := http.Request{Header:h}
+	r := http.Request{Header: h}
 
 	extractedToken, err := FromAuthHeader(&r)
 
@@ -33,23 +31,21 @@ func Test_jwt_FromAuthHeader_wrong_format(t *testing.T) {
 
 	// no header - should not error
 	h = http.Header{}
-	r = http.Request{Header:h}
+	r = http.Request{Header: h}
 
 	extractedToken, err = FromAuthHeader(&r)
 	assert.Equal(t, "", extractedToken)
 	assert.Nil(t, err)
 
-
 	// not properly formed auth header
 	h = http.Header{}
 	h.Add(defaultAuthorizationHeaderName, "bearer")
-	r = http.Request{Header:h}
+	r = http.Request{Header: h}
 
 	extractedToken, err = FromAuthHeader(&r)
 	assert.Equal(t, "", extractedToken)
 	assert.NotNil(t, err)
 }
-
 
 // check that the
 func Test_jwt_FromAuthHeader_correct(t *testing.T) {
@@ -57,7 +53,7 @@ func Test_jwt_FromAuthHeader_correct(t *testing.T) {
 	// no bearer
 	h := http.Header{}
 	h.Add(defaultAuthorizationHeaderName, fmt.Sprintf("bearer %s", jwtToken))
-	r := http.Request{Header:h}
+	r := http.Request{Header: h}
 
 	extractedToken, err := FromAuthHeader(&r)
 
