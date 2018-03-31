@@ -3,13 +3,14 @@ package user
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/NAVCoin/navpi-go/app/api"
-	"github.com/NAVCoin/navpi-go/app/conf"
-	"github.com/NAVCoin/navpi-go/app/middleware"
-	"github.com/NAVCoin/navpi-go/app/utils"
-	"github.com/gorilla/mux"
 	"net/http"
 	"time"
+
+	"github.com/Encrypt-S/navpi-go/app/api"
+	"github.com/Encrypt-S/navpi-go/app/conf"
+	"github.com/Encrypt-S/navpi-go/app/middleware"
+	"github.com/Encrypt-S/navpi-go/app/utils"
+	"github.com/gorilla/mux"
 )
 
 // UIProtection defines a structure to store username and password
