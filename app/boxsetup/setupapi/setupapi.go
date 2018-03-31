@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/NAVCoin/navpi-go/app/api"
-	"github.com/NAVCoin/navpi-go/app/conf"
-	"github.com/NAVCoin/navpi-go/app/middleware"
+	"github.com/Encrypt-S/navpi-go/app/api"
+	"github.com/Encrypt-S/navpi-go/app/conf"
+	"github.com/Encrypt-S/navpi-go/app/middleware"
 	"github.com/gorilla/mux"
 	"github.com/muesli/crunchy"
 )
