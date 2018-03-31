@@ -1,6 +1,6 @@
 package conf
 
-import "github.com/NAVCoin/navpi-go/app/utils"
+import "github.com/Encrypt-S/navpi-go/app/utils"
 
 // NavConfig defines a structure to store rpc data
 type NavConfig struct {
