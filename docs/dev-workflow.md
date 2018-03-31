@@ -7,7 +7,7 @@ This is the main project repo for NavPi 2.0 "Kowhai"
     git clone https://github.com/Encrypt-S/navpi-go.git
 
 ## set project WORKDIR
-    /go/src/github.com/NAVCoin/navpi-go/app
+    /go/src/github.com/Encrypt-S/navpi-go/app
 
 ## install main dependencies
     go get ./
