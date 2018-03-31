@@ -1,4 +1,4 @@
-package: github.com/NAVCoin/navpi-go/app
+package: github.com/Encrypt-S/navpi-go/app
 import:
 - package: github.com/Sirupsen/logrus
   version: v1.0.4
