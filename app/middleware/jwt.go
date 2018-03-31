@@ -3,10 +3,11 @@ package middleware
 import (
 	"errors"
 	"fmt"
-	"github.com/NAVCoin/navpi-go/app/conf"
-	"github.com/dgrijalva/jwt-go"
 	"net/http"
 	"strings"
+
+	"github.com/Encrypt-S/navpi-go/app/conf"
+	"github.com/dgrijalva/jwt-go"
 )
 
 func JwtHandler() Adapter {
