@@ -3,14 +3,15 @@ package user
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/NAVCoin/navpi-go/app/api"
-	"github.com/NAVCoin/navpi-go/app/conf"
-	"github.com/appleboy/gofight"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/Encrypt-S/navpi-go/app/api"
+	"github.com/Encrypt-S/navpi-go/app/conf"
+	"github.com/appleboy/gofight"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_loginHandler_correct(t *testing.T) {
