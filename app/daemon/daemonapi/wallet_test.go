@@ -26,6 +26,13 @@ var (
 	validPws = []string{"d1924ce3d0510b2b2b4604c99453e2e1"}
 )
 
+func Test_getStakeReport(t *testing.T) {
+
+	// setup tests
+	api.BuildAppErrors()
+
+}
+
 func Test_checkPasswordStrength(t *testing.T) {
 
 	// run through valid password range

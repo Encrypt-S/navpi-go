@@ -21,7 +21,7 @@ func InitWalletHandlers(r *mux.Router, prefix string) {
 	namespace := "wallet"
 
 	// setup getstakereport
-	r.HandleFunc(fmt.Sprintf("%s/%s/v1/getstakereport", prefix, namespace), middleware.Adapt(getStakeReport())).Methods("GET")
+	r.Handle(fmt.Sprintf("%s/%s/v1/getstakereport", prefix, namespace), middleware.Adapt(getStakeReport())).Methods("GET")
 
 	// setup encryptwallet
 	r.Handle(fmt.Sprintf("/%s/%s/v1/encryptwallet", prefix, namespace), middleware.Adapt(encryptWallet())).Methods("POST")
