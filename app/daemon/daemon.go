@@ -13,9 +13,10 @@ import (
 	"time"
 
 	"fmt"
-	"github.com/NAVCoin/navpi-go/app/conf"
-	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
-	"github.com/NAVCoin/navpi-go/app/fs"
+
+	"github.com/Encrypt-S/navpi-go/app/conf"
+	"github.com/Encrypt-S/navpi-go/app/daemon/daemonrpc"
+	"github.com/Encrypt-S/navpi-go/app/fs"
 )
 
 const (

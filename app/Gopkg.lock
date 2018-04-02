@@ -3,7 +3,7 @@
 
 [[projects]]
   branch = "v2.0.0-kowhai"
-  name = "github.com/NAVCoin/navpi-go"
+  name = "github.com/Encrypt-S/navpi-go"
   packages = [
     "app/api",
     "app/boxsetup/setupapi",
@@ -17,7 +17,20 @@
     "app/user",
     "app/utils"
   ]
-  revision = "41a0485c97baf6d2926e7af019c5379f0db20bf2"
+  revision = "3b65c20d2904a10a9b22e16ab06b799d6d013f42"
+
+[[projects]]
+  branch = "v2.0.0-kowhai"
+  name = "github.com/NAVCoin/navpi-go"
+  packages = [
+    "app/api",
+    "app/conf",
+    "app/daemon/daemonrpc",
+    "app/fs",
+    "app/middleware",
+    "app/utils"
+  ]
+  revision = "3b65c20d2904a10a9b22e16ab06b799d6d013f42"
 
 [[projects]]
   name = "github.com/Sirupsen/logrus"
@@ -126,8 +139,8 @@
     ".",
     "mem"
   ]
-  revision = "bb8f1927f2a9d3ab41c9340aa034f6b803f4359c"
-  version = "v1.0.2"
+  revision = "63644898a8da0bc22138abf860edaf5277b6102e"
+  version = "v1.1.0"
 
 [[projects]]
   name = "github.com/spf13/cast"
@@ -206,6 +219,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d5c97ce77c70f7525cc7cf3466f8132e50974746fd1f8630c8dd12d9ab594bf6"
+  inputs-digest = "f5ac5e6eb726152f358b93dcb24def491a885908ee64dd74f38a270b5606500e"
   solver-name = "gps-cdcl"
   solver-version = 1

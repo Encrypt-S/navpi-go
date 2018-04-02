@@ -7,7 +7,8 @@ import (
 	"net/http"
 
 	"fmt"
-	"github.com/NAVCoin/navpi-go/app/conf"
+
+	"github.com/Encrypt-S/navpi-go/app/conf"
 )
 
 type RpcRequestData struct {

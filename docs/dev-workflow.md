@@ -1,13 +1,13 @@
 # Developer Workflow
 Notes, config, and general workflow for navpi-go development
 
-## clone [navpi-go](https://github.com/NAVCoin/navpi-go.git)
+## clone [navpi-go](https://github.com/Encrypt-S/navpi-go.git)
 This is the main project repo for NavPi 2.0 "Kowhai"
 
-    git clone https://github.com/NAVCoin/navpi-go.git
+    git clone https://github.com/Encrypt-S/navpi-go.git
 
 ## set project WORKDIR
-    /go/src/github.com/NAVCoin/navpi-go/app
+    /go/src/github.com/Encrypt-S/navpi-go/app
 
 ## install main dependencies
     go get ./
@@ -21,10 +21,10 @@ This is the main project repo for NavPi 2.0 "Kowhai"
 ## run tests
     go test ./...
 
-## clone [nav-docker](https://github.com/NAVCoin/nav-docker)
+## clone [nav-docker](https://github.com/Encrypt-S/nav-docker)
 This repo contains Docker files used to build and run containerized instances of the different Nav projects.
 
-    git clone https://github.com/NAVCoin/nav-docker.git
+    git clone https://github.com/Encrypt-S/nav-docker.git
 
 ## start service
 To run the service that spawns a Docker container running the navcoind daemon, simply run the command below in the directory containing the Docker files:
