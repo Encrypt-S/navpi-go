@@ -26,10 +26,6 @@
 
 
 [[constraint]]
-  branch = "v2.0.0-kowhai"
-  name = "github.com/Encrypt-S/navpi-go"
-
-[[constraint]]
   name = "github.com/Sirupsen/logrus"
   version = "1.0.5"
 
