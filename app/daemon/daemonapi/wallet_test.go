@@ -26,13 +26,6 @@ var (
 	validPws = []string{"d1924ce3d0510b2b2b4604c99453e2e1"}
 )
 
-func Test_getStakeReport(t *testing.T) {
-
-	// setup tests
-	api.BuildAppErrors()
-
-}
-
 func Test_checkPasswordStrength(t *testing.T) {
 
 	// run through valid password range
@@ -53,9 +46,9 @@ func Test_checkPasswordStrength(t *testing.T) {
 
 }
 
+// Test encryptWallet func with and empty passphrase
 func Test_encryptWallet_empty_passphrase(t *testing.T) {
 
-	// setup tests
 	api.BuildAppErrors()
 
 	r := gofight.New()
@@ -83,9 +76,9 @@ func Test_encryptWallet_empty_passphrase(t *testing.T) {
 
 }
 
+// Test encryptWallet func without a passphrase
 func Test_encryptWallet_no_passphrase(t *testing.T) {
 
-	// setup tests
 	api.BuildAppErrors()
 
 	r := gofight.New()
@@ -105,6 +98,33 @@ func Test_encryptWallet_no_passphrase(t *testing.T) {
 			assert.Equal(t, r.Code, http.StatusInternalServerError)
 			assert.NotNil(t, apiResp.Errors)
 			assert.Equal(t, len(apiResp.Errors), 1)
+
+		})
+
+}
+
+// Test getStakeReport func
+func Test_getStakeReport(t *testing.T) {
+
+	api.BuildAppErrors()
+
+	r := gofight.New()
+	r.GET("/").
+		SetDebug(true).
+		Run(getStakeReport(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+
+			var apiResp api.Response
+
+			// get the json from the response body
+			err := json.NewDecoder(r.Body).Decode(&apiResp)
+
+			if err != nil {
+				t.Error(err.Error())
+			}
+
+			// ensure we have success
+			assert.Nil(t, apiResp.Errors)
+			assert.Equal(t, http.StatusOK, r.Code)
 
 		})
 

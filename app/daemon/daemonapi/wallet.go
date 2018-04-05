@@ -21,7 +21,7 @@ func InitWalletHandlers(r *mux.Router, prefix string) {
 	namespace := "wallet"
 
 	// setup getstakereport
-	r.Handle(fmt.Sprintf("%s/%s/v1/getstakereport", prefix, namespace), middleware.Adapt(getStakeReport())).Methods("GET")
+	r.Handle(fmt.Sprintf("%s/%s/v1/getstakereport", prefix, namespace), middleware.Adapt(getStakeReport()))
 
 	// setup encryptwallet
 	r.Handle(fmt.Sprintf("/%s/%s/v1/encryptwallet", prefix, namespace), middleware.Adapt(encryptWallet())).Methods("POST")
@@ -96,20 +96,22 @@ func encryptWallet() http.Handler {
 func getStakeReport() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		n := daemonrpc.RpcRequestData{}
-		n.Method = "getstakereport"
+			n := daemonrpc.RpcRequestData{}
+			n.Method = "getstakereport"
 
-		resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
+			resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
 
-		// Handle errors requesting the daemon
-		if err != nil {
-			daemonrpc.RpcFailed(err, w, r)
-			return
-		}
+			// Handle errors requesting the daemon
+			if err != nil {
+				daemonrpc.RpcFailed(err, w, r)
+				return
+			}
 
 		bodyText, err := ioutil.ReadAll(resp.Body)
 		w.WriteHeader(resp.StatusCode)
 		w.Write(bodyText)
+
+		return
 
 	})
 }
