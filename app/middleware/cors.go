@@ -4,6 +4,8 @@ import (
 	"net/http"
 )
 
+// CORSHandler allows http to be served
+// adding necessary headers to response
 func CORSHandler() Adapter {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -11,7 +13,7 @@ func CORSHandler() Adapter {
 			w.Header().Add("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 			w.Header().Add("Access-Control-Allow-Headers", "*")
 
-			// if this is the preflight then exit heres
+			// if this is the preflight then exit here
 			if r.Method == http.MethodOptions {
 
 				w.WriteHeader(http.StatusOK)
