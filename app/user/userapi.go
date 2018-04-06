@@ -26,11 +26,10 @@ func InitSetupHandlers(r *mux.Router, prefix string) {
 	namespace := "user"
 
 	// login route - takes the username, password and retruns a jwt
-	loginPath := api.RouteBuilder(prefix, namespace, "v1", "login" )
+	loginPath := api.RouteBuilder(prefix, namespace, "v1", "login")
 	r.Handle(loginPath, middleware.Adapt(loginHandler(), middleware.CorsHandler()))
 
 }
-
 
 // protectUIHandler takes the api response and checks username and password
 func loginHandler() http.Handler {
