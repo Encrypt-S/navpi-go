@@ -13,6 +13,7 @@ import (
 	"github.com/Encrypt-S/navpi-go/app/conf"
 	"github.com/Encrypt-S/navpi-go/app/daemon/daemonrpc"
 	"github.com/Encrypt-S/navpi-go/app/middleware"
+	"github.com/Encrypt-S/navpi-go/app/api"
 )
 
 // InitChainHandlers sets up handlers for the blockchain rpc interface
@@ -22,8 +23,8 @@ func InitChainHandlers(r *mux.Router, prefix string) {
 	//config = conf
 	//
 	//r.HandleFunc(fmt.Sprintf("/%s/blockchain/v1/getblockcount", prefix), getBlockCount)
-
-	r.Handle(fmt.Sprintf("/%s/%s/v1/getblockcount", prefix, namespace), middleware.Adapt(getBlockCount(),
+	getBlocCountPath := api.RouteBuilder(prefix, namespace, "v1", "getblockcount")
+	r.Handle(getBlocCountPath, middleware.Adapt(getBlockCount(),
 		middleware.JwtHandler())).Methods("GET")
 
 	//// not implemented
