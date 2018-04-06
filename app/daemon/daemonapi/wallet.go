@@ -27,7 +27,7 @@ func InitWalletHandlers(r *mux.Router, prefix string) {
 	// setup encryptwallet
 	r.Handle(api.RouteBuilder(prefix, namespace, "v1", "encryptwallet"),
 		middleware.Adapt(encryptWallet())).
-			Methods("POST")
+		Methods("POST")
 
 }
 
@@ -56,6 +56,7 @@ func encryptWallet() http.Handler {
 		err := json.NewDecoder(r.Body).Decode(&encryptWalletCmd)
 
 		if err != nil {
+
 			w.WriteHeader(http.StatusInternalServerError)
 
 			returnErr := api.AppRespErrors.ServerError
@@ -64,17 +65,22 @@ func encryptWallet() http.Handler {
 			apiResp.Send(w)
 
 			return
+
 		}
 
 		err = checkPasswordStrength(encryptWalletCmd.PassPhrase)
 
 		if err != nil {
+
 			w.WriteHeader(http.StatusBadRequest)
+
 			returnErr := api.AppRespErrors.InvalidStrength
 			returnErr.ErrorMessage = fmt.Sprintf("Invalid strength error: %v", err)
 			apiResp.Errors = append(apiResp.Errors, returnErr)
 			apiResp.Send(w)
+
 			return
+
 		}
 
 		n := daemonrpc.RpcRequestData{}
@@ -101,14 +107,14 @@ func stakeReport() http.Handler {
 
 		n := daemonrpc.RpcRequestData{}
 		n.Method = "getstakereport"
-		//
+
 		resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
 
-			// Handle errors requesting the daemon
-			if err != nil {
-				daemonrpc.RpcFailed(err, w, r)
-				return
-			}
+		// Handle errors requesting the daemon
+		if err != nil {
+			daemonrpc.RpcFailed(err, w, r)
+			return
+		}
 
 		bodyText, err := ioutil.ReadAll(resp.Body)
 		w.WriteHeader(resp.StatusCode)

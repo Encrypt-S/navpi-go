@@ -15,11 +15,8 @@ import (
 	"github.com/Encrypt-S/navpi-go/app/daemon/daemonapi"
 	"github.com/Encrypt-S/navpi-go/app/manager/managerapi"
 	"github.com/Encrypt-S/navpi-go/app/user"
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
-
-var server *http.Server
 
 func main() {
 
@@ -72,15 +69,9 @@ func main() {
 
 	}
 
-	// Start the server
+	// Start http server
 	port := fmt.Sprintf(":%d", serverConfig.ManagerAPIPort)
-	srv := &http.Server{
-		Addr:    port,
-		Handler: handlers.CORS()(router)}
-
-	log.Println("port", port)
-	srv.ListenAndServe()
-
+	http.ListenAndServe(port, router)
 }
 
 // Start everything before we get going
