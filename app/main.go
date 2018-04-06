@@ -15,7 +15,6 @@ import (
 	"github.com/Encrypt-S/navpi-go/app/daemon/daemonapi"
 	"github.com/Encrypt-S/navpi-go/app/manager/managerapi"
 	"github.com/Encrypt-S/navpi-go/app/user"
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -72,14 +71,24 @@ func main() {
 
 	}
 
-	// Start the server
-	port := fmt.Sprintf(":%d", serverConfig.ManagerAPIPort)
-	srv := &http.Server{
-		Addr:    port,
-		Handler: handlers.CORS()(router)}
+	//headersOk := handlers.AllowedHeaders([]string{"*"})
+	//originsOk := handlers.AllowedOrigins([]string{"*"})
+	//methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
-	log.Println("port", port)
-	srv.ListenAndServe()
+	// Start http server
+
+	port := fmt.Sprintf(":%d", serverConfig.ManagerAPIPort)
+	http.ListenAndServe(port, router)
+
+
+	// Start the server
+	//port := fmt.Sprintf(":%d", serverConfig.ManagerAPIPort)
+	//srv := &http.Server{
+	//	Addr:    port,
+	//	Handler: handlers.CORS()(router)}
+	//
+	//log.Println("port", port)
+	//srv.ListenAndServe()
 
 }
 
