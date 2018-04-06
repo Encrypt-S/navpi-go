@@ -36,5 +36,3 @@ func Test_RouteBuilder(t *testing.T) {
 	assert.Equal(t, "/api/chain/v1/getuser", route)
 
 }
-
-
