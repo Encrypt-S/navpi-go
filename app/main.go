@@ -71,25 +71,10 @@ func main() {
 
 	}
 
-	//headersOk := handlers.AllowedHeaders([]string{"*"})
-	//originsOk := handlers.AllowedOrigins([]string{"*"})
-	//methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	// Start http server
-
 	port := fmt.Sprintf(":%d", serverConfig.ManagerAPIPort)
 	http.ListenAndServe(port, router)
-
-
-	// Start the server
-	//port := fmt.Sprintf(":%d", serverConfig.ManagerAPIPort)
-	//srv := &http.Server{
-	//	Addr:    port,
-	//	Handler: handlers.CORS()(router)}
-	//
-	//log.Println("port", port)
-	//srv.ListenAndServe()
-
 }
 
 // Start everything before we get going
