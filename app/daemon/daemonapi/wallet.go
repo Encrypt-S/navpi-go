@@ -21,10 +21,13 @@ func InitWalletHandlers(r *mux.Router, prefix string) {
 	namespace := "wallet"
 
 	// setup getstakereport
-	r.Handle(fmt.Sprintf("/%s/%s/v2/stakereport", prefix, namespace), middleware.Adapt(stakeReport()))
+	stakeReportPath := api.RouteBuilder(prefix, namespace, "v1", "stakeReport")
+	r.Handle(stakeReportPath, middleware.Adapt(stakeReport()))
 
 	// setup encryptwallet
-	r.Handle(fmt.Sprintf("/%s/%s/v1/encryptwallet", prefix, namespace), middleware.Adapt(encryptWallet())).Methods("POST")
+	r.Handle(api.RouteBuilder(prefix, namespace, "v1", "encryptwallet"),
+		middleware.Adapt(encryptWallet())).
+			Methods("POST")
 
 }
 
