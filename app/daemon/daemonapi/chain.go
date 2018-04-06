@@ -6,7 +6,6 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"fmt"
 	"io"
 	"io/ioutil"
 
