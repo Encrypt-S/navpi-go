@@ -9,10 +9,10 @@ import (
 	"io"
 	"io/ioutil"
 
+	"github.com/Encrypt-S/navpi-go/app/api"
 	"github.com/Encrypt-S/navpi-go/app/conf"
 	"github.com/Encrypt-S/navpi-go/app/daemon/daemonrpc"
 	"github.com/Encrypt-S/navpi-go/app/middleware"
-	"github.com/Encrypt-S/navpi-go/app/api"
 )
 
 // InitChainHandlers sets up handlers for the blockchain rpc interface
