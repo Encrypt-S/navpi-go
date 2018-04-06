@@ -103,29 +103,29 @@ func Test_encryptWallet_no_passphrase(t *testing.T) {
 
 }
 
-// Test getStakeReport func
-func Test_encryptWallets(t *testing.T) {
-
-	api.BuildAppErrors()
-
-	r := gofight.New()
-	r.GET("/").
-		SetDebug(true).
-		Run(stakeReport(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-
-			var apiResp api.Response
-
-			// get the json from the response body
-			err := json.NewDecoder(r.Body).Decode(&apiResp)
-
-			if err != nil {
-				t.Error(err.Error())
-			}
-
-			// ensure we have success
-			assert.Nil(t, apiResp.Errors)
-			assert.Equal(t, http.StatusOK, r.Code)
-
-		})
-
-}
+//// Test getStakeReport func
+//func Test_encryptWallets(t *testing.T) {
+//
+//	api.BuildAppErrors()
+//
+//	r := gofight.New()
+//	r.GET("/").
+//		SetDebug(true).
+//		Run(stakeReport(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+//
+//			//var apiResp api.Response
+//			//
+//			//// get the json from the response body
+//			//err := json.NewDecoder(r.Body).Decode(&apiResp)
+//			//
+//			//if err != nil {
+//			//	t.Error(err.Error())
+//			//}
+//			//
+//			//// ensure we have success
+//			//assert.Nil(t, apiResp.Errors)
+//			//assert.Equal(t, http.StatusOK, r.Code)
+//
+//		})
+//
+//}
