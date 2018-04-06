@@ -27,10 +27,12 @@ func InitSetupHandlers(r *mux.Router, prefix string) {
 	namespace := "setup"
 
 	// setup setrange route - takes the users ip address and saves it to the config as a range
-	r.Handle(fmt.Sprintf("/%s/%s/v1/setrange", prefix, namespace), middleware.Adapt(rangeSetHandler()))
+	setRangePath := api.RouteBuilder(prefix, namespace, "v1", "setrange")
+	r.Handle(setRangePath, middleware.Adapt(rangeSetHandler()))
 
 	// setup protectui route - protect UI with username and password
-	r.Handle(fmt.Sprintf("/%s/%s/v1/protectui", prefix, namespace), middleware.Adapt(protectUIHandler())).Methods("POST")
+	protectUIPath := api.RouteBuilder(prefix, namespace, "v1", "protectui")
+	r.Handle(protectUIPath, middleware.Adapt(protectUIHandler())).Methods("POST")
 
 }
 
