@@ -18,8 +18,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var server *http.Server
-
 func main() {
 
 	initMain()
@@ -70,7 +68,6 @@ func main() {
 		user.InitSetupHandlers(router, "api")
 
 	}
-
 
 	// Start http server
 	port := fmt.Sprintf(":%d", serverConfig.ManagerAPIPort)
