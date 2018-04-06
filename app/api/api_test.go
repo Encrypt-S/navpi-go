@@ -28,3 +28,13 @@ func Test_metaErrorDisplayHandler(t *testing.T) {
 
 		})
 }
+
+func Test_RouteBuilder(t *testing.T) {
+
+	route := RouteBuilder("api", "chain", "v1", "getuser")
+
+	assert.Equal(t, "/api/chain/v1/getuser", route)
+
+}
+
+

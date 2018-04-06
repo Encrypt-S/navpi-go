@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/Encrypt-S/navpi-go/app/middleware"
@@ -73,4 +74,10 @@ func metaErrorDisplayHandler() http.Handler {
 		appResp.Send(w)
 
 	})
+}
+
+func RouteBuilder(prefix string, namespace string, version string, method string) string {
+	route := fmt.Sprintf("/%s/%s/%s/%s", prefix, namespace, version, method)
+	log.Println(route)
+	return route
 }
