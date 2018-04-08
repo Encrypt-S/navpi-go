@@ -87,5 +87,8 @@ func CORSRouteHandler(path string, r *mux.Router,  f http.Handler, method string
 }
 
 func ProtectedRouteHandler(path string, r *mux.Router,  f http.Handler,  method string ) {
-	r.Handle(path, middleware.Adapt(f, middleware.CORSHandler(), middleware.JwtHandler())).Methods(method)
+	r.Handle(path, middleware.Adapt(f,
+		middleware.CORSHandler(),
+		middleware.JwtHandler())).
+		Methods(method)
 }
