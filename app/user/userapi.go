@@ -8,7 +8,6 @@ import (
 
 	"github.com/Encrypt-S/navpi-go/app/api"
 	"github.com/Encrypt-S/navpi-go/app/conf"
-	"github.com/Encrypt-S/navpi-go/app/middleware"
 	"github.com/Encrypt-S/navpi-go/app/utils"
 	"github.com/gorilla/mux"
 )
@@ -27,7 +26,7 @@ func InitSetupHandlers(r *mux.Router, prefix string) {
 
 	// login route - takes the username, password and retruns a jwt
 	loginPath := api.RouteBuilder(prefix, namespace, "v1", "login")
-	r.Handle(loginPath, middleware.Adapt(loginHandler(), middleware.CORSHandler()))
+	api.OpenRouteHandler(loginPath, r, loginHandler(), http.MethodGet)
 
 }
 

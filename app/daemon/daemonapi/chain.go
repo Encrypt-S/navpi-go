@@ -12,19 +12,19 @@ import (
 	"github.com/Encrypt-S/navpi-go/app/api"
 	"github.com/Encrypt-S/navpi-go/app/conf"
 	"github.com/Encrypt-S/navpi-go/app/daemon/daemonrpc"
-	"github.com/Encrypt-S/navpi-go/app/middleware"
 )
 
 // InitChainHandlers sets up handlers for the blockchain rpc interface
 func InitChainHandlers(r *mux.Router, prefix string) {
 
 	namespace := "chain"
-	//config = conf
-	//
-	//r.HandleFunc(fmt.Sprintf("/%s/blockchain/v1/getblockcount", prefix), getBlockCount)
+
 	getBlocCountPath := api.RouteBuilder(prefix, namespace, "v1", "getblockcount")
-	r.Handle(getBlocCountPath, middleware.Adapt(getBlockCount(),
-		middleware.JwtHandler())).Methods("GET")
+	api.ProtectedRouteHandler(getBlocCountPath, r, getBlockCount(), http.MethodPost)
+
+
+	//r.Handle(getBlocCountPath, middleware.Adapt(getBlockCount(),
+	//	middleware.JwtHandler())).Methods("GET")
 
 	//// not implemented
 	//r.HandleFunc("/blockchain/v1/getbestblockhash", api.NotImplemented).Methods("GET")
@@ -51,8 +51,6 @@ func InitChainHandlers(r *mux.Router, prefix string) {
 // protectUIHandler takes the api response and checks username and password
 func getBlockCount() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		//fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
 
 		log.Println("getBlockCount")
 

@@ -10,7 +10,6 @@ import (
 	"github.com/Encrypt-S/navpi-go/app/api"
 	"github.com/Encrypt-S/navpi-go/app/conf"
 	"github.com/Encrypt-S/navpi-go/app/daemon/daemonrpc"
-	"github.com/Encrypt-S/navpi-go/app/middleware"
 	"github.com/gorilla/mux"
 	"github.com/muesli/crunchy"
 )
@@ -22,12 +21,11 @@ func InitWalletHandlers(r *mux.Router, prefix string) {
 
 	// setup getstakereport
 	stakeReportPath := api.RouteBuilder(prefix, namespace, "v1", "stakeReport")
-	r.Handle(stakeReportPath, middleware.Adapt(stakeReport()))
+	api.ProtectedRouteHandler(stakeReportPath, r, stakeReport(), http.MethodGet)
 
 	// setup encryptwallet
-	r.Handle(api.RouteBuilder(prefix, namespace, "v1", "encryptwallet"),
-		middleware.Adapt(encryptWallet())).
-		Methods("POST")
+	encryptWalletPath := api.RouteBuilder(prefix, namespace, "v1", "encryptwallet")
+	api.ProtectedRouteHandler(encryptWalletPath, r, encryptWallet(), http.MethodPost)
 
 }
 
