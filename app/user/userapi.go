@@ -26,7 +26,7 @@ func InitSetupHandlers(r *mux.Router, prefix string) {
 
 	// login route - takes the username, password and retruns a jwt
 	loginPath := api.RouteBuilder(prefix, namespace, "v1", "login")
-	api.CORSRouteHandler(loginPath, r, loginHandler(), http.MethodGet)
+	api.OpenRouteHandler(loginPath, r, loginHandler(), http.MethodGet)
 
 }
 
