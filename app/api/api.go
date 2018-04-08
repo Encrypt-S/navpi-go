@@ -81,3 +81,11 @@ func RouteBuilder(prefix string, namespace string, version string, method string
 	log.Println(route)
 	return route
 }
+
+func CORSRouteHandler(path string, r *mux.Router,  f http.Handler, method string) {
+	r.Handle(path, middleware.Adapt(f, middleware.CORSHandler())).Methods(method)
+}
+
+func ProtectedRouteHandler(path string, r *mux.Router,  f http.Handler,  method string ) {
+	r.Handle(path, middleware.Adapt(f, middleware.CORSHandler(), middleware.JwtHandler())).Methods(method)
+}
