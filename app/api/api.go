@@ -82,8 +82,8 @@ func RouteBuilder(prefix string, namespace string, version string, method string
 	return route
 }
 
-func OpenRouteHandler(path string, r *mux.Router,  f http.Handler, method string) {
-	r.Handle(path, middleware.Adapt(f, middleware.CORSHandler())).Methods(method)
+func OpenRouteHandler(path string, r *mux.Router,  f http.Handler) {
+	r.Handle(path, middleware.Adapt(f, middleware.CORSHandler()))
 }
 
 func ProtectedRouteHandler(path string, r *mux.Router,  f http.Handler,  method string ) {

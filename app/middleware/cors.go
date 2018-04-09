@@ -12,6 +12,7 @@ func CORSHandler() Adapter {
 
 			w.Header().Add("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 			w.Header().Add("Access-Control-Allow-Headers", "*")
+			w.Header().Add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 
 			// if this is the preflight then exit here
 			if r.Method == http.MethodOptions {
