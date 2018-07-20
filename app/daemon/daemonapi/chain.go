@@ -1,19 +1,30 @@
 package daemonapi
 
 import (
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
+
 	"io"
+	"io/ioutil"
+
+	"github.com/Encrypt-S/navpi-go/app/api"
+	"github.com/Encrypt-S/navpi-go/app/conf"
+	"github.com/Encrypt-S/navpi-go/app/daemon/daemonrpc"
 )
 
-// Setup all the handlers for the blockchain rpc interface
+// InitChainHandlers sets up handlers for the blockchain rpc interface
 func InitChainHandlers(r *mux.Router, prefix string) {
 
-	//config = conf
-	//
-	//r.HandleFunc(fmt.Sprintf("/%s/blockchain/v1/getblockcount", prefix), getBlockCount)
+	namespace := "chain"
+
+	getBlocCountPath := api.RouteBuilder(prefix, namespace, "v1", "getblockcount")
+	api.ProtectedRouteHandler(getBlocCountPath, r, getBlockCount(), http.MethodPost)
+
+
+	//r.Handle(getBlocCountPath, middleware.Adapt(getBlockCount(),
+	//	middleware.JwtHandler())).Methods("GET")
 
 	//// not implemented
 	//r.HandleFunc("/blockchain/v1/getbestblockhash", api.NotImplemented).Methods("GET")
@@ -37,23 +48,25 @@ func InitChainHandlers(r *mux.Router, prefix string) {
 
 }
 
-func getBlockCount(w http.ResponseWriter, r *http.Request) {
-	//fmt.Fprintf(w, "NAVCoin pi server") // send data to client side
+// protectUIHandler takes the api response and checks username and password
+func getBlockCount() http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-	log.Println("getBlockCount")
+		log.Println("getBlockCount")
 
-	//n := daemonrpc.RpcRequestData{}
-	//n.Method = "getblockcount"
-	//
-	//resp, err := daemonrpc.RequestDaemon(n, config)
-	//
-	//if err != nil { // Handle errors requesting the daemon
-	//	daemonrpc.RpcFailed(err, w, r)
-	//	return
-	//}
-	//
-	//bodyText, err := ioutil.ReadAll(resp.Body)
-	//w.WriteHeader(resp.StatusCode)
-	//w.Write(bodyText)
-	io.WriteString(w, "hello world\n")
+		n := daemonrpc.RpcRequestData{}
+		n.Method = "getblockcount"
+
+		resp, err := daemonrpc.RequestDaemon(n, conf.NavConf)
+
+		if err != nil { // Handle errors requesting the daemon
+			daemonrpc.RpcFailed(err, w, r)
+			return
+		}
+
+		bodyText, err := ioutil.ReadAll(resp.Body)
+		w.WriteHeader(resp.StatusCode)
+		w.Write(bodyText)
+		io.WriteString(w, "hello world\n")
+	})
 }

@@ -8,21 +8,19 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/NAVCoin/navpi-go/app/api"
-	"github.com/NAVCoin/navpi-go/app/boxsetup/setupapi"
-	"github.com/NAVCoin/navpi-go/app/conf"
-	"github.com/NAVCoin/navpi-go/app/daemon"
-	"github.com/NAVCoin/navpi-go/app/daemon/daemonapi"
-	"github.com/NAVCoin/navpi-go/app/manager/managerapi"
-	"github.com/gorilla/handlers"
+	"github.com/Encrypt-S/navpi-go/app/api"
+	"github.com/Encrypt-S/navpi-go/app/boxsetup/setupapi"
+	"github.com/Encrypt-S/navpi-go/app/conf"
+	"github.com/Encrypt-S/navpi-go/app/daemon"
+	"github.com/Encrypt-S/navpi-go/app/daemon/daemonapi"
+	"github.com/Encrypt-S/navpi-go/app/manager/managerapi"
+	"github.com/Encrypt-S/navpi-go/app/user"
 	"github.com/gorilla/mux"
 )
 
-var server *http.Server
-
 func main() {
 
-	api.BuildAppErrors()
+	initMain()
 
 	// log out server runtime OS and Architecture
 	log.Println(fmt.Sprintf("Server running in %s:%s", runtime.GOOS, runtime.GOARCH))
@@ -34,60 +32,53 @@ func main() {
 		log.Fatal("Failed to load the server config: " + err.Error())
 	}
 
-	conf.LoadAppConfig()
+	// Load the App config
+	err = conf.LoadAppConfig()
+	if err != nil {
+		log.Println("Failed to load the app config: " + err.Error())
+	}
+
 	conf.StartConfigManager()
 
-	router := mux.NewRouter()
+	//load the dev config file if one is set
+	conf.LoadDevConfig()
 
-	// Init the meta api
+	// setup the router and the api
+	router := mux.NewRouter()
 	api.InitMetaHandlers(router, "api")
 
 	// check to see if we have a defined running config
 	// If not we are only going to boot the setup apis, otherwise we will start the app
 	if conf.AppConf.RunningNavVersion == "" {
 
-		//log.Println("App config undetected :: creating mock config, initializing setup handlers")
-
-		//appConfig, err := conf.MockAppConfig()
-		//if err != nil {
-		//	log.Fatal("Failed to create the mock config: " + err.Error())
-		//} else {
-		//	log.Println("appConfig", appConfig)
-		//}
-
+		log.Println("No App Config starting the setup api")
 		setupapi.InitSetupHandlers(router, "api")
 
 	} else {
 
 		log.Println("App config found :: booting all apis!")
-
-		err := conf.LoadRPCDetails(conf.AppConf)
-
-		if err != nil {
-			//TODO: Fix this
-			log.Println("RPC Details Not found!")
-			log.Println("err", err)
-		}
-
 		// we have a user config so start the app in running mode
+		// TODO: make dependent on the dev config
 		daemon.StartManager()
 
+		// stat all app API's
 		managerapi.InitManagerhandlers(router, "api")
 		daemonapi.InitChainHandlers(router, "api")
+		daemonapi.InitWalletHandlers(router, "api")
+		user.InitSetupHandlers(router, "api")
 
 	}
 
-	//load the dev config file if one is set
-	conf.LoadDevConfig()
+	// Start http server
+	port := fmt.Sprintf(":%d", serverConfig.ManagerAPIPort)
+	http.ListenAndServe(port, router)
+}
 
-	// Start the server
-	port := fmt.Sprintf(":%d", serverConfig.ManagerApiPort)
-	srv := &http.Server{
-		Addr:    port,
-		Handler: handlers.CORS()(router)}
+// Start everything before we get going
+func initMain() {
 
-	log.Println("port", port)
-
-	srv.ListenAndServe()
+	api.BuildAppErrors()
+	conf.CreateRPCDetails()
+	conf.GenerateJWTSecret()
 
 }

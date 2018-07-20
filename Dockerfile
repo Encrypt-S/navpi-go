@@ -3,11 +3,20 @@ FROM golang
 ARG app_env
 ENV APP_ENV $app_env
 
-COPY ./app /go/src/github.com/NAVCoin/navpi-go/app
-WORKDIR /go/src/github.com/NAVCoin/navpi-go/app
+COPY ./app /go/src/github.com/Encrypt-S/navpi-go/app
+WORKDIR /go/src/github.com/Encrypt-S/navpi-go/app
 
+# Install dependencies
 RUN go get ./
-RUN go build
+
+# Install test dependencies
+RUN go get -t -v ./...
+
+## Build
+#RUN go build
+#
+## Test
+#RUN go test
 
 CMD if [ ${APP_ENV} = production ]; \
 	then \

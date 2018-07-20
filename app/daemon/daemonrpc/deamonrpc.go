@@ -6,11 +6,14 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/NAVCoin/navpi-go/app/conf"
+	"fmt"
+
+	"github.com/Encrypt-S/navpi-go/app/conf"
 )
 
 type RpcRequestData struct {
-	Method string `json:"method"`
+	Method string      `json:"method"`
+	Params interface{} `json:"params"`
 }
 
 type RpcResp struct {
@@ -19,26 +22,50 @@ type RpcResp struct {
 	Message string `json:"message"`
 }
 
+/*
+type RpcRequestData struct {
+	Method string `json:"method"`
+	Args   string `json:"arguments"`
+}
+
+type RpcResp struct {
+	Code    int    `json:"code"`
+	Data    string `json:"data"`
+	Message string `json:"message"`
+}
+
+*/
+
 // RequestDaemon request the data via the daemon's rpc api
 // it also allows auto switches between the testnet and live depending on the config
 func RequestDaemon(rpcReqData RpcRequestData, navConf conf.NavConfig) (*http.Response, error) {
 
-	username := navConf.RpcUser
-	password := navConf.RpcPassword
+	serverConf := conf.ServerConf
+
+	username := navConf.RPCUser
+	password := navConf.RPCPassword
 
 	client := &http.Client{}
 
 	jsonValue, _ := json.Marshal(rpcReqData)
 
-	url := "http://127.0.0.1:44444"
+	// set the port to live
+	port := serverConf.LivePort
 
-	//if(config.TestNet) {
-	//	url = "http://127.0.0.1:44445"
-	//}
+	// check to see if we are in test net mode
+	if serverConf.UseTestnet {
+		port = serverConf.TestPort
+	}
 
+	// build the url
+	url := fmt.Sprintf("http://127.0.0.1:%d", port)
+
+	//  build the request
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonValue))
 	req.SetBasicAuth(username, password)
 	req.Header.Add("Content-Type", "application/json")
+
+	// TODO: Handled 500 errors
 
 	resp, err := client.Do(req)
 

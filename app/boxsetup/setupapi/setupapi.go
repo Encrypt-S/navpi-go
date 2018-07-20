@@ -7,13 +7,14 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/NAVCoin/navpi-go/app/api"
-	"github.com/NAVCoin/navpi-go/app/conf"
-	"github.com/NAVCoin/navpi-go/app/middleware"
+	"github.com/Encrypt-S/navpi-go/app/api"
+	"github.com/Encrypt-S/navpi-go/app/conf"
+	"github.com/Encrypt-S/navpi-go/app/middleware"
 	"github.com/gorilla/mux"
 	"github.com/muesli/crunchy"
 )
 
+// UIProtection defines a structure to store username and password
 type UIProtection struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -22,23 +23,27 @@ type UIProtection struct {
 // InitSetupHandlers sets the api
 func InitSetupHandlers(r *mux.Router, prefix string) {
 
-	var nameSpace string = "setup"
+	// setup namespace
+	namespace := "setup"
 
-	r.Handle(fmt.Sprintf("/%s/%s/v1/setrange", prefix, nameSpace), middleware.Adapt(rangeSetHandler()))
+	// setup setrange route - takes the users ip address and saves it to the config as a range
+	setRangePath := api.RouteBuilder(prefix, namespace, "v1", "setrange")
+	r.Handle(setRangePath, middleware.Adapt(rangeSetHandler()))
 
-	// Protect UI with username and password
-	r.Handle(fmt.Sprintf("/%s/%s/v1/protectui", prefix, nameSpace), middleware.Adapt(protectUIHandler())).Methods("POST")
+	// setup protectui route - protect UI with username and password
+	protectUIPath := api.RouteBuilder(prefix, namespace, "v1", "protectui")
+	r.Handle(protectUIPath, middleware.Adapt(protectUIHandler())).Methods("POST")
 
 }
 
-// rangeSetHandler takes the users ip address and saves it to the config as a range
+// protectUIHandler takes the api response and checks username and password
 func protectUIHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		var uiProtection UIProtection
 		apiResp := api.Response{}
 
-		//Get the json from the post data
+		// get the json from the post data
 		err := json.NewDecoder(r.Body).Decode(&uiProtection)
 
 		if err != nil {
@@ -52,7 +57,7 @@ func protectUIHandler() http.Handler {
 			return
 		}
 
-		// Check we have a username and password
+		// check we have a username and password
 		if uiProtection.Username == "" || uiProtection.Password == "" {
 
 			w.WriteHeader(http.StatusBadRequest)
@@ -65,7 +70,7 @@ func protectUIHandler() http.Handler {
 
 		}
 
-		// Check the password strength
+		// check the password strength
 		validator := crunchy.NewValidator()
 		err = validator.Check(uiProtection.Password)
 
@@ -73,7 +78,7 @@ func protectUIHandler() http.Handler {
 
 			w.WriteHeader(http.StatusBadRequest)
 
-			returnErr := api.AppRespErrors.InvalidPasswordStrength
+			returnErr := api.AppRespErrors.InvalidStrength
 			returnErr.ErrorMessage = fmt.Sprintf("The password is considered unsafe: %v", err)
 
 			apiResp.Errors = append(apiResp.Errors, returnErr)
@@ -86,7 +91,7 @@ func protectUIHandler() http.Handler {
 		// has the details for later
 		hashedDetails, err := api.HashDetails(uiProtection.Username, uiProtection.Password)
 
-		// if there was an error hasing the details then error
+		// if there was an error hashing the details then error
 		if err != nil {
 
 			w.WriteHeader(http.StatusInternalServerError)
@@ -100,9 +105,13 @@ func protectUIHandler() http.Handler {
 
 		}
 
-		// Everything is good store the hash
+		// everything is good store the hash in the AppConf
 		conf.AppConf.UIPassword = hashedDetails
+
+		// save config
 		conf.SaveAppConfig()
+
+		// send
 		apiResp.Send(w)
 
 	})

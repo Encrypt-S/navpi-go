@@ -6,6 +6,7 @@
 
 # dependencies
 vendor
+_vendor-*
 
 # test coverage
 c.out

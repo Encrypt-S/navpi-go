@@ -4,13 +4,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Resp struct {
-	Code    int
-	Data    string
-	Message string
-}
-
-// Setup all the handlers for the blockchain rpc interface
+// InitAddressHandlers sets up handlers for the blockchain rpc interface
 func InitAddressHandlers(r *mux.Router, prefix string) {
 
 	println(prefix)

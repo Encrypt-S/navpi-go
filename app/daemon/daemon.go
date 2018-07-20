@@ -12,9 +12,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/NAVCoin/navpi-go/app/conf"
-	"github.com/NAVCoin/navpi-go/app/daemon/daemonrpc"
-	"github.com/NAVCoin/navpi-go/app/fs"
+	"fmt"
+
+	"github.com/Encrypt-S/navpi-go/app/conf"
+	"github.com/Encrypt-S/navpi-go/app/daemon/daemonrpc"
+	"github.com/Encrypt-S/navpi-go/app/fs"
 )
 
 const (
@@ -101,7 +103,9 @@ type GitHubReleaseData struct {
 }
 
 var runningDaemon *exec.Cmd
-var minHeartbeat int64 = 500 // the lowest value the hb checker can be set to
+var minHeartbeat int64 = 1000 // the lowest value the hb checker can be set to
+
+var isGettingDaemon = false
 
 // StartManager is a simple system that checks if
 // the daemon is alive. If not it tries to start it
@@ -116,28 +120,31 @@ func StartManager() {
 
 	ticker := time.NewTicker(time.Duration(hbInterval) * time.Millisecond)
 	go func() {
-		for t := range ticker.C {
+		for range ticker.C {
 
-			log.Println(t)
+			//log.Println(t)
 
 			// check to see if the daemon is alive
 			if isAlive() {
-				log.Println("NAVCoin daemon is alive!")
+				//log.Println("NAVCoin daemon is alive!")
 			} else {
 
-				log.Println("NAVCoin daemon is unresponsive...")
+				// only do thing if we are already not getting the daemon
+				if !isGettingDaemon {
+					log.Println("NAVCoin daemon is unresponsive...")
 
-				if runningDaemon != nil {
-					Stop(runningDaemon)
-				}
+					if runningDaemon != nil {
+						Stop(runningDaemon)
+					}
 
-				// start the daemon and download it if necessary
-				cmd, err := DownloadAndStart(conf.ServerConf, conf.AppConf)
+					// start the daemon and download it if necessary
+					cmd, err := DownloadAndStart(conf.ServerConf, conf.AppConf)
 
-				if err != nil {
-					log.Println(err)
-				} else {
-					runningDaemon = cmd
+					if err != nil {
+						log.Println(err)
+					} else {
+						runningDaemon = cmd
+					}
 				}
 
 			}
@@ -222,8 +229,23 @@ func CheckForDaemon(serverConfig conf.ServerConfig, appConfig conf.AppConfig) (s
 func start(daemonPath string) *exec.Cmd {
 
 	log.Println("Booting NAVCoin daemon")
-	cmd := exec.Command(daemonPath)
-	cmd.Start()
+
+	rpcUser := fmt.Sprintf("-rpcuser=%s", conf.NavConf.RPCUser)
+	rpcPassword := fmt.Sprintf("-rpcpassword=%s", conf.NavConf.RPCPassword)
+
+	// setup to use the testnet if needed
+	testnet := ""
+
+	if conf.ServerConf.UseTestnet {
+		testnet = "-testnet"
+	}
+
+	cmd := exec.Command(daemonPath, rpcUser, rpcPassword, testnet)
+	err := cmd.Start()
+
+	if err != nil {
+		log.Fatal("Failed to start the daemon: " + err.Error())
+	}
 
 	return cmd
 
@@ -269,7 +291,11 @@ func downloadDaemon(serverConf conf.ServerConfig, version string) {
 
 	dlPath, dlName, _ := getDownloadPathAndName(releaseInfo)
 
+	isGettingDaemon = true // flag we are getting the daemon
+
 	fs.DownloadExtract(dlPath, dlName)
+
+	isGettingDaemon = false // flag we have finished
 
 }
 

@@ -1,16 +1,18 @@
 package fs
 
 import (
+	"archive/tar"
 	"archive/zip"
 	"compress/gzip"
 	"fmt"
-	"github.com/dustin/go-humanize"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/dustin/go-humanize"
 )
 
 // WriteCounter counts the number of bytes written to it. It implements to the io.Writer
@@ -27,12 +29,12 @@ func (wc *WriteCounter) Write(p []byte) (int, error) {
 	return n, nil
 }
 
+// PrintProgress will print current status of download
 func (wc WriteCounter) PrintProgress() {
 	// Clear the line by using a character return to go back to the start and remove
 	// the remaining characters by filling it with spaces
 	fmt.Printf("\r%s", strings.Repeat(" ", 35))
 
-	// Return again and print current status of download
 	// We use the humanize package to print the bytes in a meaningful way (e.g. 10 MB)
 	fmt.Printf("\rDownloading... %s complete", humanize.Bytes(wc.Total))
 }
@@ -124,19 +126,21 @@ func Download(url string, downloadTofileName string) {
 
 }
 
+// Extract will call Unzip or Untar depending on the detected file extension
 func Extract(assetName string, downloadLocation string, extractPath string) {
 
 	switch filepath.Ext(assetName) {
 	case ".zip":
 		Unzip(downloadLocation, extractPath)
 	case ".gz":
-		Ungzip(downloadLocation, extractPath)
+		Untar(downloadLocation, extractPath)
 	}
 
 	log.Println("File extracted to " + extractPath)
 
 }
 
+// Unzip takes a src and destination path and unzips accordingly
 func Unzip(src, dest string) error {
 
 	log.Println("Unzip the zip file from " + dest)
@@ -185,34 +189,69 @@ func Unzip(src, dest string) error {
 	return nil
 }
 
-// Ungzip uncompresses the given tar.gz file
-func Ungzip(gzStream, dest string) error {
+// Untar takes a destination path and a reader; a tar reader loops over the tarfile
+// creating the file structure at 'dst' along the way, and writing any files
+func Untar(gzStream string, dst string) error {
+	r, err := os.Open(gzStream)
+	gzr, err := gzip.NewReader(r)
 
-	log.Println("Ungzip the tar.gz from " + dest)
-
-	gzReader, err := os.Open(gzStream)
+	defer gzr.Close()
 	if err != nil {
 		return err
 	}
-	defer gzReader.Close()
 
-	gzArchive, err := gzip.NewReader(gzReader)
-	if err != nil {
-		return err
+	tr := tar.NewReader(gzr)
+
+	for {
+		header, err := tr.Next()
+
+		switch {
+
+		// if no more files are found return
+		case err == io.EOF:
+			return nil
+
+			// return any other error
+		case err != nil:
+			return err
+
+			// if the header is nil, just skip it (not sure how this happens)
+		case header == nil:
+			continue
+		}
+
+		// the target location where the dir/file should be created
+		target := filepath.Join(dst, header.Name)
+
+		// the following switch could also be done using fi.Mode(), not sure if there
+		// a benefit of using one vs. the other.
+		// fi := header.FileInfo()
+
+		// check the file type
+		switch header.Typeflag {
+
+		// if its a dir and it doesn't exist create it
+		case tar.TypeDir:
+			if _, err := os.Stat(target); err != nil {
+				if err := os.MkdirAll(target, 0755); err != nil {
+					return err
+				}
+			}
+
+			// if it's a file create it
+		case tar.TypeReg:
+			f, err := os.OpenFile(target, os.O_CREATE|os.O_RDWR, os.FileMode(header.Mode))
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+
+			// copy over contents
+			if _, err := io.Copy(f, tr); err != nil {
+				return err
+			}
+		}
 	}
-	defer gzArchive.Close()
-
-	dest = filepath.Join(dest, gzArchive.Name)
-
-	writer, err := os.Create(dest)
-	if err != nil {
-		return err
-	}
-	defer writer.Close()
-
-	_, err = io.Copy(writer, gzArchive)
-
-	return err
 }
 
 // GetCurrentPath gets the path of the go app

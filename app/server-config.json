@@ -2,5 +2,13 @@
   "managerApiPort": 9002,
   "releaseAPI": "https://api.github.com/repos/NAVCoin/navcoin-core/releases",
   "latestReleaseAPI": "https://api.github.com/repos/NAVCoin/navcoin-core/releases/latest",
-  "daemonHeartbeat": 1000
+  "daemonHeartbeat": 5000,
+
+  "navCoinPorts": {
+    "livePort": 44444,
+    "testnetPort": 44445
+  },
+
+  "useTestnet": true
+
 }
